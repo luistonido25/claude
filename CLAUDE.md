@@ -15,16 +15,19 @@ There is **no build step and no test suite**. Plain HTML/CSS/JS; the only depend
 
 ## Structure
 
-- `index.html` — landing page: program overview, profile bar, week-by-week day cards, portfolio tracker, "Before Day 1" setup checklist. `<body data-page="index">`.
-- `day-01.html` … `day-30.html` — one page per training day. `<body data-day="N">` (N without leading zero; filenames use two digits). Each has a `<section id="daily-quiz">` placeholder rendered by app.js.
+The site is multi-track: GHL 30-Day (original, at `index.html` + `day-XX.html`) and Make.com 14-Day (`make.html` + `make-day-XX.html`); n8n and Zapier tabs are "soon" placeholders. Every page carries a `<nav class="track-nav">` tab bar.
+
+- `index.html` — GHL track hub: program overview, profile bar, week-by-week day cards, portfolio tracker, "Before Day 1" setup checklist. `<body data-page="index">` (no `data-track` = GHL, legacy keys).
+- `make.html` — Make track hub, same mechanics. `<body data-page="index" data-track="make" data-total-days="14">`.
+- `day-01.html` … `day-30.html` / `make-day-01.html` … `make-day-14.html` — one page per training day. `<body data-day="N">` plus `data-track="make"` on Make pages (N without leading zero; filenames use two digits). Each has a `<section id="daily-quiz">` placeholder rendered by app.js. Task IDs are globally unique across tracks: `dNN-tMM` (GHL), `mNN-tMM` (Make), portfolio `pf-*` / `mpf-*`.
 - `styles.css` — all styling. Week color coding via `week-1` … `week-5` classes; light/dark via `prefers-color-scheme`.
 - `app.js` — progress engine: named profiles, localStorage persistence, cloud sync, quiz rendering. No frameworks.
-- `quizzes.js` — `window.GHL30_QUIZZES = {dayNumber: [{q, options[4], correct, explain}]}`, 5 questions per day.
+- `quizzes.js` / `make-quizzes.js` — `window.GHL30_QUIZZES` / `window.MAKE_QUIZZES = {dayNumber: [{q, options[4], correct, explain}]}`, 5 questions per day. app.js picks the registry by `data-track`.
 - `netlify/functions/progress.mjs` — GET/PUT `/api/progress?user=<name>`; stores per-user JSON in the Netlify Blobs store `progress`. Name-only identity (no passwords) by design.
 
 ## Progress data model
 
-- Current profile: `localStorage["ghl30:currentUser"]`. All progress keys are namespaced: `ghl30:<user>:task:<id>`, `ghl30:<user>:day:<n>:pct`, `ghl30:<user>:quiz:<n>`.
+- Current profile: `localStorage["ghl30:currentUser"]`. All progress keys are namespaced: `ghl30:<user>:task:<id>`, `ghl30:<user>:day:<n>:pct`, `ghl30:<user>:quiz:<n>`. Non-GHL tracks add a track prefix after the user: `ghl30:<user>:make:day:<n>:pct`, `ghl30:<user>:make:quiz:<n>`; snapshot dict keys are `"5"` (GHL) vs `"make:5"`.
 - Sync: on load, GET server snapshot and merge (union of checked tasks, max of percentages/scores); on change, debounced PUT of the full snapshot `{tasks, days, quizzes}`. Offline/GitHub Pages → graceful local-only fallback.
 
 ## Conventions (must be preserved when editing day pages)

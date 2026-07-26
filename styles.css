@@ -605,3 +605,46 @@ footer.site-footer {
   font-size: 0.82rem;
   font-weight: 600;
 }
+
+/* ---------- Track navigation (multi-track) ---------- */
+
+.track-nav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.track-nav .container {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.track-nav a, .track-nav .soon {
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.track-nav a:hover { color: var(--text); }
+
+.track-nav a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.track-nav .soon { opacity: 0.5; cursor: default; }
+.track-nav .soon::after {
+  content: " soon";
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Make track hub hero */
+.hero.hero-make { background: linear-gradient(135deg, #6d28d9, #c026d3); }

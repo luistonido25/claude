@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 1 — Make Fundamentals &amp; Account Setup | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="1">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 1 · Fast Fundamentals</span>
+      <span class="hours-badge">⏱ 5–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 1</span>Make Fundamentals &amp; Account Setup</h1>
+    <p class="day-goal">By tonight you'll have a working Make account, you'll have built and scheduled your first scenario, you'll understand the operations-based pricing model well enough to explain it to a client, and — if you know n8n — you'll have translated your existing mental model into Make vocabulary.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Account, UI tour, and the Make mental model</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Make (formerly Integromat) is a visual automation platform. Its unit of work is the <strong>scenario</strong> — a chain of <strong>modules</strong> that runs on a schedule or instantly via webhooks. Unlike n8n, you pay per <strong>operation</strong>: every time any module executes once, that's one operation off your quota.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m01-t01"><span>Go to <strong>make.com</strong> → click <strong>Get started free</strong> → sign up (Google sign-in is fastest). Pick the datacenter region it suggests. You land on the dashboard.<em class="why">The free plan gives 1,000 operations/month — plenty for this track if you run tests with small data sets.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t02"><span>Tour the left sidebar and write one line each in your training journal: <strong>Scenarios</strong> (your automations), <strong>Templates</strong> (pre-built scenarios), <strong>Connections</strong> (saved app credentials), <strong>Webhooks</strong>, <strong>Data stores</strong> (built-in mini database), <strong>Data structures</strong>, <strong>Devices</strong>, plus <strong>Organization → Subscription</strong> where the operations counter lives.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t03"><span>Open <strong>Organization</strong> (top-left) → <strong>Subscription</strong> tab → find your <strong>operations used / remaining</strong> meter. Screenshot it — you'll compare at the end of the track to show clients you can estimate operation costs.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t04"><span>In your journal, write the pricing model in one sentence: <em>"Make bills per module execution (operation); a 5-module scenario processing 10 items with an iterator can cost 50+ operations per run."</em> Then write why that changes design decisions (batching, filters early, schedules not too frequent).<em class="why">Interviewers for Make roles almost always probe whether you design with operation costs in mind.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t05"><span>If you know n8n: copy this translation table into your journal and fill the right column from memory first, then check — workflow→<strong>scenario</strong>, node→<strong>module</strong>, credentials→<strong>connections</strong>, execution→<strong>run</strong> (billed per operation), expression editor→<strong>mapping panel + functions</strong>, automatic item looping→<strong>iterators/aggregators (explicit!)</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build your first scenario, click by click</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">The classic starter: a scheduled scenario that reads a Google Sheet and emails you a summary. Small, but it exercises connections, mapping, and scheduling.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m01-t06"><span>Create a Google Sheet named <strong>Make Practice</strong> with headers <code>Name</code>, <code>Email</code>, <code>Status</code> and 5 fake rows (mix Status values: new / contacted / won).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t07"><span>In Make click <strong>Scenarios</strong> → <strong>+ Create a new scenario</strong>. You're on the empty canvas — click the big <strong>+</strong> circle, search <strong>Google Sheets</strong>, choose the <strong>Search Rows</strong> module.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t08"><span>Click <strong>Add</strong> next to Connection → sign in to Google and allow access — this creates your first reusable <strong>connection</strong>. Then pick your spreadsheet <strong>Make Practice</strong>, sheet <strong>Sheet1</strong>, leave filter empty, set <strong>Maximum number of returned rows</strong> to <strong>10</strong>.<em class="why">Capping returned rows is an operations-cost habit — build it on Day 1.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t09"><span>Right-click the module → <strong>Run this module only</strong>. Inspect the output bubbles: each row is a separate <strong>bundle</strong>. Click a bubble open and note the field names — this is what n8n calls items/JSON.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t10"><span>Add a second module: click the right side of the Sheets module → search <strong>Email</strong> → choose <strong>Send an Email</strong> (or the Gmail module). Connect your account. In <strong>To</strong>, type your own address; in <strong>Subject</strong>, type <code>Row: </code> then click into the field and pick the <strong>Name</strong> mapping chip from the panel; in <strong>Content</strong>, map <strong>Name</strong>, <strong>Email</strong> and <strong>Status</strong> onto separate lines.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t11"><span>Click <strong>Run once</strong> (bottom-left) and watch the run: the email module fires once <em>per bundle</em> — you should get 5 emails. Look at the numbers in the module bubbles: that run just cost you ~6 operations. Write down why (1 search + 5 sends).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t12"><span>That was spammy by design. Now fix it: click the wrench between the modules → <strong>Set up a filter</strong> → label <code>Only new</code>, condition <strong>Status</strong> <em>equal to</em> <code>new</code>. <strong>Run once</strong> again — only "new" rows email now. Filters BEFORE expensive modules = fewer operations.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t13"><span>Bottom of the canvas: click the clock icon on the first module → <strong>Scheduling</strong> → set <strong>Every day at 09:00</strong>. Then flip the scenario switch (bottom-left) to <strong>ON</strong>, confirm, and rename the scenario (click its name, top-left) to <code>[TRAIN] Daily sheet digest v1</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t14"><span>Open <strong>History</strong> (tab at the bottom) → click your run → step through each module's input/output. This panel is your n8n "Executions" equivalent and your main debugging tool all track long.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Blueprints, templates, and lock-in drills</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m01-t15"><span>Export your scenario: canvas → three-dot <strong>More</strong> menu (bottom toolbar) → <strong>Export Blueprint</strong>. A <code>.json</code> file downloads — save it to <code>Make Portfolio/blueprints/day01-digest.json</code>.<em class="why">Blueprints are how Make freelancers deliver and version work; every build in this track gets exported.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t16"><span>Create a new empty scenario → <strong>More</strong> → <strong>Import Blueprint</strong> → pick the file you just exported. Note what survives (modules, mappings, filters) and what you must re-link (connections). Delete this duplicate afterwards.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t17"><span>Browse <strong>Templates</strong> in the left sidebar, open any two lead-related templates, and read their module chains without installing. In your journal: one pattern you recognized, one module you'd never seen.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t18"><span><strong>Drill 1 (timed, 20 min):</strong> delete nothing, build the whole Session-2 scenario again from scratch in a new scenario — Sheets search → filter → email → schedule. Under 20 minutes = pass. Delete the copy when done.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t19"><span><strong>Drill 2 (no clicks):</strong> from memory, write the exact click-path for: creating a connection, adding a filter, scheduling a scenario, exporting a blueprint. Then verify each in the UI and correct your notes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m01-t20"><span>Screenshot your finished scenario canvas and History panel → <code>Make Portfolio/screenshots/makeday01-*.png</code>. Journal entry: 3 things that clicked, 1 thing that's still fuzzy (tomorrow's mapping day will probably fix it).</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A live, scheduled scenario (<code>[TRAIN] Daily sheet digest v1</code>) with a filter, its exported blueprint in your portfolio folder, two screenshots, a written operations-cost explanation, and (for n8n users) a completed translation table.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Operations discipline</h3>
+    <p>Turn the scenario switch <strong>OFF</strong> when you finish each day's work. A forgotten every-15-minutes schedule can eat a free plan's 1,000 operations in a weekend — and telling a client "I burned your quota testing" is not a portfolio story.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official docs: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — bookmark; search any module name.</li>
+      <li>Free structured courses: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — you'll use these for certification on Day 13.</li>
+      <li>Read today: Help Center article on <em>"Operations"</em> (billing model) and <em>"Scenario editor"</em>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make.html">← Make track home</a>
+  <a href="make-day-02.html">Day 2: Mapping, Functions &amp; Iterators →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

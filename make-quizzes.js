@@ -1,0 +1,1 @@
+window.MAKE_QUIZZES = {};

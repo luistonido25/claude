@@ -10,8 +10,18 @@
   "use strict";
 
   var PREFIX = "ghl30:";
-  var TOTAL_DAYS = 30;
   var API = "/api/progress";
+
+  // Track support: GHL pages have no data-track (legacy keys stay unchanged);
+  // other tracks (e.g. "make") prefix their day/quiz keys.
+  var TRACK = document.body.getAttribute("data-track") || "";
+  var TP = TRACK ? TRACK + ":" : "";
+  var TOTAL_DAYS = parseInt(document.body.getAttribute("data-total-days") || "30", 10);
+  var QUIZ_REGISTRY = { "": "GHL30_QUIZZES", "make": "MAKE_QUIZZES" };
+
+  function quizData() {
+    return window[QUIZ_REGISTRY[TRACK] || "GHL30_QUIZZES"] || {};
+  }
 
   /* ---------- storage helpers ---------- */
 
@@ -114,9 +124,14 @@
       if (!k || k.indexOf(ns) !== 0) continue;
       var rest = k.slice(ns.length);
       var v = lsGet(k);
-      if (rest.indexOf("task:") === 0 && v === "1") snap.tasks[rest.slice(5)] = 1;
-      else if (/^day:\d+:pct$/.test(rest)) snap.days[rest.split(":")[1]] = parseInt(v, 10) || 0;
-      else if (rest.indexOf("quiz:") === 0) snap.quizzes[rest.slice(5)] = parseInt(v, 10) || 0;
+      var m;
+      if (rest.indexOf("task:") === 0 && v === "1") {
+        snap.tasks[rest.slice(5)] = 1;
+      } else if ((m = rest.match(/^(?:([a-z0-9]+):)?day:(\d+):pct$/))) {
+        snap.days[(m[1] ? m[1] + ":" : "") + m[2]] = parseInt(v, 10) || 0;
+      } else if ((m = rest.match(/^(?:([a-z0-9]+):)?quiz:(\d+)$/))) {
+        snap.quizzes[(m[1] ? m[1] + ":" : "") + m[2]] = parseInt(v, 10) || 0;
+      }
     }
     return snap;
   }
@@ -130,14 +145,19 @@
       lsSet(ns + "task:" + id, "1"); // union merge: server-checked stays checked
     });
     Object.keys(snap.days || {}).forEach(function (d) {
-      var local = parseInt(lsGet(ns + "day:" + d + ":pct") || "0", 10);
+      // d is "5" (GHL) or "make:5" (other tracks)
+      var parts = d.indexOf(":") > -1 ? d.split(":") : ["", d];
+      var lk = ns + (parts[0] ? parts[0] + ":" : "") + "day:" + parts[1] + ":pct";
+      var local = parseInt(lsGet(lk) || "0", 10);
       var remote = parseInt(snap.days[d], 10) || 0;
-      lsSet(ns + "day:" + d + ":pct", String(Math.max(local, remote)));
+      lsSet(lk, String(Math.max(local, remote)));
     });
     Object.keys(snap.quizzes || {}).forEach(function (d) {
-      var local = parseInt(lsGet(ns + "quiz:" + d) || "0", 10);
+      var parts = d.indexOf(":") > -1 ? d.split(":") : ["", d];
+      var lk = ns + (parts[0] ? parts[0] + ":" : "") + "quiz:" + parts[1];
+      var local = parseInt(lsGet(lk) || "0", 10);
       var remote = parseInt(snap.quizzes[d], 10) || 0;
-      lsSet(ns + "quiz:" + d, String(Math.max(local, remote)));
+      lsSet(lk, String(Math.max(local, remote)));
     });
   }
 
@@ -243,7 +263,7 @@
     boxes.forEach(function (b) { if (b.checked) checked++; });
     var pct = Math.round((checked / boxes.length) * 100);
 
-    set("day:" + day + ":pct", String(pct));
+    set(TP + "day:" + day + ":pct", String(pct));
 
     var fill = document.querySelector(".day-progress-fill");
     var text = document.querySelector(".day-progress-text");
@@ -257,10 +277,10 @@
     var day = parseInt(document.body.getAttribute("data-day") || "0", 10);
     var host = document.getElementById("daily-quiz");
     if (!day || !host) return;
-    var questions = (window.GHL30_QUIZZES || {})[day];
+    var questions = quizData()[day];
     if (!questions || !questions.length) { host.style.display = "none"; return; }
 
-    var best = parseInt(get("quiz:" + day) || "-1", 10);
+    var best = parseInt(get(TP + "quiz:" + day) || "-1", 10);
     var picked = new Array(questions.length).fill(-1);
 
     var html = '<h2>🧠 Day ' + day + ' self-test</h2>';
@@ -315,8 +335,8 @@
         (score === questions.length ? " — perfect! 🎉" :
          score >= Math.ceil(questions.length * 0.6) ? " — solid, review the misses above." :
          " — reread today's sessions, then retake.");
-      var prev = parseInt(get("quiz:" + day) || "-1", 10);
-      if (score > prev) set("quiz:" + day, String(score));
+      var prev = parseInt(get(TP + "quiz:" + day) || "-1", 10);
+      if (score > prev) set(TP + "quiz:" + day, String(score));
       this.textContent = "Retake quiz";
       this.disabled = false;
       updateQuizBadge();
@@ -329,9 +349,9 @@
     var day = document.body.getAttribute("data-day");
     if (!day) return;
     var badge = document.querySelector(".quiz-score-badge");
-    var questions = (window.GHL30_QUIZZES || {})[parseInt(day, 10)] || [];
+    var questions = quizData()[parseInt(day, 10)] || [];
     if (!badge || !questions.length) return;
-    var best = parseInt(get("quiz:" + day) || "-1", 10);
+    var best = parseInt(get(TP + "quiz:" + day) || "-1", 10);
     badge.textContent = best >= 0 ? "🧠 Quiz: " + best + "/" + questions.length : "";
   }
 
@@ -344,13 +364,13 @@
     var daysDone = 0;
 
     for (var d = 1; d <= TOTAL_DAYS; d++) {
-      var pct = parseInt(get("day:" + d + ":pct") || "0", 10);
+      var pct = parseInt(get(TP + "day:" + d + ":pct") || "0", 10);
       sum += pct;
       if (pct === 100) daysDone++;
 
       var badge = document.querySelector('.day-pct[data-day="' + d + '"]');
       if (badge) {
-        var quizBest = parseInt(get("quiz:" + d) || "-1", 10);
+        var quizBest = parseInt(get(TP + "quiz:" + d) || "-1", 10);
         var label = pct === 100 ? "✓ Done" : pct + "%";
         if (quizBest >= 0) label += " · 🧠" + quizBest + "/5";
         badge.textContent = label;
