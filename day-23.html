@@ -14,6 +14,7 @@
     <div class="day-meta">
       <span class="week-badge">Week 4 · GHL + n8n Integration</span>
       <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
     </div>
     <h1><span class="day-num">Day 23</span>Portfolio #10: Lead Logger &amp; Instant Alerts (GHL → n8n)</h1>
     <p class="day-goal">By tonight, every submission of Summit Dental's "New Patient Inquiry" form will fire a GHL workflow that POSTs the lead to an n8n webhook, which appends a clean row to a Google Sheet and pings you instantly on Telegram — tested end-to-end on the production URL. This is your first real GHL → n8n integration, and it's a build agencies genuinely sell.</p>
@@ -85,6 +86,8 @@
     <p>This is your first cross-platform integration: a GHL form firing a GHL workflow webhook into n8n, fanning out to Google Sheets and Telegram, running on the <strong>production</strong> URL with verified executions. Once the JSON export, four screenshots, and Loom are in your <strong>GHL Portfolio</strong> folder, go to the home page and tick <strong>Portfolio #10</strong> on the tracker.</p>
   </div>
 
+  <section class="callout quiz" id="daily-quiz"></section>
+
   <div class="callout deliverable">
     <h2>📦 Deliverable of the day</h2>
     <p>A live, activated <strong>Lead Logger &amp; Alerts</strong> pipeline: form submission → GHL workflow → n8n production webhook → Summit Leads row + Telegram alert, proven by two end-to-end tests visible in the n8n Executions list — plus <code>lead-logger-alerts.json</code>, the architecture drawing, four screenshots, and the Loom walkthrough.</p>
@@ -112,6 +115,7 @@
   <a href="day-24.html">Day 24: GHL API 2.0 in n8n →</a>
 </nav>
 
+<script src="quizzes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

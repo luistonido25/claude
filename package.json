@@ -1,0 +1,9 @@
+{
+  "name": "ghl-30-day-intensive",
+  "version": "1.0.0",
+  "private": true,
+  "description": "30-day GoHighLevel training site with per-user cloud progress",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

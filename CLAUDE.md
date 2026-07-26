@@ -8,17 +8,24 @@ A static website: **"GHL 30-Day Intensive"** — a 30-day, day-by-day GoHighLeve
 
 ## Commands
 
-There is **no build step, no dependencies, no test suite**. Plain HTML/CSS/JS.
+There is **no build step and no test suite**. Plain HTML/CSS/JS; the only dependency (`@netlify/blobs`) is used by the serverless function and installed by Netlify at deploy time.
 
-- Preview locally: `python3 -m http.server 8000` from the repo root, then open `http://localhost:8000`.
-- Deploy: `.github/workflows/deploy-pages.yml` publishes the repo root to GitHub Pages on push to `main` (Pages must be enabled with Source = GitHub Actions in repo settings).
+- Preview locally: `python3 -m http.server 8000` from the repo root, then open `http://localhost:8000`. The progress API is not available locally — the frontend falls back to local-only storage (by design).
+- Deploy: pushes to `claude/claude-md-docs-jziuo2` auto-deploy two ways: (1) Netlify (primary, ghl-30-day-intensive.netlify.app) via linked repo — this includes the functions; (2) GitHub Pages via `.github/workflows/deploy-pages.yml`, which mirrors the branch to `gh-pages` (static only, no API — the site runs in local-only mode there).
 
 ## Structure
 
-- `index.html` — landing page: program overview, week-by-week day cards, portfolio tracker, "Before Day 1" setup checklist. `<body data-page="index">`.
-- `day-01.html` … `day-30.html` — one page per training day. `<body data-day="N">` (N without leading zero; filenames use two digits).
+- `index.html` — landing page: program overview, profile bar, week-by-week day cards, portfolio tracker, "Before Day 1" setup checklist. `<body data-page="index">`.
+- `day-01.html` … `day-30.html` — one page per training day. `<body data-day="N">` (N without leading zero; filenames use two digits). Each has a `<section id="daily-quiz">` placeholder rendered by app.js.
 - `styles.css` — all styling. Week color coding via `week-1` … `week-5` classes; light/dark via `prefers-color-scheme`.
-- `app.js` — progress engine. No frameworks, no external requests.
+- `app.js` — progress engine: named profiles, localStorage persistence, cloud sync, quiz rendering. No frameworks.
+- `quizzes.js` — `window.GHL30_QUIZZES = {dayNumber: [{q, options[4], correct, explain}]}`, 5 questions per day.
+- `netlify/functions/progress.mjs` — GET/PUT `/api/progress?user=<name>`; stores per-user JSON in the Netlify Blobs store `progress`. Name-only identity (no passwords) by design.
+
+## Progress data model
+
+- Current profile: `localStorage["ghl30:currentUser"]`. All progress keys are namespaced: `ghl30:<user>:task:<id>`, `ghl30:<user>:day:<n>:pct`, `ghl30:<user>:quiz:<n>`.
+- Sync: on load, GET server snapshot and merge (union of checked tasks, max of percentages/scores); on change, debounced PUT of the full snapshot `{tasks, days, quizzes}`. Offline/GitHub Pages → graceful local-only fallback.
 
 ## Conventions (must be preserved when editing day pages)
 

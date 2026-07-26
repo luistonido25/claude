@@ -14,6 +14,7 @@
     <div class="day-meta">
       <span class="week-badge">Week 4 · GHL + n8n Integration</span>
       <span class="hours-badge">⏱ 7–8 hours</span>
+      <span class="quiz-score-badge"></span>
     </div>
     <h1><span class="day-num">Day 26</span>Portfolio #12: GHL ⇄ Google Sheets Two-Way Sync</h1>
     <p class="day-goal">By tonight you'll have two scheduled n8n workflows keeping GHL contacts and a Google Sheet in sync in both directions without infinite loops, plus a dedicated error-alert workflow that pings Telegram whenever anything fails — and a completed test matrix proving all three sync cases work. Two-way sync is a classic senior-level interview topic; today you earn the right to talk about it.</p>
@@ -101,6 +102,8 @@ Rename it <strong>Create contact</strong>.</span></label></li>
     <p>Two scheduled sync workflows with an upsert key, a loop-guard column, retries, and a dedicated Error Trigger alarm — verified by a written test matrix. Once the three JSON exports, screenshots, and Loom are saved, go to the home page and tick <strong>Portfolio #12</strong> on the tracker.</p>
   </div>
 
+  <section class="callout quiz" id="daily-quiz"></section>
+
   <div class="callout deliverable">
     <h2>📦 Deliverable of the day</h2>
     <p>Both directions of the sync live and verified against the three-case test matrix (new row → contact; edited contact → row; guarded row-edit push), a tested error-alert workflow, three workflow JSONs in <code>GHL Portfolio/n8n-exports</code>, four screenshots, the Loom, and PASS/FAIL matrix results in your journal.</p>
@@ -128,6 +131,7 @@ Rename it <strong>Create contact</strong>.</span></label></li>
   <a href="day-27.html">Day 27: Portfolio #13 — Client Onboarding Machine →</a>
 </nav>
 
+<script src="quizzes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
