@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 20 — Pipeline Automation, Internal Ops &amp; Webhooks | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="20">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 20</span>Pipeline Automation, Internal Ops &amp; Webhooks</h1>
+    <p class="day-goal">By tonight your automations won't just message customers — they'll run the BUSINESS: pipeline stages that trigger staff tasks, workflows that move deals forward automatically, notifications on every channel, round-robin lead assignment — and your first real webhook, fired from GHL and inspected as raw JSON. That last part is the bridge to Week 4, where n8n turns you from a GHL specialist into an automation engineer.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Pipeline-driven automation (both directions)</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Pipelines and workflows talk to each other in BOTH directions: a stage change can <strong>trigger</strong> a workflow, and a workflow <strong>action</strong> can move an opportunity to a new stage. Master both and you can automate an entire sales process. Today's scenario: when a Summit Dental consult ends in an accepted treatment plan, the machine kicks off the paperwork.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d20-t01"><span>Prep the pipeline: open <strong>Opportunities</strong> → confirm the <strong>Patient Acquisition</strong> pipeline has (or add via the pipeline's edit screen) two later stages: <strong>Consult Done</strong> and <strong>Treatment Accepted</strong>. Note all stage names exactly as written — trigger filters must match them precisely.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t02"><span>Build the stage-change workflow: <strong>Automation → Client Systems → + Create Workflow → Start from Scratch</strong> → rename <strong>"Treatment Accepted — Ops"</strong> → Trigger: find the opportunity/pipeline trigger (listed under Opportunities — named <strong>Pipeline Stage Changed</strong> or <strong>Opportunity Status Changed</strong> depending on version; pick the one that filters by stage) → filters: <strong>Pipeline is Patient Acquisition</strong> + <strong>moved to stage Treatment Accepted</strong> → <strong>Save Trigger</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t03"><span>Action 1 — a HUMAN task: <strong>+</strong> → find the <strong>Add Task</strong> action → Title: <code>Prepare treatment plan paperwork for {{contact.name}}</code> → Description: include <code>{{contact.phone}}</code> and "call to schedule the procedure" → Due: <strong>in 1 day</strong> → Assign to: <strong>your user</strong>. <strong>Save Action</strong>.<em class="why">Automation that creates TASKS keeps humans in the loop — clients trust systems that tell staff what to do next, not systems that try to do everything.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t04"><span>Action 2 — congratulate the patient: <strong>Send Email</strong> → subject <code>Great decision, {{contact.first_name}} — here's what happens next</code> → 3 short lines about next steps. Action 3 — <strong>Send Internal Notification</strong> (in-app) to your user: "💰 {{contact.name}} accepted treatment — task created." <strong>Save</strong>, <strong>Publish</strong>, Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t05"><span>Test direction 1 (stage → workflow): in <strong>Opportunities</strong>, drag Testy's card (or create an opportunity for him) into <strong>Treatment Accepted</strong>. Verify: enrollment appears, email arrives, in-app bell rings, and the task exists (check the contact record's Tasks section, or Contacts → Tasks list view). Walk the run in <strong>Execution Logs</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t06"><span>Now direction 2 (workflow → stage): open <strong>"Speed to Lead"</strong> from Day 16 → in the <strong>Replied</strong> branch, add an <strong>Update Opportunity</strong> (or Create/Update Opportunity) action AFTER the internal notification → configure it to move the contact's Patient Acquisition opportunity to a stage like <strong>Contacted / Engaged</strong> (use your Day 3 stage that means "we're talking") → Save + re-Publish.<em class="why">Now a reply physically moves the card on the board — the sales team sees pipeline truth without touching anything.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t07"><span>Test direction 2: submit the New Patient Inquiry form as <strong>Owen Opsmove</strong> (<code>you+owen@gmail.com</code>), reply within the 5-minute window (so the replied tag lands), and confirm on the <strong>Opportunities</strong> board that Owen's card sits in the stage your action set — moved by the workflow, not by you. Log-check it. Journal line: "stage changes can trigger workflows; workflows can change stages; guard against loops (a stage-move action that re-fires its own trigger)."</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Internal ops: notifications 3 ways, tasks &amp; round-robin</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Client-facing messages win the contract; INTERNAL automation keeps it. This session is about the staff side: every alert channel, and automatic lead distribution across a team.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d20-t08"><span>Inventory the three notification channels: open any Training workflow, add a <strong>Send Internal Notification</strong> action, and click through its <strong>Type</strong> selector: (1) <strong>Email</strong> — full detail, arrives in staff inbox; (2) <strong>In-app</strong> — the bell inside GHL, best for at-desk staff; (3) <strong>SMS</strong> — to a staff phone, for time-critical alerts (A2P caveat applies here too). Note in your journal which recipient options exist: specific user(s), or the contact's <strong>assigned user</strong> — that second one is what makes round-robin useful.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t09"><span>Understand assignment: every contact and opportunity can have an <strong>assigned user</strong> (open Testy's record and find the Owner/Assigned field). Write the ops chain in your notes: round-robin assigns the lead → notifications target "assigned user" → tasks assign to "assigned user" → each staff member automatically gets THEIR leads, alerts, and to-dos.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t10"><span>Add a second user so round-robin has someone to rotate to: <strong>Settings → My Staff → + Add Employee</strong> → invent <strong>"Dana Frontdesk"</strong> with an email alias you own (<code>you+dana@gmail.com</code>), role <strong>User</strong>, access to Summit Dental only. Save. (You did this on Day 1's tour — now it's for real use.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t11"><span>Find round-robin — it lives in TWO places; check both and note the difference: (a) <strong>Workflow action</strong>: in the action picker search <strong>Assign to User</strong> — it can distribute new contacts round-robin across selected users; (b) <strong>Calendar setting</strong>: Calendars → your calendar's settings → team/staff section, where round-robin distributes BOOKINGS among staff. Write one line: contacts vs appointments — different round-robins.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t12"><span>Wire it into Speed to Lead: open <strong>"Speed to Lead"</strong> → insert an <strong>Assign to User</strong> action as the FIRST action (before the emails) → select both you and Dana, round-robin ON → then edit BOTH Internal Notification actions to send to the <strong>assigned user</strong> instead of hard-coded you → Save + re-Publish.<em class="why">Hard-coded recipients break the moment a client's team changes; "assigned user" scales forever. Interviewers notice this design instinct.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t13"><span>Test the rotation: submit the New Patient Inquiry form twice — <strong>Rhonda Robin1</strong> (<code>you+rr1@gmail.com</code>) and <strong>Robert Robin2</strong> (<code>you+rr2@gmail.com</code>). Check each contact's assigned user afterwards: one should be you, the other Dana, and the notification for Dana's lead should land at <code>you+dana@gmail.com</code>. Log-check both runs. Screenshot the two contact records showing alternating owners: <code>day20-roundrobin.png</code>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Webhooks: your bridge to Week 4</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Read this paragraph twice — it's the doorway to your Week 4 superpowers. A <strong>webhook</strong> is one system sending an automatic HTTP message to another system's URL the moment something happens — like a phone call between apps, where the "conversation" is a chunk of structured data called <strong>JSON</strong>. GHL can both <strong>send</strong> webhooks (the Webhook ACTION — data goes OUT to any URL when a workflow step runs) and <strong>receive</strong> them (the Inbound Webhook TRIGGER — an outside system starts a GHL workflow). Every GHL↔n8n integration you build next week is just these two doors used well.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d20-t14"><span>Copy the paragraph above into your journal IN YOUR OWN WORDS (3–4 sentences, no jargon you can't define). If you can't rephrase it, re-read until you can — Week 4 assumes this concept is solid.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t15"><span>Get a free inspection URL: open <a href="https://webhook.site" target="_blank" rel="noopener">webhook.site</a> in a new tab — no signup needed; the site instantly shows "Your unique URL". Click the <strong>copy</strong> button next to it and keep this tab OPEN (it live-displays anything sent to that URL). Paste the URL into your notes too.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t16"><span>Build the sender: <strong>Automation → Training folder → + Create Workflow → Start from Scratch</strong> → rename <strong>"Training — Webhook Out"</strong> → Trigger: <strong>Contact Tag → Tag Added → send-webhook</strong> (create the tag) → <strong>Save Trigger</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t17"><span>Add the Webhook action: <strong>+</strong> → search <strong>Webhook</strong> (under the integrations/advanced group; note if yours carries a Premium badge — on many plans outbound webhook executions are premium-metered, pennies each) → Method: <strong>POST</strong> → URL: paste your webhook.site URL. Explore the panel: custom headers and custom data/payload fields — add one custom key: <code>source</code> = <code>ghl-training</code>. <strong>Save Action</strong> → <strong>Publish</strong> → Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t18"><span>FIRE IT: add the tag <strong>send-webhook</strong> to Testy McTestface. Switch to your webhook.site tab within a few seconds — a new request should appear in the left column. Click it. You are now looking at raw JSON that GHL just pushed across the internet because of a tag. Savor this moment; it's the whole Week 4 mechanism in miniature.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t19"><span>Read the payload like an engineer. In the webhook.site request body, find and write down the JSON keys for: the contact's <strong>first name</strong>, <strong>last name</strong>, <strong>email</strong>, <strong>phone</strong>, <strong>tags</strong> (notice it's a list/array), the contact's <strong>id</strong> (a long string — this is the API's name for Testy), the <strong>location id</strong> (the sub-account's id), and your custom <code>source</code> field. In your journal, define in one line each: key/value, string vs array, and id.<em class="why">Next week n8n will grab exactly these fields by key name. Reading JSON calmly is the skill gap between GHL-only VAs and automation specialists — cross it today.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t20"><span>Also check the GHL side of the story: open the workflow's <strong>Execution Logs</strong> → expand the run → find the webhook step and note what GHL logs about it (status, and on some versions the response code — webhook.site returns 200 OK). Journal line: "a webhook step can FAIL if the receiving URL is down — logs show it; error handling comes with n8n."</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t21"><span>Now the other direction, recon only: back in the trigger picker, find <strong>Inbound Webhook</strong> (under the premium/integrations group — note the premium badge if shown; it's plan-dependent). Open its config just far enough to see that GHL GIVES YOU a unique URL that outside systems can POST to, with the payload becoming usable data in the workflow. Do NOT build with it today — on Day 23 n8n will be the outside system calling it. Cancel out, and write one line each in your journal: "Webhook action = GHL talks OUT. Inbound Webhook trigger = the world talks IN."</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d20-t22"><span>Evidence + journal: screenshot the webhook.site screen with the expanded JSON payload → <code>day20-webhook-payload.png</code>; screenshot the "Webhook Out" canvas → <code>day20-webhook-canvas.png</code>; plus the round-robin shot from Session 2. Journal entry: the two webhook directions in your own words, the 8 JSON keys you identified, the both-directions pipeline lesson, and one sentence on what you want n8n to do with this data next week.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A published <strong>"Treatment Accepted — Ops"</strong> workflow (stage-triggered task + notifications), Speed to Lead upgraded with round-robin assignment and an automatic stage move (both log-verified), and a fired-and-inspected outbound webhook with the JSON payload screenshotted (<code>day20-webhook-payload.png</code>, <code>day20-webhook-canvas.png</code>, <code>day20-roundrobin.png</code>) and its key fields decoded in your journal.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Keep today's webhook.site payload screenshot somewhere you'll see it again — when you're deep in n8n on Day 23 mapping <code>first_name</code> into a Google Sheet, you'll realize Day 20 was the day the door opened. Job listings that say "GHL + Zapier/Make/n8n" pay meaningfully more than GHL-only roles, and the entire difference is being comfortable with what you looked at today: JSON in, JSON out.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — the webhook action: <a href="https://help.gohighlevel.com/support/search/solutions?term=webhook+action" target="_blank" rel="noopener">search "webhook action"</a>.</li>
+      <li>Help Center — inbound webhook trigger &amp; premium actions: <a href="https://help.gohighlevel.com/support/search/solutions?term=inbound+webhook" target="_blank" rel="noopener">search "inbound webhook"</a>.</li>
+      <li>Help Center — round-robin &amp; user assignment: <a href="https://help.gohighlevel.com/support/search/solutions?term=round+robin" target="_blank" rel="noopener">search "round robin"</a>.</li>
+      <li>Your inspector: <a href="https://webhook.site" target="_blank" rel="noopener">webhook.site</a> — free, no signup; each visit gives a fresh unique URL.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-19.html">← Day 19: Portfolio #7 &amp; #8: Review Machine + Database Reactivation</a>
+  <a href="day-21.html">Day 21: Week 3 Review + Portfolio #9: Agency Snapshot →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 27 — Portfolio #13: Client Onboarding Machine (Capstone) | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="27">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 27</span>Portfolio #13: Client Onboarding Machine (Capstone)</h1>
+    <p class="day-goal">The money workflow: when a client signs up, <em>everything</em> happens automatically — welcome email, pipeline card, Google Drive folder, master-sheet row, kickoff task, team alert, and a follow-up sequence that waits for the kickoff to be booked. By tonight you'll have run a full dress rehearsal with a fake client and watched every artifact appear on its own. This is the build that anchors your portfolio and your interviews.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Architecture + build the GHL scaffolding</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Why agencies pay for this: onboarding is where clients churn ("I paid… now what?") and where teams drop balls. Automating the first 48 hours is directly billable work. Today's trigger is the <strong>New Client Intake</strong> form (in production it would be Payment Received — same workflow, different trigger; you'll note that swap explicitly).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d27-t01"><span>Diagram task — draw the full machine before touching either tool: <strong>GHL:</strong> intake form submitted (or payment received) → welcome email + tag <code>client-active</code> + create opportunity in "Onboarding" pipeline + webhook to n8n → wait 1 day → check-in email → wait for stage "Kickoff Scheduled" → reminder sequence. <strong>n8n:</strong> webhook → create Drive folder → append to Clients sheet → create kickoff task in GHL via API → Telegram team alert (→ optional welcome doc). Save it as <code>day27-architecture.png</code> — it opens your capstone Loom.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t02"><span>Create the pipeline: in Summit Dental, <strong>Settings → Pipelines</strong> (or Opportunities → Pipelines) → <strong>+ Create new pipeline</strong> → name <strong>Onboarding</strong> → add exactly four stages in order: <strong>Paid</strong>, <strong>Intake Done</strong>, <strong>Kickoff Scheduled</strong>, <strong>Live</strong>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t03"><span>Build the intake form: <strong>Sites → Forms → Builder → + Add Form</strong>, name <strong>New Client Intake</strong>. Fields: First Name, Last Name, Email, Phone, plus custom questions <strong>Business Name</strong> (text — add a matching contact custom field when the builder asks), <strong>Website URL</strong> (text), and <strong>Main goal for the first 90 days?</strong> (text area). Save, and open its preview link in a bookmark-able tab.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t04"><span>Prepare the master sheet: new Google Sheet <strong>Clients</strong>, tab <strong>Master</strong>, headers A–G: <code>Signed Up</code>, <code>Business Name</code>, <code>Contact Name</code>, <code>Email</code>, <code>Phone</code>, <code>Drive Folder</code>, <code>Status</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t05"><span>Journal the production note you'll say in the Loom: with Stripe connected (Day 12), the trigger becomes <strong>Payment Received</strong> (or "Order Form Submission") instead of Form Submitted — everything downstream is identical. One trigger swap turns this demo into a live revenue workflow.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — The GHL onboarding workflow</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d27-t06"><span><strong>Automation → + Create Workflow → Start from Scratch</strong>, name <strong>Client Onboarding Machine</strong>. Trigger: <strong>Form Submitted</strong> → filter Form is <strong>New Client Intake</strong>. Save Trigger.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t07"><span>Action 1 — <strong>Send Email</strong>: subject "Welcome aboard, {{contact.first_name}} — here's what happens next". Body: warm 4-line welcome, the three next steps (you'll get a kickoff invite within 1 business day; your client folder is being created; reply to this email anytime), signed by the agency. Use merge tags for name and business name.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t08"><span>Action 2 — <strong>Add Contact Tag</strong>: <code>client-active</code>. Action 3 — <strong>Create/Update Opportunity</strong>: pipeline <strong>Onboarding</strong>, stage <strong>Paid</strong>, opportunity name <code>{{contact.business_name}} — Onboarding</code> (pick the custom field merge tag), lead value optional (e.g. 1500).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t09"><span>Action 4 — <strong>Webhook</strong>: POST, URL = <em>leave a placeholder for now</em> (you'll paste the n8n test URL in Session 3, task 12). In <strong>Custom Data</strong> add: <code>business_name</code> = business-name merge tag, <code>goal</code> = the 90-day-goal field's merge tag. Save Action.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t10"><span>Action 5 — <strong>Wait</strong>: 1 day. Action 6 — <strong>Send Email</strong>: day-2 check-in ("How's the intake homework going? Your kickoff call gets scheduled this week — grab a time here" + your Day-10 booking link). Keep it three sentences.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t11"><span>Action 7 — <strong>Wait</strong> again, but this time change the Wait type to <strong>Condition / Event</strong>: wait until <strong>Pipeline Stage</strong> becomes <strong>Kickoff Scheduled</strong> (in the Wait step, choose the "Contact reply / Condition" style option that resumes on an opportunity-stage condition — in current GHL this is the Wait step's <em>Until condition matches</em> configuration; if your Wait step lacks it, use the <strong>Goal Event</strong> step type: Goal = Pipeline Stage Changed to Onboarding/Kickoff Scheduled, and set "if not achieved → continue anyway" off). After it: Action 8 — <strong>Send Email</strong> "Kickoff confirmed — prep checklist inside". Save + <strong>Publish</strong>.<em class="why">Wait-for-stage is the difference between a drip sequence and a state machine — the workflow reacts to reality (the kickoff getting booked) instead of blindly sending on a timer. Expect this to be an interview talking point.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — The n8n side: folder, sheet, task, alert</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d27-t12"><span>n8n: <strong>Create Workflow</strong> → <strong>Client Onboarding Ops</strong> → Save. Add a <strong>Webhook</strong> trigger, Method <code>POST</code>, Respond <code>Immediately</code>. Copy the <strong>Test URL</strong>, paste it into the GHL workflow's Webhook action (Session 2, task 9's placeholder), Save Action, re-<strong>Publish</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t13"><span>Capture a payload: press <strong>Test workflow</strong>, submit the intake form as yourself with Business Name <strong>Testco</strong>, inspect the received item (find <code>contact_id</code>, names, email, and your custom <code>business_name</code> and <code>goal</code> keys), then <strong>pin</strong> it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t14"><span>Node 1 — <strong>Google Drive</strong>: action <strong>Create folder</strong> (credential: your Google OAuth — approve the Drive scopes when prompted). <strong>Folder Name</strong> = <code>Client — {{ $json.body.business_name }}</code>, parent folder: create a "Clients" folder in your Drive first and select it (From list). Execute Node → check Drive for the new folder. Note the node's output includes the folder's <code>id</code> and a webViewLink-style URL.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t15"><span>Node 2 — <strong>Google Sheets</strong>: <strong>Append row</strong> to <strong>Clients / Master</strong>. Map: <strong>Signed Up</strong> = <code>{{ $now.format('yyyy-MM-dd') }}</code>, <strong>Business Name</strong> = <code>{{ $('Webhook').item.json.body.business_name }}</code>, <strong>Contact Name</strong> = first + last from the webhook, <strong>Email</strong>, <strong>Phone</strong> likewise, <strong>Drive Folder</strong> = the folder URL from the Drive node's output (drag it in — e.g. <code>{{ $json.webViewLink }}</code>), <strong>Status</strong> = <code>Onboarding</code>. Execute → verify the row.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t16"><span>Node 3 — kickoff task on the GHL contact via API: <strong>HTTP Request</strong>, POST <code>https://services.leadconnectorhq.com/contacts/{{ $('Webhook').item.json.body.contact_id }}/tasks</code>, credential <strong>GHL Summit Dental (PIT)</strong> + <code>Version: 2021-07-28</code> header, JSON body:
+<pre><code>{
+  "title": "Schedule kickoff call — {{ $('Webhook').item.json.body.business_name }}",
+  "body": "Client goal: {{ $('Webhook').item.json.body.goal }}",
+  "dueDate": "{{ $now.plus({ days: 1 }).toISO() }}",
+  "completed": false
+}</code></pre>
+Execute → open the contact in GHL → <strong>Tasks</strong> tab → the task is there with tomorrow's due date. (If your Private Integration lacks a tasks scope, edit it in <strong>Settings → Private Integrations</strong> and add it — remember a re-generated token must be updated in the n8n credential. Alternative path: a <strong>Google Calendar</strong> node creating a "Kickoff — {business}" event works too; pick one and note why in your journal.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t17"><span>Node 4 — <strong>Telegram</strong> team alert (reuse the bot):
+<pre><code>🎉 NEW CLIENT: {{ $('Webhook').item.json.body.business_name }}{{ '\n' }}Contact: {{ $('Webhook').item.json.body.first_name }} {{ $('Webhook').item.json.body.last_name }} ({{ $('Webhook').item.json.body.email }}){{ '\n' }}Goal: {{ $('Webhook').item.json.body.goal }}{{ '\n' }}📁 Folder + sheet row created, kickoff task assigned.</code></pre></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t18"><span>Optional stretch (skip if past hour 6): <strong>Google Docs</strong> node — create a doc titled <code>Welcome — {{ $('Webhook').item.json.body.business_name }}</code> inside the client's Drive folder, with a templated body (welcome text + their goal quoted back). Then add its link to the Telegram message.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t19"><span>Chain test at the third-thirds rule (you've been testing each node — now the chain): with the webhook still pinned, run <strong>Test workflow</strong> and watch all four (or five) nodes go green in sequence. Fix any expression path that resolves empty — check them against the pinned JSON, not from memory.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Dress rehearsal: "Riverbend Physio" + capstone packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Now the full performance, production URLs, no pins, one take — exactly what you'd do before handing this to a paying client.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d27-t20"><span>Cutover: unpin the webhook data → Save → toggle <strong>Client Onboarding Ops</strong> to <strong>Active</strong> → copy the <strong>Production URL</strong> → paste into the GHL workflow's Webhook action → Save Action → <strong>Publish</strong>. Read the URL back: it must contain <code>/webhook/</code>, not <code>/webhook-test/</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t21"><span>Dress rehearsal: submit the intake form as fake client <strong>Rita Rivers</strong>, business <strong>Riverbend Physio</strong>, email an alias you control (e.g. <code>you+riverbend@gmail.com</code>), goal <em>"Fill 20 new patient slots per month from Google."</em> Then verify every artifact against this checklist, ticking each in your journal: ① welcome email received at the alias, ② tag <code>client-active</code> on the contact, ③ opportunity card <strong>Riverbend Physio — Onboarding</strong> sitting in <strong>Paid</strong>, ④ Drive folder <strong>Client — Riverbend Physio</strong>, ⑤ row in the Clients sheet with the folder link, ⑥ kickoff task on the contact due tomorrow, ⑦ Telegram alert, ⑧ a successful run in n8n <strong>Overview → Executions</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t22"><span>Test the state machine: drag Riverbend's opportunity card from <strong>Paid</strong> → <strong>Kickoff Scheduled</strong> in the Onboarding pipeline. Check the GHL workflow's execution/enrollment view: the Wait/Goal step should release and send the "Kickoff confirmed" email to the alias. (The 1-day check-in email you can verify tomorrow — note it in the journal as a pending check.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t23"><span>Export + shoot everything: <strong>•••</strong> → <strong>Download</strong> → <code>client-onboarding-ops.json</code> into <code>GHL Portfolio/n8n-exports</code>. Screenshots into <code>GHL Portfolio/screenshots</code>: <code>day27-n8n-canvas.png</code>, <code>day27-ghl-workflow.png</code> (full action list visible), <code>day27-pipeline.png</code> (Riverbend card), <code>day27-drive-sheet.png</code> (folder + sheet row side by side), <code>day27-artifacts.png</code> (Telegram + task).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t24"><span>Record the capstone Loom — <strong>5+ minutes, this is your interview piece</strong>: (1) the architecture drawing and the business problem (~1 min), (2) live: submit the intake form and tour every artifact appearing (~2 min), (3) the GHL workflow, pausing on the wait-for-stage step (~1 min), (4) the n8n canvas, pausing on the API task-creation node (~1 min), (5) close with the Payment-Received swap note and what you'd add next (contract e-sign, invoicing). Do a 30-second rehearsal of your opening line first.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d27-t25"><span>Write the 1-page case study into <code>GHL Portfolio/case-studies</code> (template: <strong>Problem</strong> — manual onboarding drops balls in the first 48h; <strong>Solution</strong> — GHL + n8n machine with 8 automated artifacts; <strong>Stack</strong> — GHL workflows, webhooks, API 2.0, n8n, Google Drive/Sheets, Telegram; <strong>Result</strong> — onboarding time from ~2h of admin to 0, nothing forgotten; <strong>Link</strong> — the Loom). Then update your journal: Week 4's four builds in one paragraph — this becomes your "tell me about a project" answer.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #13: Client Onboarding Machine (Capstone)</h2>
+    <p>The capstone: a cross-platform state machine — GHL trigger, tags, pipeline, wait-for-stage sequencing, plus an n8n ops layer creating folders, sheet rows, API tasks, and team alerts — proven by a full dress rehearsal with Riverbend Physio. With the JSON export, five screenshots, the 5-minute Loom, and the case study saved, go to the home page and tick <strong>Portfolio #13</strong> on the tracker. That's 13 of 13 — the portfolio is complete.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A fully rehearsed onboarding machine: all eight artifacts verified from a single form submission on production URLs, the stage-change goal tested, <code>client-onboarding-ops.json</code> exported, five screenshots, a 5+ minute capstone Loom, and a 1-page case study in <code>GHL Portfolio/case-studies</code>.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>When you demo this build, always lead with the checklist of artifacts ("one form submission produces these eight things") before showing any canvas. Hiring managers buy outcomes, not node graphs — the graph is just your proof. Tomorrow you start packaging all 13 builds exactly this way.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL workflow Wait step &amp; Goal events: search <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> for <em>"Wait step"</em> and <em>"Goal Event"</em>.</li>
+      <li>GHL tasks API (create task on a contact): <a href="https://highlevel.stoplight.io/docs/integrations/" target="_blank" rel="noopener">highlevel.stoplight.io</a> → Contacts → Tasks.</li>
+      <li>n8n Google Drive node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledrive/" target="_blank" rel="noopener">docs.n8n.io — Google Drive</a> · Google Docs node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googledocs/" target="_blank" rel="noopener">docs.n8n.io — Google Docs</a>.</li>
+      <li>n8n Google Calendar node (task-creation alternative): <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlecalendar/" target="_blank" rel="noopener">docs.n8n.io — Google Calendar</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-26.html">← Day 26: Portfolio #12 — GHL ⇄ Google Sheets Two-Way Sync</a>
+  <a href="day-28.html">Day 28: Package Your Portfolio →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
