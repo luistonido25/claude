@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 26 — Portfolio #12: GHL ⇄ Google Sheets Two-Way Sync | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="26">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 26</span>Portfolio #12: GHL ⇄ Google Sheets Two-Way Sync</h1>
+    <p class="day-goal">By tonight you'll have two scheduled n8n workflows keeping GHL contacts and a Google Sheet in sync in both directions without infinite loops, plus a dedicated error-alert workflow that pings Telegram whenever anything fails — and a completed test matrix proving all three sync cases work. Two-way sync is a classic senior-level interview topic; today you earn the right to talk about it.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Sync design: source of truth, loops, and the guard column</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Naive two-way sync is a perpetual-motion machine: GHL updates the sheet → the sheet looks "changed" → n8n updates GHL → GHL looks "changed" → forever. Every real sync design answers three questions before any node is placed.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d26-t01"><span>Write the three design answers in your journal. (1) <strong>Source of truth:</strong> GHL wins on conflicts — the sheet is a convenient editing surface, not the master. (2) <strong>Key:</strong> every row is matched to a contact by <strong>GHL Contact ID</strong>, never by email or name (people change emails; IDs never change). (3) <strong>Loop guard:</strong> a <strong>Last Synced</strong> timestamp column — whenever <em>we</em> write a row, we stamp it; the Sheet→GHL direction only pushes rows a human edited, which we detect because the edit doesn't update the stamp.<em class="why">Being able to explain "how do you stop a two-way sync from looping?" is a legitimate differentiator in interviews — most candidates have never thought about it.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t02"><span>Create the spreadsheet: new Google Sheet named <strong>Summit Contact Sync</strong>, tab renamed <strong>Contacts</strong>, headers in row 1, columns A–G exactly: <code>GHL Contact ID</code>, <code>First</code>, <code>Last</code>, <code>Email</code>, <code>Phone</code>, <code>Tags</code>, <code>Last Synced</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t03"><span>Draw today's architecture: two separate workflows. <strong>Direction 1 (GHL → Sheet):</strong> Schedule (15 min) → GET contacts → Append-or-Update rows keyed on Contact ID → stamp Last Synced. <strong>Direction 2 (Sheet → GHL):</strong> Schedule (15 min, offset) → read all rows → keep only rows where Last Synced is empty (new row typed by a human) → IF row has a Contact ID → update contact, ELSE create contact → write the new ID + stamp back to the row. Plus a third mini-workflow: <strong>Error Trigger → Telegram</strong>. Screenshot the sketch as <code>day26-architecture.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t04"><span>Journal the simplification we're accepting: detecting <em>edits</em> to existing rows properly needs an "Edited At" comparison or a Google Sheets trigger per-row-hash — beyond today. Our rule: <strong>new rows flow Sheet→GHL; existing contacts flow GHL→Sheet</strong>. Write one sentence on how you'd extend it later (e.g. an "Edited?" checkbox column a human ticks to force a push).</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Direction 1: GHL → Sheet every 15 minutes</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d26-t05"><span>New workflow <strong>Sync GHL → Sheet</strong>. Add a <strong>Schedule Trigger</strong>: Trigger Interval <code>Minutes</code>, Minutes Between Triggers <code>15</code>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t06"><span>Add an <strong>HTTP Request</strong> node: GET <code>https://services.leadconnectorhq.com/contacts/</code>, credential <strong>GHL Summit Dental (PIT)</strong>, <code>Version</code> header, query params <code>locationId</code> = yours and <code>limit</code> = <code>100</code>. Execute Node → you get one item whose <code>contacts</code> key holds an array of contact objects.<em class="why">Pagination note for real clients: with more than 100 contacts you loop pages using the response's <code>meta</code> paging info (startAfter/startAfterId) until empty. Summit Dental fits in one page, so we note it and move on.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t07"><span>The Sheets node needs one item <em>per contact</em>, not one item holding an array. Add a <strong>Split Out</strong> node after the HTTP Request: <strong>Field to Split Out</strong> = <code>contacts</code>. Execute Node → now you see N items, one per contact. (This is the "item handling" move; the alternative <strong>Loop Over Items / SplitInBatches</strong> node is for pacing batches through rate-limited APIs — journal one line on the difference.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t08"><span>Add a <strong>Google Sheets</strong> node: operation <strong>Append or Update Row</strong>, Document <strong>Summit Contact Sync</strong>, Sheet <strong>Contacts</strong>, <strong>Column to match on</strong> = <code>GHL Contact ID</code>.<em class="why">"Append or update, keyed on the ID" is the whole upsert pattern in one dropdown — existing rows update in place, unknown IDs become new rows, and running the sync twice never duplicates.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t09"><span>Map the columns (Expression mode / drag from input): <strong>GHL Contact ID</strong> = <code>{{ $json.id }}</code>, <strong>First</strong> = <code>{{ $json.firstName }}</code>, <strong>Last</strong> = <code>{{ $json.lastName }}</code>, <strong>Email</strong> = <code>{{ $json.email }}</code>, <strong>Phone</strong> = <code>{{ $json.phone }}</code>, <strong>Tags</strong> = <code>{{ ($json.tags || []).join(', ') }}</code>, <strong>Last Synced</strong> = <code>{{ $now.toISO() }}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t10"><span>Run <strong>Test workflow</strong>, then open the sheet: every Summit Dental contact (Tessa, Ava, Igor, Wanda and friends from this week) should be a row with a fresh Last Synced stamp. Run <strong>Test workflow</strong> a second time and confirm the row count did NOT grow — same rows, newer stamps. That's your upsert proof.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t11"><span>Harden it: click the HTTP Request node → <strong>Settings</strong> tab (next to Parameters) → enable <strong>Retry On Fail</strong>, Max Tries <code>3</code>, Wait Between Tries <code>2000</code> ms. Do the same on the Google Sheets node. Save the workflow.<em class="why">APIs hiccup. Three retries with a pause absorbs 90% of transient failures before your error workflow ever needs to fire.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Direction 2: Sheet → GHL for human-added rows</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d26-t12"><span>New workflow <strong>Sync Sheet → GHL</strong>. Add a <strong>Schedule Trigger</strong>, every <code>15</code> minutes. (n8n Cloud also offers a <strong>Google Sheets Trigger</strong> node that polls for changed rows — try it another day; the schedule keeps today deterministic.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t13"><span>Add a <strong>Google Sheets</strong> node: operation <strong>Get Row(s)</strong> on <strong>Summit Contact Sync / Contacts</strong>, no filters — read everything. Execute Node and confirm each row arrives as one item with your seven columns as fields.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t14"><span>Add a <strong>Filter</strong> node: keep items where <strong>Last Synced</strong> <em>is empty</em> (condition: String → <code>{{ $json['Last Synced'] }}</code> → "is empty"). These are rows a human typed that no sync has touched — the only rows this direction is allowed to push. Execute: with the sheet fully stamped from Session 2, output should be <strong>0 items</strong>. Correct!</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t15"><span>Add an <strong>IF</strong> node after the Filter: condition String → <code>{{ $json['GHL Contact ID'] }}</code> → <strong>is not empty</strong>. True = the row references an existing contact (update path); False = brand-new person (create path).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t16"><span><strong>True branch — update:</strong> HTTP Request, PUT <code>https://services.leadconnectorhq.com/contacts/{{ $json['GHL Contact ID'] }}</code>, credential + Version header, body:
+<pre><code>{
+  "firstName": "{{ $json.First }}",
+  "lastName": "{{ $json.Last }}",
+  "email": "{{ $json.Email }}",
+  "phone": "{{ $json.Phone }}"
+}</code></pre>
+Rename it <strong>Update contact</strong>. Enable Retry On Fail here too.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t17"><span><strong>False branch — create:</strong> HTTP Request, POST <code>https://services.leadconnectorhq.com/contacts/</code>, body:
+<pre><code>{
+  "firstName": "{{ $json.First }}",
+  "lastName": "{{ $json.Last }}",
+  "email": "{{ $json.Email }}",
+  "phone": "{{ $json.Phone }}",
+  "locationId": "YOUR_LOCATION_ID",
+  "source": "sheet sync"
+}</code></pre>
+Rename it <strong>Create contact</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t18"><span>Write the new ID back so the row never syncs twice: after <strong>Create contact</strong>, add a <strong>Google Sheets</strong> node, operation <strong>Update Row</strong>, match on <code>Email</code> (safe here because the row is fresh), and set <strong>GHL Contact ID</strong> = <code>{{ $json.contact.id }}</code> and <strong>Last Synced</strong> = <code>{{ $now.toISO() }}</code>. Then after <strong>Update contact</strong>, add another Sheets <strong>Update Row</strong> matching on <code>GHL Contact ID</code> that just stamps <strong>Last Synced</strong> = <code>{{ $now.toISO() }}</code>.<em class="why">The stamp is the loop-breaker: once written, the Filter in task 14 will skip this row on every future run.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t19"><span>Build the safety net — third workflow, name it <strong>Sync Error Alarm</strong>: add an <strong>Error Trigger</strong> node, then a <strong>Telegram</strong> node with message <code>⚠️ Sync failure in {{ $json.workflow.name }}: {{ $json.execution.error.message }} — see {{ $json.execution.url }}</code>. Save and <strong>Activate</strong> it. Then open <em>both</em> sync workflows → workflow menu <strong>•••</strong> → <strong>Settings</strong> → <strong>Error Workflow</strong> → select <strong>Sync Error Alarm</strong> → Save each.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t20"><span>Prove the alarm works: temporarily break the <strong>Update contact</strong> node's URL (add "XX" to the path), add a fake row in the sheet with a made-up Contact ID and empty Last Synced, <strong>Activate</strong> Sheet→GHL and wait for a scheduled run (or trigger a production run by momentarily setting the schedule to every minute). You should get the Telegram failure ping and a red row in Executions. Fix the URL, delete the fake sheet row, restore the 15-minute schedule.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — The test matrix, activation, and packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A sync isn't done until every direction is proven. Run this matrix and record PASS/FAIL for each line in your journal.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d26-t21"><span>Activate both sync workflows (toggle <strong>Active</strong>). <strong>Matrix case 1 — new row → contact created:</strong> type a new person into the sheet (<strong>Nora Newrow</strong>, <code>nora.newrow@example.com</code>, phone, leave ID and Last Synced empty). Wait for the next Sheet→GHL run (watch <strong>Overview → Executions</strong>), then verify: Nora exists in GHL Contacts, and her row now has a Contact ID + Last Synced stamp.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t22"><span><strong>Matrix case 2 — edited contact → row updates:</strong> in GHL, open Wanda Window and change her phone number. After the next GHL→Sheet run, confirm the sheet row shows the new phone and a fresher Last Synced. PASS?</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t23"><span><strong>Matrix case 3 — edited row → contact updates:</strong> per our design, an edited existing row does NOT push automatically (Last Synced isn't empty). Prove the design holds: edit Nora's phone in the sheet, wait one cycle, confirm GHL did <em>not</em> change and no loop started. Then force the push the designed way: clear Nora's <strong>Last Synced</strong> cell, wait one cycle, and confirm her GHL record updated and the stamp came back. Journal the nuance — this manual "clear-the-stamp" is your v1 edit-push mechanism.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t24"><span><strong>Loop check:</strong> let both workflows run untouched for 30+ minutes, then open Executions: every run should show success with no unexpected row/contact churn (same row count, no duplicate contacts, stamps advancing only on the 15-minute rhythm). If rows multiply, your Append-or-Update key column is wrong — fix and re-run the matrix.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t25"><span>Export and shoot: Download all three workflows into <code>GHL Portfolio/n8n-exports</code> as <code>sync-ghl-to-sheet.json</code>, <code>sync-sheet-to-ghl.json</code>, <code>sync-error-alarm.json</code>. Screenshots: <code>day26-canvas-d1.png</code>, <code>day26-canvas-d2.png</code>, <code>day26-sheet.png</code> (with stamps visible), <code>day26-error-alert.png</code> (the Telegram failure ping from task 20).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d26-t26"><span>Record a 3–4 minute Loom: explain source-of-truth and the Last Synced loop guard on your sketch, demo matrix case 1 live (type a row, show the contact appear), and show the error-alarm design. Save to <code>GHL Portfolio/videos</code>, tick the matrix results into your journal.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #12: GHL ⇄ Google Sheets Two-Way Sync</h2>
+    <p>Two scheduled sync workflows with an upsert key, a loop-guard column, retries, and a dedicated Error Trigger alarm — verified by a written test matrix. Once the three JSON exports, screenshots, and Loom are saved, go to the home page and tick <strong>Portfolio #12</strong> on the tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Both directions of the sync live and verified against the three-case test matrix (new row → contact; edited contact → row; guarded row-edit push), a tested error-alert workflow, three workflow JSONs in <code>GHL Portfolio/n8n-exports</code>, four screenshots, the Loom, and PASS/FAIL matrix results in your journal.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Never match rows by email in a long-lived sync — emails change and duplicates creep in; the Contact ID is the only stable key. And if you ever see executions firing every few seconds, deactivate <em>both</em> workflows first, then investigate — that's the loop signature, and it can burn through API rate limits and n8n execution quotas fast.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>n8n Google Sheets node (Append or Update / Update Row): <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/" target="_blank" rel="noopener">docs.n8n.io — Google Sheets</a>.</li>
+      <li>n8n Error Trigger + error workflows: <a href="https://docs.n8n.io/flow-logic/error-handling/" target="_blank" rel="noopener">docs.n8n.io — error handling</a>.</li>
+      <li>Split Out node: <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitout/" target="_blank" rel="noopener">docs.n8n.io — Split Out</a> · Loop Over Items: <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.splitinbatches/" target="_blank" rel="noopener">docs.n8n.io — Loop Over Items</a>.</li>
+      <li>GHL contacts API (list, pagination, update): <a href="https://highlevel.stoplight.io/docs/integrations/" target="_blank" rel="noopener">highlevel.stoplight.io</a> → Contacts.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-25.html">← Day 25: Portfolio #11 — AI Lead Qualifier</a>
+  <a href="day-27.html">Day 27: Portfolio #13 — Client Onboarding Machine →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

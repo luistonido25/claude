@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 13 — Memberships &amp; Courses | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="13">
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 2 · Funnels, Websites &amp; Payments</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 13</span>Memberships &amp; Courses</h1>
+    <p class="day-goal">By tonight Ironworks will have a structured online course ("Kickstart Video Vault") with two weeks of lessons, a free offer and a $21 offer attached to it, and you'll have logged into the client portal as a member and completed a lesson yourself. Courses are how service businesses productize — and a surprisingly rare skill among GHL freelancers.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Create the course &amp; build its structure</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">GHL's course engine lives under <strong>Memberships</strong>. The hierarchy mirrors the page builder's logic: a <strong>Product</strong> (the course) holds <strong>Categories</strong> (modules/weeks) which hold <strong>Lessons</strong> (called "Posts" in some versions). You'll use text lessons and placeholder videos — content quality isn't today's skill; structure is.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d13-t01"><span>In <strong>Ironworks Fitness</strong>, click <strong>Memberships</strong> in the left sidebar → open the <strong>Courses</strong> area → click <strong>Products</strong> (or "All Products") → <strong>+ Create Product</strong>. If a template chooser appears (Sprint Course / Marathon / Membership / Build Your Own), pick <strong>Build Your Own</strong> — you want to place every piece yourself today.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t02"><span>Name it <strong>Kickstart Video Vault</strong>, description: <strong>"Every Kickstart Challenge lesson in one place — watch before your workout, rewatch anytime."</strong> Click <strong>Create</strong>, and you land in the course outline builder.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t03"><span>Create two categories: click <strong>+ Add Category</strong> (label varies: "New Category" / "Add Module") → name the first <strong>Week 1 — Foundations</strong> → repeat for <strong>Week 2 — Momentum</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t04"><span>Add Week 1's three lessons (click <strong>+ Add Lesson / + New Post</strong> inside the category), using these titles + 1-line descriptions: <strong>"Welcome — How to Use the Vault"</strong> <em>(what to watch when, and the one rule: never skip Day 1)</em>; <strong>"Form Fundamentals: The Big 3"</strong> <em>(squat, press, row — the checkpoints that keep you safe)</em>; <strong>"Nutrition Baseline: The Plate Method"</strong> <em>(no weighing, no apps — just build every plate this way)</em>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t05"><span>Add Week 2's three lessons: <strong>"Progressive Overload, Explained Like You're Five"</strong> <em>(the only reason muscles change — and how to apply it this week)</em>; <strong>"Cardio That Doesn't Suck"</strong> <em>(three 15-minute finishers you might actually enjoy)</em>; <strong>"Your Week 3+ Plan"</strong> <em>(what to do the day the challenge ends so momentum doesn't)</em>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t06"><span>Fill each lesson with placeholder content: open each lesson → paste its description into the body plus 3–4 bullet points of what the video "covers". For video, either record a 30-second Loom placeholder ("This is the Form Fundamentals lesson — full video coming") and paste/upload it, or leave the lessons as text posts — both are fine. Mark all lessons <strong>Published</strong> (each lesson has a Draft/Published state — flip every one, or the member portal will look empty later).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t07"><span>Add a course <strong>thumbnail</strong>: in the product's settings/details, upload a poster image (Unsplash "kettlebell dark" works well — the thumbnail is what members see in their library). Also check the portal appearance settings you passed (logo, colors) and set the logo to Ironworks'.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Offers: free preview + $21 paid</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Key mental model: courses aren't sold directly — <strong>Offers</strong> are. An offer is a purchasable wrapper that grants access to one or more products at a price. Same course, two doors: a free preview door and a $21 door.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d13-t08"><span>Write the model in your journal first: <strong>Product = the content. Offer = the access + the price.</strong> One offer can bundle several products; one product can sit behind several offers. This decoupling is why you never duplicate course content for a sale.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t09"><span>In <strong>Memberships</strong>, open the <strong>Offers</strong> tab → <strong>+ Create Offer</strong>. Name: <strong>Kickstart Vault — Free Preview</strong>, price type <strong>Free</strong>, and attach the product <strong>Kickstart Video Vault</strong>. Save/publish the offer (offers also have Draft/Published states — publish it).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t10"><span><strong>+ Create Offer</strong> again: <strong>Kickstart Video Vault — Full Access</strong>, price <strong>$21 one-time</strong>, attach the same product, publish. If the offer asks which payment integration to use, it's your Day-12 Stripe test-mode connection.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t11"><span>Find each offer's <strong>checkout link</strong> (open the offer → look for a checkout URL / "Copy link"). Open the $21 offer's checkout in an incognito tab and inspect it: it's a GHL-hosted checkout page with the offer name, price, and card fields. Don't buy yet — just recognize that every offer ships with a ready-made checkout page you can link from any funnel or email.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t12"><span>Learn the <strong>magic link</strong> concept: members log into the client portal with a password OR via a magic link (a tokenized login URL GHL can generate per contact — no password needed). Find where they live: in <strong>Memberships</strong>, look at a member/contact's options for "Magic Links" (and note there are also magic-link merge fields for emails — Week 3 uses them). One journal line on why they matter: fewer "I can't log in" support tickets.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Become your own member: grant, log in, complete</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You never ship a course you haven't experienced as a member. Grant yourself access through the free offer and walk the member journey end-to-end.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d13-t13"><span>Grant access: in <strong>Memberships</strong>, find the members/contacts area (or open the <strong>Kickstart Vault — Free Preview</strong> offer) and use <strong>Grant Offer / Add Member</strong> → select an existing test contact with an email you control (e.g. Cara Customer at <code>you+cara@gmail.com</code>) → grant the <strong>Free Preview</strong> offer. Alternative route if your version prefers it: open the contact in <strong>Contacts</strong> and use the membership/offer actions on the record.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t14"><span>Check your inbox for the welcome/login email GHL sends new members (check spam the first time). No email? Generate a <strong>magic link</strong> for the contact from the Memberships member area and open that instead.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t15"><span>Log into the <strong>client portal</strong> as the member (set a password if prompted). Look around like a paying customer: library shows the <strong>Kickstart Video Vault</strong> with your thumbnail → open it → confirm both categories and all six lessons render, in order, with your content.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t16"><span>Complete the <strong>"Welcome — How to Use the Vault"</strong> lesson: read/watch it, click <strong>Mark as Complete</strong> (or the completion checkbox), and confirm the course progress indicator moved. Screenshot this view — a member portal showing real progress is a great portfolio shot.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t17"><span>Back in the admin side: find the course analytics/members view in <strong>Memberships</strong> (Members, or the product's stats) and confirm you can see the member, their offer, and their progress from the business's perspective. Journal one line: "Member experience = portal; business view = Memberships → members/analytics."</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Drip vs all-at-once + the Week 3 bridge</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d13-t18"><span>Find the <strong>drip</strong> settings: in the course builder, open <strong>Week 2 — Momentum</strong>'s category settings and look for drip/delay options (e.g. "unlock N days after enrollment"). Set Week 2 to unlock <strong>7 days after</strong> enrollment, save, then check the member portal — Week 2 should now show as locked for your member. Flip it back to all-at-once when you've seen it work, and journal when you'd use each: drip for cohort pacing and reducing refunds; all-at-once for reference vaults.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t19"><span>Preview the Week 3 connection (read-only, 10 minutes): go to <strong>Automation → + Create Workflow → Start from Scratch</strong>, click <strong>+</strong> to browse actions, and find the <strong>Membership</strong> action (e.g. <strong>"Membership Grant Offer"</strong> / revoke offer). Read its options, then <strong>delete the draft without saving</strong>. This is how course access is really granted at scale: purchase or form submission triggers a workflow → workflow grants the offer → member gets the welcome email — no human involved.<em class="why">"Payment → automatic course access" is a classic interview whiteboard question; you now know both halves of it.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d13-t20"><span>Wrap up: screenshots to <code>GHL Portfolio/screenshots</code> — <code>day13-course-outline.png</code> (admin builder with categories + lessons), <code>day13-member-portal.png</code> (logged-in member view), <code>day13-lesson-complete.png</code> (progress showing), <code>day13-offers.png</code> (both offers listed). Journal entry for Day 13: product-vs-offer in one sentence, drip-vs-all-at-once in one sentence, and how a workflow will grant access in Week 3.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The <strong>Kickstart Video Vault</strong> course with 2 categories and 6 published lessons plus a thumbnail, a free offer and a $21 offer both published with working checkout links, yourself logged in as a member with one lesson completed, a drip test performed and reverted, 4 screenshots, and a Day 13 journal entry.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>When you pitch clients later, "membership site" scares them and "online course" sounds like work. Say instead: <em>"a private members' area where your customers watch your content"</em> — every gym, clinic, and coach immediately wants one. You built one in a day; most agencies charge $1,500+ for exactly this.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Membership products"</em>, <em>"Offers"</em>, and <em>"Magic links"</em>.</li>
+      <li>Loom (placeholder lesson videos): <a href="https://www.loom.com" target="_blank" rel="noopener">loom.com</a>.</li>
+      <li>Free thumbnails: <a href="https://unsplash.com" target="_blank" rel="noopener">unsplash.com</a> — search "kettlebell dark", "gym chalk".</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-12.html">← Day 12: Products, Payments &amp; Order Forms</a>
+  <a href="day-14.html">Day 14: Week 2 Review + Portfolio #4: Full Business Website →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

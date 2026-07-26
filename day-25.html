@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 25 — Portfolio #11: AI Lead Qualifier | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="25">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 25</span>Portfolio #11: AI Lead Qualifier</h1>
+    <p class="day-goal">By tonight, every new Summit Dental lead will be scored 1–10 and summarized by an AI model inside n8n, with the score and summary written back onto the GHL contact via the API, a "hot-lead" or "nurture" tag applied, an instant alert for hot leads, and a GHL workflow reacting to the tag — a complete closed loop. This is the single most in-demand build in current automation job posts.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Prepare GHL fields, field IDs, and an AI API key</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Architecture for today: <strong>GHL new-lead workflow → n8n Webhook → AI model (score + summary as strict JSON) → parse → IF score ≥ 7 → write back to GHL + tag + alert; else → write back + nurture tag → GHL reacts to the tag</strong>. Sketch it before you build (add it to yesterday's diagram habit).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d25-t01"><span>In Summit Dental: <strong>Settings → Custom Fields</strong> → <strong>+ Add Field</strong>. Create field 1: type <strong>Number</strong> (Numerical), name <strong>Lead Score</strong>, object Contact, group "General Info" (or a new "AI" folder). Create field 2: type <strong>Multi Line</strong> (Text Area? — pick the multi-line text option), name <strong>AI Summary</strong>. Save both.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t02"><span>Get both field IDs the API way (rehearsing yesterday's skill): in the <strong>GHL API Lab</strong> workflow, re-run the GET to <code>https://services.leadconnectorhq.com/locations/YOUR_LOCATION_ID/customFields</code> and copy the <code>id</code> of <strong>Lead Score</strong> and <strong>AI Summary</strong> into your notes. (Alternative: the n8n HighLevel community node or the docs' "try it" console can fetch them too — but you know the raw way now.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t03"><span>Check your Private Integration scopes still cover today: contacts <strong>write</strong> is required (it is, from Day 24). If you add scopes to an existing Private Integration, GHL may ask you to re-generate the token — if the token changes, update the <strong>GHL Summit Dental (PIT)</strong> credential in n8n.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t04"><span>Get an LLM API key — either provider works, the n8n steps below note both: <strong>OpenAI</strong>: platform.openai.com → sign up → <strong>Settings → Billing</strong> → add $5 credit → <strong>API keys → Create new secret key</strong> → copy it once. <strong>Anthropic</strong>: console.anthropic.com → sign up → <strong>Billing</strong> → add $5 → <strong>API Keys → Create Key</strong>. Store the key in a private note; you'll paste it only into an n8n credential.<em class="why">A few dollars covers thousands of lead scorings — the per-lead cost of this build is a fraction of a cent, a great stat to quote to clients.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t05"><span>Add a "message" field to the intake if it's missing: open the <strong>New Patient Inquiry</strong> form in <strong>Sites → Forms → Builder</strong> and confirm it has a free-text field like <strong>"What do you need help with?"</strong>. If not, drag in a Text Area field, save, and note its field name — the AI needs real words to score.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build the n8n brain: webhook → AI → safe parse</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d25-t06"><span>n8n: <strong>Create Workflow</strong> → name <strong>AI Lead Qualifier</strong> → Save. Add a <strong>Webhook</strong> trigger, Method <code>POST</code>, Respond <code>Immediately</code>. Copy the <strong>Test URL</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t07"><span>GHL: <strong>Automation → + Create Workflow → Start from Scratch</strong>, name <strong>New Lead → AI Qualifier</strong>. Trigger: <strong>Form Submitted</strong>, filter Form is <strong>New Patient Inquiry</strong>. Action: <strong>Webhook</strong>, POST, paste the n8n <strong>Test URL</strong>. In the action's <strong>Custom Data</strong> add: <code>message</code> = the form's message field merge tag (pick it from the tag picker), and <code>source</code> = <code>New Patient Inquiry</code>. Save + <strong>Publish</strong>.<em class="why">Contact id, name, email and phone come along automatically in the webhook payload; custom data is how you forward the free-text answer the AI actually needs.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t08"><span>Capture a payload: in n8n press <strong>Test workflow</strong> (webhook listening), then submit the form as <strong>Hana Hotlead</strong>, email <code>hana.hot@example.com</code>, message: <em>"My crown broke this morning, I'm in a lot of pain, can I come in today or tomorrow? I have insurance."</em> Inspect the webhook output, write down the paths for <code>contact_id</code>, name, email, and your custom <code>message</code>/<code>source</code> keys — then <strong>pin</strong> the output.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t09"><span>Add the AI node after the webhook: click <strong>+</strong> → search <strong>OpenAI</strong> → action <strong>Message a model</strong> (or search <strong>Anthropic</strong> → <strong>Message a model</strong> — identical shape). Create the credential: <strong>Create new credential</strong> → paste your API key → Save. Pick a cheap fast model (e.g. a "mini"/"haiku" tier model from the model dropdown).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t10"><span>Write the prompt as an expression in the message/user-prompt field — copy exactly, then adjust the JSON paths to your pinned data:
+<pre><code>You are a lead qualifier for a dental clinic.
+Score this lead 1-10 for how likely they are to book
+a paid appointment soon (10 = urgent, ready, insured).
+Then write a 2-sentence plain-English summary for the
+front-desk team.
+
+Lead name: {{ $json.body.first_name }} {{ $json.body.last_name }}
+Source: {{ $json.body.source }}
+Message: "{{ $json.body.message }}"
+
+Reply with ONLY valid JSON, no markdown, no extra text:
+{"score": &lt;number 1-10&gt;, "summary": "&lt;2 sentences&gt;"}</code></pre>
+Click <strong>Execute Node</strong> and read the model's reply in the output.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t11"><span>Never trust an LLM to return clean JSON — parse defensively. Add a <strong>Code</strong> node after the AI node, language JavaScript, mode "Run Once for Each Item", and paste (adjust <code>item.json.message.content</code> to wherever your AI node puts the text — check its output first):
+<pre><code>const raw = $json.message?.content ?? $json.content?.[0]?.text ?? '';
+const match = raw.match(/\{[\s\S]*\}/);
+let score = 5, summary = 'AI parse failed — review manually.';
+if (match) {
+  try {
+    const parsed = JSON.parse(match[0]);
+    score = Number(parsed.score) || 5;
+    summary = String(parsed.summary || summary);
+  } catch (e) {}
+}
+return { json: { score, summary } };</code></pre>
+Execute Node → output should be a clean <code>{ "score": 9, "summary": "…" }</code> item.<em class="why">The regex grabs the first {...} block even if the model wraps it in text or code fences; the fallback score of 5 with a "review manually" note means a bad AI day never crashes the pipeline.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t12"><span>Add an <strong>IF</strong> node after the Code node: condition type <strong>Number</strong>, Value 1 = <code>{{ $json.score }}</code>, operation <strong>is greater than or equal to</strong>, Value 2 = <code>7</code>. The node now has a <strong>true</strong> (hot) and <strong>false</strong> (nurture) output — the fork of today's build.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Write back to GHL on both branches + close the loop</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d25-t13"><span><strong>Hot branch (true):</strong> add an <strong>HTTP Request</strong> node — Method <code>PUT</code>, URL <code>https://services.leadconnectorhq.com/contacts/{{ $('Webhook').item.json.body.contact_id }}</code> (the <code>$('Webhook')</code> syntax reaches back to the webhook node's data from anywhere downstream), Header Auth credential <strong>GHL Summit Dental (PIT)</strong>, <code>Version</code> header, JSON body:
+<pre><code>{
+  "customFields": [
+    { "id": "LEAD_SCORE_FIELD_ID", "field_value": "{{ $json.score }}" },
+    { "id": "AI_SUMMARY_FIELD_ID", "field_value": "{{ $json.summary }}" }
+  ]
+}</code></pre>
+Rename the node <strong>Write score (hot)</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t14"><span>Still on the hot branch, add a second <strong>HTTP Request</strong> after it — Method <code>POST</code>, URL <code>https://services.leadconnectorhq.com/contacts/{{ $('Webhook').item.json.body.contact_id }}/tags</code>, body <code>{ "tags": ["hot-lead"] }</code>. Rename it <strong>Tag hot-lead</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t15"><span>Finish the hot branch with a <strong>Telegram</strong> node (reuse yesterday's bot credential and chat id), message expression:
+<pre><code>🔥 HOT LEAD ({{ $('Code').item.json.score }}/10) — {{ $('Webhook').item.json.body.first_name }} {{ $('Webhook').item.json.body.last_name }}{{ '\n' }}{{ $('Code').item.json.summary }}{{ '\n' }}📞 {{ $('Webhook').item.json.body.phone }}</code></pre>
+(Adjust node names inside <code>$('…')</code> if you renamed yours differently.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t16"><span><strong>Nurture branch (false):</strong> copy-paste the <strong>Write score (hot)</strong> node onto the false output (same body — it writes whatever score/summary arrived), then copy <strong>Tag hot-lead</strong>, connect it after, and change its body to <code>{ "tags": ["nurture"] }</code>. Rename them <strong>Write score (nurture)</strong> and <strong>Tag nurture</strong>. No alert on this branch — the whole point is that cold leads don't ping anyone.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t17"><span>Test the brain end-to-end on pinned data: click <strong>Test workflow</strong>. Hana's urgent message should ride the <strong>true</strong> branch: both HTTP nodes green, Telegram alert received. Open Hana's contact in GHL → confirm <strong>Lead Score</strong>, <strong>AI Summary</strong>, and the <strong>hot-lead</strong> tag are on the record.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t18"><span>Close the loop in GHL: <strong>Automation → + Create Workflow → Start from Scratch</strong>, name <strong>Hot Lead Response</strong>. Trigger: <strong>Contact Tag</strong> → filter <strong>Tag Added</strong> is <strong>hot-lead</strong>. Actions: (1) <strong>Internal Notification</strong> → type Email (or in-app) to your user: "Hot lead {{contact.name}} — call within 5 minutes. Summary: {{contact.ai_summary}}" (pick the custom field from the merge-tag picker); (2) <strong>Create/Update Opportunity</strong> → pipeline <strong>Patient Acquisition</strong>, stage <strong>New Lead</strong> (or your first stage), then a second Create/Update Opportunity or "Move Opportunity" step is unnecessary — instead set the stage directly to your "Hot"/priority stage if your Day-3 pipeline has one. Save + <strong>Publish</strong>.<em class="why">This is the loop employers love hearing about: n8n decides, GHL acts. Tag = the handshake between the two systems.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Production cutover, two-lead test, packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d25-t19"><span>Cutover checklist (say it out loud, do it in order): unpin the Webhook data → <strong>Save</strong> → toggle <strong>Active</strong> → copy the <strong>Production URL</strong> → in GHL's <strong>New Lead → AI Qualifier</strong> workflow replace the webhook URL → Save Action → <strong>Publish</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t20"><span><strong>Test lead 1 (obviously hot):</strong> submit the form as <strong>Igor Implant</strong>, message <em>"I need two implants, my sister recommended you, I'd like to book a consultation this week, budget is not an issue."</em> Verify all five artifacts: n8n execution (Executions list, true branch), Lead Score ≥ 7 on the contact, AI Summary filled, <strong>hot-lead</strong> tag, Telegram alert, and the GHL <strong>Hot Lead Response</strong> workflow fired (check its Execution/Enrollment history tab) with the internal notification + opportunity.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t21"><span><strong>Test lead 2 (obviously cold):</strong> submit as <strong>Wanda Window</strong>, message <em>"Just wondering what teeth whitening costs, no rush, maybe next year."</em> Verify: false branch in the execution, score &lt; 7, <strong>nurture</strong> tag, NO Telegram alert, NO Hot Lead Response run. If the model scores it ≥ 7, tighten the prompt (add "price-only curiosity with no timeline = 3 or lower") and re-test.<em class="why">Testing both branches with predictable inputs is what "I tested it" means in a professional setting — one green run is not a test.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t22"><span>Open both executions in <strong>Overview → Executions</strong> and step through the Code node's input/output for each — see the raw AI text turn into clean JSON. Screenshot the hot execution as <code>day25-execution-hot.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t23"><span>Export + shoot: <strong>•••</strong> → <strong>Download</strong> → <code>ai-lead-qualifier.json</code> into <code>GHL Portfolio/n8n-exports</code>. Screenshots: <code>day25-canvas.png</code> (full workflow with both branches), <code>day25-contact-hot.png</code> (Igor's GHL record showing score, summary, tag), <code>day25-telegram.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d25-t24"><span>Record a 3–4 minute Loom: architecture sketch first, then submit a hot lead live, then walk the canvas — spend 30 seconds each on the prompt design ("strict JSON, single object"), the defensive Code node, and the tag handshake back into GHL. Save to <code>GHL Portfolio/videos</code>, then journal: today's per-lead AI cost estimate and one idea for another AI use-case in GHL (e.g. drafting reply SMS).</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #11: AI Lead Qualifier</h2>
+    <p>An AI-in-the-loop integration: GHL lead → n8n → LLM scoring with defensive parsing → API write-back, tags, alerts, and a GHL workflow reacting to the result. With the JSON export, screenshots, and Loom saved, go to the home page and tick <strong>Portfolio #11</strong> on the tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A live AI qualification loop proven with two opposite test leads (hot and cold), both verified in the n8n Executions list and on the GHL contact records — plus <code>ai-lead-qualifier.json</code> in <code>GHL Portfolio/n8n-exports</code>, four screenshots, the Loom walkthrough, and a journal entry on prompt design and cost.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>The three ideas that made today robust — <strong>demand strict JSON in the prompt</strong>, <strong>parse with a fallback</strong>, and <strong>branch on a number, not on prose</strong> — apply to every AI automation you'll ever build. Write them at the top of your journal; they're also a killer interview answer to "how do you make AI reliable in production?"</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>n8n OpenAI node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.openai/" target="_blank" rel="noopener">docs.n8n.io — OpenAI</a> · Anthropic node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-langchain.anthropic/" target="_blank" rel="noopener">docs.n8n.io — Anthropic</a>.</li>
+      <li>n8n Code node: <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.code/" target="_blank" rel="noopener">docs.n8n.io — Code</a> · IF node: <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.if/" target="_blank" rel="noopener">docs.n8n.io — IF</a>.</li>
+      <li>GHL contacts API (update + tags): <a href="https://highlevel.stoplight.io/docs/integrations/" target="_blank" rel="noopener">highlevel.stoplight.io</a> → Contacts.</li>
+      <li>GHL custom fields in workflows/merge tags: search <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> for <em>"Custom Fields"</em>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-24.html">← Day 24: GHL API 2.0 in n8n</a>
+  <a href="day-26.html">Day 26: Portfolio #12 — GHL ⇄ Google Sheets Two-Way Sync →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

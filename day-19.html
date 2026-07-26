@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 19 — Portfolio #7 &amp; #8: Review Machine + Database Reactivation | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="19">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 19</span>Portfolio #7 &amp; #8: Review Machine + Database Reactivation</h1>
+    <p class="day-goal">A double-portfolio day. By tonight Summit Dental will (1) automatically ask every happy patient for a Google review — compliantly — and (2) have a launch-ready Database Reactivation campaign that mines the existing patient list for booked appointments with a $99 offer, complete with an exit goal and a Reactivation pipeline. Two of the five systems every agency sells, built and tested in one day.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Reputation tour + review link setup</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Reviews are a local business's lifeblood — most patients pick a dentist from the Google Maps pack, sorted by stars and review count. GHL has a whole <strong>Reputation</strong> module for this. Tour it first, then wire the review link the automation will send.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d19-t01"><span>In Summit Dental click <strong>Reputation</strong> in the left sidebar. Walk each sub-tab and write one line per tab in your notes: <strong>Overview</strong> (ratings dashboard), <strong>Requests</strong> (every review invite sent + status), <strong>Reviews</strong> (pulled-in Google/Facebook reviews once connected), and any AI review-reply settings your version shows.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t02"><span>Find the review link setting: go to <strong>Settings → Reputation Management</strong> (some versions: Reputation → Settings). Locate the <strong>Review Link</strong> field — this is the URL review requests point to. A real client would connect their <strong>Google Business Profile</strong> (Settings → Integrations → Google Business Profile) so this links straight to their "leave a review" pop-up; Summit Dental is fictional, so paste a placeholder like <code>https://g.page/r/summit-dental-placeholder/review</code> and write in your journal the 1-line note: "swap for the client's real GBP review short-link at onboarding."</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t03"><span>Compliance lesson — copy this into your journal, verbatim-ish: <strong>"Review gating" — asking happy customers for public reviews while diverting unhappy ones away from Google — violates Google's review policies.</strong> The compliant pattern: ask EVERYONE for honest feedback, make the public review link available to all, and ALSO offer a private feedback channel so unhappy patients have an easy way to tell the practice directly. You filter by follow-up emphasis, not by blocking access.<em class="why">Agencies get clients' Google profiles penalized doing this wrong. Knowing the compliant version out loud is a hiring signal.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t04"><span>Build the private feedback catcher: <strong>Sites → Forms → Builder → + Add Form</strong> → name it <strong>"Private Feedback"</strong> → fields: name, email, one long-text field "How was your visit? What could we do better?" → save, and copy its public link into your notes. This is where your workflow will point people who want to share concerns.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Portfolio #7: the "Review Request" workflow</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">This chains onto Day 17's work: the Post-Visit workflow already stamps <strong>visit-complete</strong> when a patient shows. Your review machine triggers right there.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d19-t05"><span><strong>Automation → Client Systems → + Create Workflow → Start from Scratch</strong> → rename <strong>"Review Request"</strong>. Trigger: <strong>Contact Tag → Tag Added → visit-complete</strong> (this decouples it cleanly from the calendar — any future "visit complete" source works too). Alternative noted in journal: trigger directly on <strong>Appointment Status = Showed</strong>; explain in one line why the tag version is more flexible. <strong>Save Trigger</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t06"><span>Action 1 — <strong>Wait</strong> → Time Delay → <strong>2 hours</strong>. (Day 17's Post-Visit workflow already waits 2 h before tagging, so the ask lands ~4 h after the visit — same-day, while the experience is fresh, but not creepy-instant. Note the total timing in your journal.) <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t07"><span>Action 2 — the ask, email version: <strong>Send Email</strong> → Subject: <code>How was your visit, {{contact.first_name}}?</code> → Body (~90 words): thank them; "would you take 60 seconds to share your experience?"; the <strong>review link</strong> as a clear button/link; then one honest sentence: "If anything wasn't right, we'd genuinely like to hear it — you can tell us privately here" + the <strong>Private Feedback form link</strong>. Both links visible to everyone = compliant. <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t08"><span>Action 3 — the ask, SMS version: <strong>Send SMS</strong> → <code>Thanks for visiting Summit Dental, {{contact.first_name}}! Would you leave us a quick review? [review link] — Anything we could do better? Tell us privately: [feedback link]</code>. (A2P caveat as always — build it, test to your own number if possible.) <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t09"><span>Action 4 — branch on engagement: add an <strong>If/Else</strong> — Branch 1 <strong>"Engaged"</strong>: use an email-activity condition (<strong>clicked</strong> the review email link) if your condition panel offers it; otherwise use the <strong>replied</strong> tag from Day 16's helper as a proxy. But first insert a <strong>Wait → 3 days</strong> ABOVE the If/Else so there's time to click. Chain check: Wait 2 h → email → SMS → Wait 3 days → If/Else. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t10"><span>Fill the branches: <strong>Engaged</strong> → <strong>Send Email</strong> thank-you ("Thanks so much — it truly helps a small practice!"). <strong>None/Else</strong> → <strong>Send Email</strong> gentle second ask, subject <code>One small favor, {{contact.first_name}}?</code>, review link + private-feedback link again, explicitly "no pressure — this is the last time we'll ask." Both branches then converge on (or each end with) an <strong>Add Contact Tag → review-requested</strong> action. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t11"><span>Settings: <strong>Allow Re-Entry OFF</strong> for now with a journal note on the real-world nuance (you don't want to re-ask after every single visit; a mature build re-allows after 6+ months), <strong>Stop on Response ON</strong> (a reply = human conversation; the second ask must not fire), time window <strong>9:00–19:00</strong>. <strong>Publish + Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t12"><span>Test it end to end: add the tag <strong>visit-complete</strong> to <strong>Testy McTestface</strong> (remove it first if Day 17 already left it there — and note that with Re-Entry OFF you may need a fresh contact; if so, create <strong>Rita Reviewer</strong>, <code>you+rita@gmail.com</code>). For the test, temporarily set Wait 1 to <strong>2 minutes</strong> and Wait 2 to <strong>3 minutes</strong> (Day 18's compressed-test trick). Verify: ask email arrives with BOTH links working → don't click → second-ask email arrives → <strong>review-requested</strong> tag lands. Walk the full run in <strong>Execution Logs</strong>, then restore the production waits (2 hours / 3 days) and re-save.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Portfolio #8: Database Reactivation (DBR)</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">DBR is the classic "found money" campaign: instead of buying ads, you message the client's EXISTING list of lapsed customers with a compelling offer. It's often the first thing an agency runs for a new client because it produces revenue in week one. Structure: a Smart List finds the lapsed segment → a bulk-applied tag launches them into a 3-touch offer sequence → a goal exits anyone who replies or books → replies create opportunities in a dedicated pipeline.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d19-t13"><span>Create the fake lapsed patients you'll launch at (3 of them): <strong>Contacts → + Add Contact</strong> — <strong>Larry Lapsed</strong> (<code>you+larry@gmail.com</code>), <strong>Linda Lapsed</strong> (<code>you+linda@gmail.com</code>), <strong>Lou Lapsed</strong> (<code>you+lou@gmail.com</code>), all with your phone number. Give each the tag <strong>patient</strong> and — using whatever fields you built in Week 1 — mark them as old (e.g. set a "Last Visit" custom field to 8+ months ago, or simply rely on the tag; note which you used).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t14"><span>Build the segment as a Smart List: <strong>Contacts</strong> → click <strong>More Filters / Advanced Filters</strong> → filter to your lapsed definition. The honest note for your journal: a real account filters on "last appointment older than 6 months"; your training data approximates this with <strong>tag is "patient"</strong> + your Last-Visit-style field (or simply the tag). Apply the filter, confirm your 3 Lapsed contacts (and no one else) match, then click <strong>Save as Smart List</strong> → name it <strong>"patient-lapsed"</strong>.<em class="why">Smart Lists are saved, live-updating filters — the standard way to define campaign audiences in GHL.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t15"><span>Build the landing pipeline for responders: <strong>Opportunities → Pipelines</strong> (or Settings → Pipelines) → <strong>+ Create Pipeline</strong> → name <strong>"Reactivation"</strong> → stages: <strong>Replied</strong>, <strong>Booked</strong>, <strong>Completed Visit</strong>, <strong>Lost</strong>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t16"><span>Build the campaign workflow: <strong>Automation → Client Systems → + Create Workflow → Start from Scratch</strong> → rename <strong>"DBR — Spring Reactivation"</strong> → Trigger: <strong>Contact Tag → Tag Added → dbr-spring</strong> (create the tag) → <strong>Save Trigger</strong>.<em class="why">Launching a campaign off a manually-applied tag is the pro pattern: you control exactly WHO and WHEN by controlling the tag, and you can re-run the campaign later with a new tag.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t17"><span>Touch 1 (Day 0): <strong>Send Email</strong> → Subject: <code>{{contact.first_name}}, it's been a while — here's $99 to come back</code> → Body using this offer copy: <em>"It's been a while since your last visit, and we'd love to see you again. Book this month and your complete cleaning + check-up is just <strong>$99</strong> — our New-Year Cleaning Special for returning patients. Spots are limited; grab yours here:"</em> + <code>{{custom_values.booking_link}}</code> + "Reply to this email and we'll set it up for you." Add a matching short <strong>SMS</strong>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t18"><span>Touches 2 and 3: <strong>Wait → 3 days</strong> → Touch 2 <strong>Send Email</strong> (angle: what a check-up catches early; restate the $99 offer + link) → <strong>Wait → 4 days</strong> → Touch 3 <strong>Send Email</strong> (last call: "the $99 special ends Friday", one-line, big button) + final <strong>SMS</strong>. Seven days, three touches total. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t19"><span>The exit goal: insert a <strong>Goal</strong> step AFTER Touch 3, at the bottom of the touch chain — use the best goal type your account offers: <strong>Appointment Booked</strong>, or <strong>Added Contact Tag → replied</strong> (Day 16's helper stamps that tag on any reply — this is exactly why you built it). Remember Day 18's mechanic: a contact who books/replies mid-sequence JUMPS to the goal step immediately, skipping the remaining touches; everyone else reaches it only after all three touches. Below the goal add: <strong>Create Opportunity</strong> → pipeline <strong>Reactivation</strong> → stage <strong>Replied</strong> → name <code>{{contact.name}} — DBR Spring</code>, and an <strong>Internal Notification</strong> ("DBR response: {{contact.name}} — call them!"). Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t20"><span>Wait — that placement creates one bug: contacts who finish all 3 touches WITHOUT converting would also hit the goal step and get an opportunity. Fix it with Day 18 knowledge: check your goal's "if not met" options — choose the configuration where only goal-MEETERS proceed past it (unmet → <strong>End</strong> the workflow at the goal). Re-check your logic, write one journal line on how you solved it. This is deliberately the hardest thinking of the day.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t21"><span>Settings: Re-Entry <strong>OFF</strong> (one campaign, one pass), Stop on Response <strong>OFF</strong> — justify in your journal: the reply is HANDLED by the goal (via the replied tag), which exits them forward into the opportunity; Stop-on-Response would remove them before the goal could (compare with what you chose on Day 18 and why it differs). Time window <strong>9:00–18:00</strong> Mon–Sat. For testing, compress the waits to <strong>3 minutes / 4 minutes</strong>. <strong>Publish + Save</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Launch, test, and package BOTH portfolio pieces</h2>
+    <p class="session-time">≈ 1.5–2 hours</p>
+    <p class="session-intro">Launching a DBR is its own skill: you bulk-apply the launch tag from the Smart List. Then you verify both converter and non-converter paths, restore production timings, and document two portfolio pieces.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d19-t22"><span>LAUNCH: <strong>Contacts</strong> → open the <strong>patient-lapsed</strong> Smart List tab → tick the checkbox at the top of the list to select all 3 → in the bulk-actions bar click <strong>Add Tag</strong> (or the tag icon) → choose <strong>dbr-spring</strong> → confirm. Note for your journal: on a real 2,000-contact launch you would use the bulk action's <strong>drip/batch option</strong> (or your Day 18 throttle notes) to stagger sends — never blast 2,000 SMS in one minute.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t23"><span>Confirm all 3 enrolled in "DBR — Spring Reactivation" (<strong>Enrollment History</strong>) and Touch 1 emails hit your inbox 3× (larry/linda/lou aliases). Now play the market: <strong>Larry replies</strong> (send a reply from his alias so the helper stamps <strong>replied</strong> → he should jump to the goal, get a <strong>Reactivation → Replied</strong> opportunity, and you get the internal notification). <strong>Linda and Lou do nothing</strong> → they should receive Touches 2 and 3 over the next ~7 minutes, then end with no opportunity.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t24"><span>Verify in <strong>Execution Logs</strong>: expand Larry's run (goal jump visible, opportunity + notification executed) and Linda's run (all three touches, ended at goal, nothing after). Check <strong>Opportunities → Reactivation</strong>: exactly ONE card (Larry). If Linda or Lou got a card, your t20 fix isn't right — debug before moving on. Then restore production waits (3 days / 4 days) and re-save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t25"><span>Screenshots into <code>GHL Portfolio/screenshots</code>: <code>day19-review-canvas.png</code>, <code>day19-review-log.png</code> (Testy/Rita's full run), <code>day19-dbr-canvas.png</code>, <code>day19-dbr-log-converted.png</code> (Larry), <code>day19-dbr-pipeline.png</code> (the Reactivation board with Larry's card), <code>day19-smartlist.png</code> (the patient-lapsed list).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t26"><span>Record TWO short Looms (2–4 min each — separate videos; they're separate portfolio pieces). Review Machine: the compliance point first (no gating — public link for all + private feedback route), then canvas + logs. DBR: the "found money" pitch, the Smart List → bulk tag launch pattern, the goal exit, the pipeline result. Save both links in <code>GHL Portfolio/videos</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d19-t27"><span>Journal entry: both system maps, the review-gating rule in one sentence, the goal-placement bug you fixed and how, and the launch pattern (Smart List → bulk tag → throttle). Then tick <strong>Portfolio #7 AND Portfolio #8</strong> on the home-page tracker — a two-badge day.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #7 &amp; #8: Review Machine + Database Reactivation</h2>
+    <p>Two sellable systems in one day: a compliant, engagement-branching <strong>review request machine</strong> chained onto your appointment lifecycle, and a <strong>database reactivation campaign</strong> with a Smart-List launch, goal-based exits, and a dedicated Reactivation pipeline — both verified in Execution Logs with converter and non-converter test paths. Go to the home page and tick <strong>Portfolio #7</strong> and <strong>Portfolio #8</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Published <strong>"Review Request"</strong> and <strong>"DBR — Spring Reactivation"</strong> workflows (production timings restored), the <strong>Private Feedback</strong> form, the <strong>patient-lapsed</strong> Smart List, the <strong>Reactivation</strong> pipeline with one test opportunity, six screenshots (<code>day19-*.png</code>), two Looms, and a journal entry covering compliance + the goal-placement fix.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Never promise a client you'll "filter out bad reviews" — that's review gating and it can get their Google Business Profile penalized. And never launch a real DBR without checking the list's consent status and A2P registration first: blasting SMS to a stale list is the fastest way to get a number flagged for spam. Saying these two things unprompted in an interview marks you as someone safe to hand client accounts to.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — reputation &amp; review requests: <a href="https://help.gohighlevel.com/support/search/solutions?term=review+request" target="_blank" rel="noopener">search "review request"</a>.</li>
+      <li>Help Center — Google Business Profile integration: <a href="https://help.gohighlevel.com/support/search/solutions?term=google+business+profile" target="_blank" rel="noopener">search "google business profile"</a>.</li>
+      <li>Help Center — smart lists &amp; bulk actions: <a href="https://help.gohighlevel.com/support/search/solutions?term=smart+list+bulk+action" target="_blank" rel="noopener">search "smart list bulk action"</a>.</li>
+      <li>Google's review policy (read the gating section): <a href="https://support.google.com/business/answer/3474122" target="_blank" rel="noopener">support.google.com — prohibited review content &amp; solicitation rules</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-18.html">← Day 18: Advanced Workflow Logic</a>
+  <a href="day-20.html">Day 20: Pipeline Automation, Internal Ops &amp; Webhooks →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
