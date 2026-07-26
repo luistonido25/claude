@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 18 — Advanced Workflow Logic | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="18">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 18</span>Advanced Workflow Logic</h1>
+    <p class="day-goal">By tonight you'll command the power tools that separate a workflow builder from a workflow ARCHITECT: multi-branch If/Else, all four Wait variants, Goal events that yank contacts forward the moment they convert, Go To loops, A/B splits, AI actions, and the error patterns that break real builds. You'll prove it with a 7-day nurture drip that exits converts early — tested with two contacts whose logs you'll compare side by side.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — If/Else mastery: branches &amp; condition types</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You've used If/Else with one condition. Real builds branch three, four, five ways on combinations of fields, tags, and activity. Work in a fresh practice workflow in the <strong>Training</strong> folder — today is a lab day; only the final drip is portfolio-adjacent.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d18-t01"><span>In Summit Dental: <strong>Automation → Training folder → + Create Workflow → Start from Scratch</strong> → rename <strong>"Training — Logic Lab"</strong> → trigger: <strong>Contact Tag → Tag Added → logic-lab</strong> (create the tag) → Save Trigger.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t02"><span>Add an <strong>If/Else</strong> action and study the condition panel properly this time. In your notes, list the condition SOURCES your account offers — typically: <strong>Contact Details</strong> (standard fields like email, phone, source), <strong>Custom Fields</strong> (your Day 2 fields like "Insurance Provider"), <strong>Tags</strong>, and activity-style conditions (email opened/clicked, replied — availability varies). Note the operators too: is / is not / contains / exists / is empty.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t03"><span>Build a 3-way branch on one If/Else: click <strong>+ Add Branch</strong> until you have Branch 1 <strong>"Has insurance"</strong> (custom field Insurance Provider → is not empty), Branch 2 <strong>"VIP"</strong> (Tags → includes <strong>vip</strong> — create the tag), and the automatic <strong>None</strong>/Else branch renamed in your head as "everyone else". Drop a differently-worded <strong>Send Email</strong> into each branch so you can tell them apart in tests. <strong>Save</strong>.<em class="why">Branch ORDER matters: GHL evaluates top-to-bottom and a contact takes the FIRST branch that matches. Write that sentence down.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t04"><span>Prove branch order to yourself: give <strong>Testy McTestface</strong> BOTH an Insurance Provider value and the <strong>vip</strong> tag → publish the workflow → add the <strong>logic-lab</strong> tag to Testy → check <strong>Execution Logs</strong>: he took "Has insurance" (Branch 1) even though "VIP" also matched. Reorder the branches (drag VIP above) → Settings: Allow Re-Entry ON → remove/re-add the <strong>logic-lab</strong> tag → confirm in logs he now goes down "VIP".</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t05"><span>Learn AND vs OR inside one branch: edit a branch and add a second condition — notice the AND/OR selector between condition rows. Note in your journal: AND = all conditions must match; OR = any. Multi-condition single branch vs multiple branches is the difference between "insured VIPs" and "insured OR VIP" — a real design decision.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Waits, Goals, Go To, Split &amp; AI actions</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Five power tools, one session. The star is the <strong>Goal event</strong> — the mechanic behind every "stop messaging them once they book" system, and the single most impressive thing you can name-drop in a GHL interview.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d18-t06"><span>Wait variants inventory: in the Logic Lab, add a <strong>Wait</strong> action and click through every <strong>Wait Type</strong> your account offers, writing one line each: (1) <strong>Time Delay</strong> — fixed duration; (2) <strong>Until a specific time/day</strong> — e.g. "next Monday 9:00"; (3) <strong>Event/Appointment Time</strong> — anchored to a booking (yesterday's hero); (4) <strong>Condition-based / until contact replies or condition met</strong> — pauses until something becomes true (if your plan shows it). Delete the action after — this was recon.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t07"><span>Understand Goals before touching them — write this in your journal until it's yours: a <strong>Goal event</strong> is a checkpoint placed in the action chain. The moment a contact meets the goal (e.g. replies, gets a tag, books), they <strong>immediately jump forward to the goal step from wherever they are</strong> — skipping every message in between. Contacts who never meet it just flow through normally (or exit, depending on the goal's "if not met" setting). It's how drip campaigns stop the instant someone converts.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t08"><span>Find them: in the builder click <strong>+</strong> and look for the <strong>Goal</strong> section of the action picker (goal types like <strong>Email Event, Added Contact Tag, Appointment Booked/Status, Trigger Link Clicked</strong> — list what YOUR account shows). Open one, read its options — especially the setting for what happens to contacts who reach the goal step WITHOUT having met it (continue / wait / end). Cancel out; you'll place a real one in Session 4.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t09"><span>Mini-rebuild with a goal: duplicate yesterday's reminder logic in miniature — in Logic Lab (clear old actions or use a new workflow "Training — Goal Demo", trigger Tag Added <strong>goal-demo</strong>): Send Email "msg 1" → Wait 5 min → Send Email "msg 2" → then place an <strong>Added Contact Tag</strong> GOAL (tag: <strong>booked-demo</strong>) AFTER msg 2, and add Send Email "you booked!" below the goal. Publish. Enroll Testy (add <strong>goal-demo</strong>), and while he's in the 5-min wait, add the <strong>booked-demo</strong> tag → watch <strong>Execution Logs</strong>: he skips msg 2 and jumps straight past the goal to "you booked!". That jump is the entire magic of goals.<em class="why">Yesterday's design question — "what if they book mid-reminder-sequence?" — is answered by exactly this pattern.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t10"><span><strong>Go To</strong> action: add one at the bottom of Goal Demo and connect it back to an earlier step — note how the canvas draws the loop. Use case to note: evergreen loops and "check again later" patterns. Then DELETE it and write the warning in your journal: a Go To pointing above a message with no exit = an infinite spam loop. Never ship a Go To without an exit condition (goal, If/Else, or wait-until).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t11"><span><strong>Split / A-B test</strong> action: search the action picker for <strong>Split</strong>. If your plan has it: add it, see the percentage paths (50/50 default), note the use case — testing two subject lines and comparing conversion. If it's not on your plan, note "Split = premium/plan-dependent; concept: randomly route X% down path A, rest down B." Either way, write one A/B test you'd run for Summit Dental.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t12"><span><strong>Workflow AI / GPT actions</strong> (plan-dependent — explore, don't depend): in the action picker find the AI group (e.g. <strong>GPT powered by OpenAI</strong>, Workflow AI). Open the GPT action: it takes a prompt (with merge fields!) and stores the answer for later steps. Note two real patterns: (a) drafting a personalized reply from contact data, (b) classify intent → If/Else on the AI's answer. Mark in your notes that these bill per-execution on most plans. If your trial lets you, add one that summarizes <code>{{contact.name}}</code>'s inquiry and test it once.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t13"><span><strong>Custom Values vs Custom Fields</strong> in messages — settle this forever in your journal: <strong>Custom Fields</strong> = per-CONTACT data (<code>{{contact.insurance_provider}}</code>, different for everyone). <strong>Custom Values</strong> = per-ACCOUNT constants (<code>{{custom_values.booking_link}}</code>, same for everyone — set once in Settings → Custom Values). Go to <strong>Settings → Custom Values</strong> → create <strong>booking_link</strong> = your New Patient Consult URL → then edit ONE email in yesterday's reminder workflow to use <code>{{custom_values.booking_link}}</code> instead of the pasted URL.<em class="why">When the client changes their calendar, you update ONE custom value instead of hunting through 12 workflows. This is how snapshots stay portable — huge for Day 21.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Sending discipline &amp; the failure catalog</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Advanced builders are defined less by what they can build than by what they can DEBUG. This session builds your failure catalog — the checklist you'll run every time someone says "the automation isn't working."</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d18-t14"><span>Business-hours sending: open any Training workflow → <strong>Settings</strong> tab → configure the <strong>Time Window</strong> to Mon–Fri 9:00–18:00 and observe what the options let you control (days, hours, and what happens to messages generated outside the window — they queue until the window opens). Note when you'd use it (nurture drips, promos) vs not (appointment reminders, speed-to-lead).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t15"><span>Stagger/throttle: some sends shouldn't fire 500-at-once (bulk reactivation — coming Day 19). Find the throttle controls: check the workflow <strong>Settings</strong> tab and the trigger's advanced options for batch/drip enrollment settings; ALSO note that bulk actions from the Contacts page offer "drip mode" when you mass-enroll. Write down where you found each. If you can't find a native throttle on your plan, note the workaround: Wait steps + staggered enrollment.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t16"><span>DND — the silent killer: open Testy's contact record and find the <strong>DND</strong> (Do Not Disturb) toggles (per-channel: email, SMS, calls). Flip SMS DND ON, run any SMS-containing Training workflow at him, and read the <strong>Execution Logs</strong> entry for the skipped step. Screenshot that log line, then turn DND back OFF.<em class="why">"The workflow ran but nothing sent" is DND more often than anything else. You've now SEEN what it looks like in logs.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t17"><span>Write your <strong>failure catalog</strong> — a permanent page in your journal titled "When a workflow doesn't fire / doesn't send", listing at minimum: (1) workflow still in <strong>Draft</strong>; (2) trigger <strong>filters too narrow</strong> or pointing at the wrong form/calendar/pipeline; (3) <strong>Re-Entry off</strong> and the contact already went through; (4) contact on <strong>DND</strong> for that channel; (5) <strong>time window</strong> holding the message in queue; (6) SMS blocked by <strong>A2P</strong> not being registered; (7) <strong>Stop on Response</strong> removed them after a reply; (8) merge field typo so the email LOOKS broken but sent fine. For each: where in the UI you check it (Settings tab, Enrollment History, Execution Logs, contact record).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t18"><span>Drill the catalog: cover your list, and from memory name 6 of the 8 causes and their check-locations out loud. This exact question — "a client says the automation is broken; what do you check?" — appears in nearly every GHL interview. Your catalog is the model answer.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Lab: "Lead Nurture 7-Day" drip with a conversion goal</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">The graduation exercise: a 7-day nurture drip where booking a consult is a <strong>Goal</strong> that instantly pulls converts out of the message queue. You'll run two contacts through it — one converts, one doesn't — and compare their logs. (For testing, we compress "days" into minutes; the structure is identical.)</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d18-t19"><span>Design first, on paper: Trigger: Tag Added <strong>nurture-start</strong>. Chain: Email 1 (value: "5 questions to ask any dentist") → Wait 2 days → Email 2 (social proof) → Wait 2 days → Email 3 (address a common objection) → Wait 3 days → Email 4 (direct booking ask) → <strong>GOAL: Appointment Booked</strong> (or tag <strong>consult-booked</strong>) → post-goal: Send Internal Notification "nurture converted" + Add Tag <strong>nurture-converted</strong>. Contacts who finish all 4 emails without converting just end after the goal step per its "not met" setting.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t20"><span>Build it: <strong>Client Systems folder → + Create Workflow → Start from Scratch</strong> → rename <strong>"Lead Nurture 7-Day"</strong> → trigger <strong>Contact Tag → Tag Added → nurture-start</strong> → build the 4 emails (write real 60–100 word bodies — this doubles as portfolio copy, and use <code>{{custom_values.booking_link}}</code> in every CTA) — but set the Waits to <strong>2 minutes / 2 minutes / 3 minutes</strong> for today's test. Add the <strong>Goal</strong>: type <strong>Added Contact Tag → consult-booked</strong> (tag-based is easiest to test; note that <strong>Appointment Booked</strong> is the production-grade choice) → set its unmet behavior so non-converts <strong>end</strong> at the goal → add the two post-goal actions. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t21"><span>Settings: Re-Entry <strong>OFF</strong> (nurture once), Stop on Response <strong>ON</strong> (a reply means a human conversation started — and note the interplay: a replier exits WITHOUT the converted tag; is that right? Defend your answer in one journal line). Time window: open, for today's compressed test. <strong>Publish + Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t22"><span>Create two fresh test contacts: <strong>Connie Convert</strong> (<code>you+connie@gmail.com</code>) and <strong>Nolan Noconvert</strong> (<code>you+nolan@gmail.com</code>). Add the tag <strong>nurture-start</strong> to BOTH. Confirm both appear in <strong>Enrollment History</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t23"><span>After Email 1 lands for both (~1 minute), add the tag <strong>consult-booked</strong> to <strong>Connie only</strong>. Then watch <strong>Execution Logs</strong> live over the next ~8 minutes: Connie's run should jump from wherever she is straight to the goal → notification + converted tag; Nolan's run should plod through Emails 2, 3, 4 and end at the goal, unconverted.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t24"><span>Compare the two logs side by side and write the difference in your journal in two lines: "Connie: enrolled → Email 1 → GOAL MET at wait 1 → skipped Emails 2–4 → notified+tagged. Nolan: enrolled → all 4 emails → goal not met → ended." Screenshot both expanded logs: <code>day18-log-convert.png</code>, <code>day18-log-noconvert.png</code>. Also screenshot the canvas: <code>day18-nurture-canvas.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t25"><span>Production pass: now change the three Waits to the REAL durations (2 days / 2 days / 3 days), set a 9:00–19:00 time window, and re-save + re-publish. The workflow is now genuinely deployable — and it feeds Day 19's reactivation campaign pattern.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d18-t26"><span>Journal entry for Day 18: Goals explained in your own words (2 sentences), the branch-order rule, custom values vs custom fields in one line, your failure catalog's top 5, and the compressed-test trick (minutes now, days for production) — you'll reuse it constantly.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A published <strong>"Lead Nurture 7-Day"</strong> drip in Client Systems with a working conversion Goal — proven by two contrasting Execution Log runs (Connie converts and skips ahead; Nolan rides the full drip) — three screenshots (<code>day18-*.png</code>), a <code>booking_link</code> custom value wired into your emails, and a journal failure-catalog you'll use for the rest of your career.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>The compressed-test pattern you used today — build with 2-minute waits, verify in logs, then switch to production durations — is how professionals test ANY long-running automation. Never ship a 7-day sequence you've only watched for 7 seconds, and never wait 7 days to find a typo in Email 3.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — If/Else conditions: <a href="https://help.gohighlevel.com/support/search/solutions?term=if+else+workflow" target="_blank" rel="noopener">search "if else workflow"</a>.</li>
+      <li>Help Center — Goal events: <a href="https://help.gohighlevel.com/support/search/solutions?term=goal+event+workflow" target="_blank" rel="noopener">search "goal event"</a>.</li>
+      <li>Help Center — custom values: <a href="https://help.gohighlevel.com/support/search/solutions?term=custom+values" target="_blank" rel="noopener">search "custom values"</a>.</li>
+      <li>Help Center — Workflow AI / GPT action: <a href="https://help.gohighlevel.com/support/search/solutions?term=workflow+AI" target="_blank" rel="noopener">search "workflow AI"</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-17.html">← Day 17: Portfolio #6: Appointment Lifecycle Automation</a>
+  <a href="day-19.html">Day 19: Portfolio #7 &amp; #8: Review Machine + Database Reactivation →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 30 — Job-Ready: Interviews, Test Tasks &amp; Next Steps | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="30">
+
+<header class="day-header week-5">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Days 28–30 · Portfolio &amp; Job Hunt</span>
+      <span class="hours-badge">⏱ 5–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 30</span>Job-Ready: Interviews, Test Tasks &amp; Next Steps</h1>
+    <p class="day-goal">Final day. By tonight you'll have rehearsed answers to the 10 questions GHL interviewers actually ask, survived all three classic test tasks under real time pressure, priced your freelance packages from research instead of guesswork, and written your 7-day post-program plan. Then you check the last box of the program — because you earned it.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The 10 interview questions (with answers to adapt)</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">GHL interviews are refreshingly predictable: a screening call, these questions in some order, then usually a test task. For each pair below: read the sample answer, rewrite it in your own words in your notes, then say it out loud once without reading. Your versions should reference <em>your</em> builds by name.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d30-t01"><span><strong>Q1 "Explain agency vs sub-account."</strong> → <em>"The agency account is the parent — billing, sub-account creation, snapshots, white-label. Each client business is a sub-account with its own contacts, funnels, and workflows. Day-to-day work happens ~90% inside sub-accounts."</em> <strong>Q2 "Walk me through a speed-to-lead build."</strong> → <em>"Trigger on form submission or missed call → instant SMS from the business within a minute → email → internal notification to the owner → wait step with an if/else on reply; no reply in 30 minutes escalates to a second touch and a task. I built exactly this for a demo dental clinic — I can show the 3-minute video or rebuild it live."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t02"><span><strong>Q3 "How do you handle A2P/10DLC?"</strong> → <em>"US business SMS requires brand and campaign registration under A2P/10DLC — done in GHL's phone settings via the sub-account's Trust Center. Until a campaign is approved, SMS delivery is throttled or blocked, so it's a day-one onboarding item, not an afterthought. I set expectations with clients that approval takes days, keep opt-in language compliant, and never blast unregistered numbers."</em> <strong>Q4 "What's a snapshot?"</strong> → <em>"A packaged template of an entire sub-account — pipelines, funnels, workflows, custom fields — you can deploy into a new sub-account in minutes. It's how agencies productize onboarding. I built one as my portfolio #9 and can walk through what's in it."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t03"><span><strong>Q5 "When do you use GHL native workflows vs n8n?"</strong> → <em>"Native first: anything inside one sub-account — follow-ups, pipelines, reminders — is faster to build and easier for the client's team to maintain. n8n when I need what GHL can't do natively: talking to external APIs, AI processing, multi-step data transforms, syncing with Sheets or other systems, or logic across tools. My AI lead qualifier and two-way Sheets sync are both GHL-plus-n8n for exactly that reason."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t04"><span><strong>Q6 "A workflow didn't fire. How do you debug it?"</strong> Learn this checklist verbatim — it's the single most asked practical question: <em>"In order: 1) Is the workflow actually <strong>published</strong>, not draft? 2) <strong>Execution logs</strong> — did the contact enter at all, and where did it stop? 3) <strong>Trigger filters</strong> — does the contact really match every filter (exact tag spelling, right pipeline/stage, right form)? 4) <strong>Contact state</strong> — DND enabled, missing email/phone, or re-entry not allowed so a returning contact was skipped. That order finds 95% of failures; if all four pass, I check the action itself — wait-step logic, from-numbers, and custom values."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t05"><span><strong>Q7 "How would you migrate a new client into GHL?"</strong> → <em>"Audit what exists (contacts, pipelines, calendars, current tools) → import contacts via CSV with tags for source and consent status → rebuild pipelines and custom fields → connect domains, email, and phone (A2P early) → rebuild or import funnels → recreate automations in a logical order, testing each with a test contact before enabling → run old and new in parallel briefly, then cut over. Document everything in Loom for the client's team."</em> <strong>Q8 "How long would X take / what would you charge?"</strong> → never bluff a number on the spot: <em>"For a standard [speed-to-lead / review machine] I have a build checklist, so roughly N hours — but let me confirm scope: how many locations, is A2P approved, and are we reusing existing copy? I'd rather quote accurately than fast."</em> Asking scope questions IS the right answer.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t06"><span><strong>Q9 "What's your actual GHL experience?"</strong> — the honesty answer, delivered with zero apology: <em>"150+ hours of intensive training, 13 working builds across two fictional businesses — CRM through funnels through GHL + n8n API integrations. No client work yet, which is why everything is recorded: you can watch any build working before you hire me, and I'm happy to prove it with a test task."</em> <strong>Q10 "What do you do when you're asked for something you don't know how to build?"</strong> → <em>"Say so, then close the gap fast: GHL's help docs and university, the community, and a test build in my own sandbox before touching the client's account. In my training I hit that wall weekly — the two-way sync's error handling took me a full extra session to get right — so I have a working routine for learning under deadline."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t07"><span>Rehearse: stand up, phone on timer, and answer Q1, Q2, Q6, and Q9 out loud from memory — max 60 seconds each. Do two full rounds. Ramble round one, tighten round two.<em class="why">The difference between "knows it" and "can say it on a call" is exactly this drill.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Test-task gym: the 3 classics under time pressure</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Most GHL hiring ends with a test task, and it's almost always one of these three. You'll do all three today under real conditions: timer visible, no pausing, done-not-perfect. Use a fresh folder in Ironworks Fitness (or a new test sub-account) so you're not leaning on existing work.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d30-t08"><span><strong>Test 1 — the 60-minute build.</strong> Set a 60-minute timer and build from scratch: a 2-step opt-in funnel (opt-in page with form → thank-you page) + a follow-up workflow (form trigger → instant email → 5-min wait → SMS → add tag <code>new-lead</code> → notify user). Submit the form as a test contact and confirm both messages in Conversations. Timer stops when the test contact has received both.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t09"><span>Score Test 1 honestly in your journal: finished in time? What ate the minutes (page styling is the usual trap — employers grade the <em>working automation</em>, not your color choices)? If you blew past 60 minutes, note exactly where, take a 10-minute break, and re-run it tomorrow morning as your warm-up.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t10"><span><strong>Test 2 — the debug drill (self-sabotage).</strong> Plant these exact 5 bugs in your Ironworks builds, then walk away for 15 minutes: (1) set one workflow back to <strong>draft/unpublished</strong>, (2) edit a trigger filter tag from <code>new-lead</code> to <code>newlead</code>, (3) turn on <strong>DND</strong> for your main test contact, (4) change a 5-minute <strong>wait step</strong> to 5 days, (5) break a personalization value in an SMS (e.g. change <code>{{contact.first_name}}</code> to <code>{{contact.firstname}}</code>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t11"><span>Now "arrive as the hired specialist": run a test contact through, and find all 5 bugs using only the Q6 checklist — published? → execution logs → trigger filters → contact state → step config. Time yourself and write down the order you found them in. Under 30 minutes for all five = genuinely hire-ready at debugging.<em class="why">Debugging someone else's broken account is the most common first week of a real GHL job.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t12"><span>Fix all 5 bugs, re-run the test contact end-to-end to prove the repairs, and write a 5-line "client report" in your notes: bug → symptom → fix, one line each. This report format is exactly what you'd send a real client after a debug job.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t13"><span><strong>Test 3 — explain-a-build, unrehearsed.</strong> One take, no script, no retries: record a 3-minute Loom explaining portfolio #13 (the onboarding machine) as if to an agency owner deciding whether to hire you. Hard stop at 3 minutes. Watch it back once and write down your two worst verbal habits (fillers, mumbling the ending, over-explaining).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t14"><span>If the unrehearsed Loom was genuinely better than your polished Day 28 version of #13 (it happens — spontaneity reads well), swap it into the portfolio doc. Otherwise keep it private as a benchmark and re-do this drill weekly.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Freelance vs employed, and pricing without guessing</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Short and factual. <strong>Employed/retainer</strong> (agency seat, full-time VA role): steady income, someone else finds the clients, fastest learning because you touch many accounts — but capped rates and you're building their asset. <strong>Freelance</strong>: higher ceiling and you keep the client relationships — but you spend unpaid hours selling, and income is lumpy for months. The boring, correct answer for most beginners: take the steady seat (or 2–3 anchor clients) first, freelance up from there. Neither path pays anything until applications go out — the quota is the plan.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d30-t15"><span>Do 30 minutes of live rate research — do NOT use numbers from articles or videos (including any you've seen in this program's era; markets move): on Upwork, search "GoHighLevel", filter to freelancers, and record in a note the hourly range for (a) profiles with no reviews yet, (b) profiles with 10+ jobs. On OnlineJobs.ph and your saved LinkedIn/Indeed alerts, record the posted salary range for 5 GHL VA/specialist roles. Write down the spread you actually observed — that's your market, today, in your region.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t16"><span>Set your two numbers from that research: a <strong>starting hourly rate</strong> (position yourself in the realistic band for zero-review newcomers — low enough to win the first 3 jobs, not so low it signals junk) and a <strong>3-month target rate</strong> you'll move to after your first reviews. Write both in your tracking sheet.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t17"><span>Draft three <strong>value-based packages</strong> straight from your portfolio — fixed scope, fixed price (price each at roughly your researched hourly rate × honest build-hours + testing + a Loom handover video): <strong>"Speed-to-Lead Setup"</strong> (portfolio #5: instant follow-up + missed-call text-back, installed and tested in the client's account) · <strong>"Review Machine Install"</strong> (portfolio #7: automated review requests with routing) · <strong>"GHL + n8n Integration"</strong> (scoped from #10–#12: lead logging, alerts, or a Sheets sync). One paragraph each in a "Packages" doc — this becomes proposal ammunition.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t18"><span>Write one sentence in your journal choosing your opening strategy — <em>"I'm applying for employed/VA seats first, freelancing on the side"</em> or the reverse — and why. You can change it later; today it just has to be a decision, because tomorrow's 10 applications need a direction.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — The 7-day plan, final reflection, and the last checkbox</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Day 31 is the dangerous one — no page telling you what to do. So write the next 7 days now, while you're still in program mode. The grind from here is real: expect dozens of applications per interview at the start. The people who get hired are simply the ones still applying in week 3.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d30-t19"><span>Copy this <strong>7-day post-program checklist</strong> into your tracking sheet and schedule it: ☐ <strong>10 applications every weekday</strong>, logged same-day, personalized first 2 lines, follow-ups on day 3–4 · ☐ <strong>1 new Loom per week</strong> (rotate: a rebuild, a teardown of a public funnel, a "how I'd fix this" video) · ☐ <strong>join and actually participate in 3 communities</strong> — answer at least 3 questions this week in the GHL Facebook groups; helpful answers get profile clicks, which get DMs · ☐ <strong>rebuild one portfolio piece in a new niche</strong> (speed-to-lead for a plumber or a law firm — 2 hours now that you know how) · ☐ keep the daily journal going, 3 lines a day.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t20"><span>Look into the <strong>official GHL certification path</strong>: open university.gohighlevel.com, find the current certifications (Admin certification is the usual starting point), note the cost and time commitment, and add a go/no-go decision date to your calendar 2 weeks out. It's a credibility boost, not a requirement — a hiring manager will take 13 Looms over a badge, but badge + Looms beats both.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t21"><span>Write your <strong>final reflection journal entry</strong> — answer all four honestly: (1) Day 1 you vs today — what can you build now that was science fiction 30 days ago? (2) Which build was hardest, and what got you through it? (3) What's still shaky? (that's your practice list, not a confession) (4) Your one-sentence pitch, final version. Then reread your Day 1 entry. Feel that gap. That's 150 hours of compounding.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d30-t22"><span>🎓 <strong>Final task of the program.</strong> You started 30 days ago knowing nothing about GoHighLevel. You now have 13 working systems on video, a portfolio link, a resume, live job-search profiles, rehearsed interview answers, and a tested debugging method. Nobody can take any of that from you, and nobody handed it to you either. Tell one human being what you just finished — out loud, today. Then check this box. Congratulations, specialist. Now go send the first 10 applications tomorrow morning. 🎉</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Ten interview answers rewritten in your own words and rehearsed aloud, all three classic test tasks completed under time pressure (60-minute build, 5-bug debug drill with a written client report, unrehearsed 3-minute Loom), researched rates plus three priced packages in a Packages doc, the 7-day post-program checklist scheduled — and the final checkbox of a 30-day program, checked.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Reality check, said with love</h3>
+    <p>No program — this one included — can guarantee you income or a job, and anyone who does is selling something. What you have is real and rare: demonstrable skills in a tool thousands of agencies run on, proof on video, and a repeatable practice method. The variable left is volume and persistence: 10 applications a day, honest proposals, and showing up in communities. Silence in week one means nothing. Keep the streak.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL certifications: <a href="https://university.gohighlevel.com" target="_blank" rel="noopener">university.gohighlevel.com</a> — check the current certification catalog and pricing yourself.</li>
+      <li>Help Center debugging references: search <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> for <em>"workflow execution logs"</em> and <em>"DND"</em>.</li>
+      <li>Your own portfolio link — from today on, the most important URL you own. Put it in your phone notes so you can paste it anywhere in 5 seconds.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-29.html">← Day 29: Positioning: Resume, LinkedIn &amp; Freelance Profiles</a>
+  <a href="index.html">🎓 Back to Home — you did it!</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

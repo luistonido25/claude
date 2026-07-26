@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 23 — Portfolio #10: Lead Logger &amp; Instant Alerts (GHL → n8n) | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="23">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 23</span>Portfolio #10: Lead Logger &amp; Instant Alerts (GHL → n8n)</h1>
+    <p class="day-goal">By tonight, every submission of Summit Dental's "New Patient Inquiry" form will fire a GHL workflow that POSTs the lead to an n8n webhook, which appends a clean row to a Google Sheet and pings you instantly on Telegram — tested end-to-end on the production URL. This is your first real GHL → n8n integration, and it's a build agencies genuinely sell.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Architecture first + prepare the pieces</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Professionals draw before they build. Today's data flow: <strong>GHL form → GHL workflow (Webhook action) → n8n Webhook trigger → Google Sheets append + instant alert</strong>. One direction, one trigger, two outputs — the perfect first integration.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d23-t01"><span>Draw the architecture on paper or in a free diagram tool (e.g. excalidraw.com): five boxes — <strong>New Patient Inquiry form</strong> → <strong>GHL workflow "Lead → n8n"</strong> → <strong>n8n Webhook</strong> → splitting into <strong>Google Sheets (append row)</strong> and <strong>Telegram alert</strong>. Label the arrow between GHL and n8n "HTTP POST, JSON body". Photograph/screenshot it as <code>day23-architecture.png</code>.<em class="why">You'll show this exact drawing in the Loom — explaining architecture before clicks is what separates specialists from button-pushers.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t02"><span>Prepare the destination: in Google Sheets, create a new spreadsheet named <strong>Summit Leads</strong>. In row 1, type these exact headers across columns A–F: <code>Timestamp</code>, <code>First Name</code>, <code>Last Name</code>, <code>Email</code>, <code>Phone</code>, <code>Source</code>. Rename the tab at the bottom to <strong>Leads</strong>.<em class="why">n8n's Google Sheets node reads row 1 as field names — clean headers now means effortless mapping later.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t03"><span>Verify the GHL side exists: in the <strong>Summit Dental</strong> sub-account go to <strong>Sites → Forms → Builder</strong> and confirm the <strong>New Patient Inquiry</strong> form (built on Day 6) still has First Name, Last Name, Email, and Phone fields. Open its preview link and keep that tab bookmarked — it's your test-firing button all day.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t04"><span>Journal warm-up: in two sentences, explain why we use GHL's <strong>Webhook workflow action</strong> to push to n8n (event-driven, instant, no polling) instead of having n8n repeatedly ask GHL "any new leads?" (polling — slower and wasteful). Tomorrow you'll learn the pull direction too.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Wire GHL to the n8n webhook (test mode)</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d23-t05"><span>In n8n: <strong>Create Workflow</strong>, name it <strong>Lead Logger &amp; Alerts</strong>, Save. Add a <strong>Webhook</strong> trigger node and set <strong>HTTP Method</strong> = <code>POST</code> (GHL sends leads as a POST with a JSON body — yesterday's GET drill won't catch a body). Leave <strong>Respond</strong> = <code>Immediately</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t06"><span>Copy the <strong>Test URL</strong> from the Webhook node (the one containing <code>/webhook-test/</code>) — you'll paste it into GHL next. Do NOT copy the production one yet; while building we want live results on the canvas.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t07"><span>In GHL (Summit Dental) go to <strong>Automation</strong> → <strong>+ Create Workflow</strong> → <strong>Start from Scratch</strong>. Name it <strong>Lead → n8n</strong>. Click <strong>+ Add New Trigger</strong> → choose <strong>Form Submitted</strong> → under Filters click <strong>+ Add filter</strong> → <strong>Form is</strong> → select <strong>New Patient Inquiry</strong> → <strong>Save Trigger</strong>.<em class="why">You could also duplicate your Day-16 speed-to-lead workflow and add the webhook action to it — but a dedicated workflow keeps the portfolio piece clean and easy to demo.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t08"><span>Click the <strong>+</strong> under the trigger → search the actions list for <strong>Webhook</strong> → select it. Set <strong>Method</strong> = <code>POST</code> and paste the n8n <strong>Test URL</strong> into the URL field. <strong>Save Action</strong>, then click <strong>Save</strong> on the workflow and flip it to <strong>Publish</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t09"><span>Journal note on what GHL will send: the Webhook action POSTs a JSON object with the contact's standard fields (<code>first_name</code>, <code>last_name</code>, <code>email</code>, <code>phone</code>, <code>contact_id</code>, plus location and workflow info). If you ever need extra values, the action's <strong>Custom Data</strong> section lets you add your own key/value pairs — add one now: key <code>source</code>, value <code>New Patient Inquiry form</code>. Save and re-publish.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t10"><span>Fire the first test: in n8n click <strong>Test workflow</strong> so the Webhook node is listening ("Waiting for trigger event"). Then open the form preview tab and submit it as <strong>Tessa Trial, tessa.trial@example.com, +1 555 0100</strong>. Within seconds the n8n canvas should light up with a received execution. If nothing arrives: check the GHL workflow is <strong>Published</strong>, the URL is the <em>test</em> URL, and re-press Test workflow (the test listener only waits a couple of minutes per click).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t11"><span>Open the Webhook node's OUTPUT and study the received item in JSON view. Find where the lead data lives — GHL's fields arrive in the <strong>body</strong> of the request, so expressions will look like <code>{{ $json.body.first_name }}</code>. Write down the exact paths for first name, last name, email, phone, and your custom <code>source</code> key.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t12"><span>Click the <strong>pin icon</strong> (📌) on the Webhook node's output to pin Tessa's payload. Now you can build and test the rest of the workflow all afternoon without re-submitting the form once.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Append to Google Sheets + instant Telegram alert</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d23-t13"><span>Add a <strong>Google Sheets</strong> node after the Webhook (click the <strong>+</strong> on its right edge → search <em>Google Sheets</em> → action <strong>Append row in sheet</strong>). For credentials: <strong>Create new credential</strong> → <strong>Sign in with Google</strong> → same OAuth consent flow as yesterday, this time approving Sheets/Drive scopes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t14"><span>Configure it: <strong>Document</strong> → From list → <strong>Summit Leads</strong>; <strong>Sheet</strong> → <strong>Leads</strong>. Under <strong>Mapping Column Mode</strong> keep <strong>Map Each Column Manually</strong> — your six headers appear as fields.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t15"><span>Map each column using expressions (switch each field to Expression mode, or drag from the input pane): <strong>Timestamp</strong> = <code>{{ $now.format('yyyy-MM-dd HH:mm') }}</code>, <strong>First Name</strong> = <code>{{ $json.body.first_name }}</code>, <strong>Last Name</strong> = <code>{{ $json.body.last_name }}</code>, <strong>Email</strong> = <code>{{ $json.body.email }}</code>, <strong>Phone</strong> = <code>{{ $json.body.phone }}</code>, <strong>Source</strong> = <code>{{ $json.body.source }}</code>. (Adjust paths to what you wrote down in task 11 — trust the pinned data, not this page.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t16"><span>Click <strong>Execute Node</strong> on the Google Sheets node (it runs against the pinned data), then open Summit Leads in Google Sheets and confirm Tessa Trial appeared as row 2 with all six cells filled. Fix any blank cell by correcting its expression path and re-executing.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t17"><span>Now the alert channel. Create a Telegram bot: in the Telegram app, search for <strong>@BotFather</strong> (verified account) → send <code>/newbot</code> → give it a display name (<em>Summit Alerts</em>) and a unique username ending in <em>bot</em> (e.g. <code>summit_alerts_yourname_bot</code>). BotFather replies with an <strong>HTTP API token</strong> like <code>7123456789:AAH…</code> — copy it somewhere safe.<em class="why">Prefer Slack or Discord? Both work with an incoming-webhook URL and n8n's Slack/Discord nodes — same idea, different room. Telegram is used here because it's free and takes 3 minutes.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t18"><span>Get your <strong>chat id</strong>: in Telegram, open a chat with your new bot (search its username) and press <strong>Start</strong>, then send it any message like "hi". Now visit <code>https://api.telegram.org/bot&lt;YOUR-TOKEN&gt;/getUpdates</code> in your browser (paste your real token after <code>bot</code>). In the JSON response find <code>"chat":{"id":123456789…}</code> — that number is your chat id. Note it down.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t19"><span>In n8n, add a <strong>Telegram</strong> node as a <em>second</em> branch off the Webhook node (click the Webhook node's right edge <strong>+</strong> again so Sheets and Telegram run in parallel) → action <strong>Send a text message</strong>. Create the credential: <strong>Create new credential</strong> → paste the bot token → Save. Set <strong>Chat ID</strong> to your number.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t20"><span>Write the alert text as an expression:<br><code>🦷 New Summit Dental lead!{{ '\n' }}Name: {{ $json.body.first_name }} {{ $json.body.last_name }}{{ '\n' }}Email: {{ $json.body.email }}{{ '\n' }}Phone: {{ $json.body.phone }}{{ '\n' }}Source: {{ $json.body.source }}</code><br>Click <strong>Execute Node</strong> and confirm the message lands in your Telegram with Tessa's details, nicely line-broken.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Production cutover, end-to-end tests, and packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A workflow that only works on the test URL is a demo, not a system. Cut over to production and prove it twice.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d23-t21"><span>Cutover: <strong>unpin</strong> the Webhook node's data (click the pin icon again), <strong>Save</strong> the n8n workflow, and toggle it <strong>Active</strong>. Copy the <strong>Production URL</strong> from the Webhook node. In GHL, open the <strong>Lead → n8n</strong> workflow → click the Webhook action → replace the test URL with the production URL → <strong>Save Action</strong> → <strong>Save</strong> → re-<strong>Publish</strong>.<em class="why">Forgetting this swap is the classic failure: everything "worked yesterday" because the test URL was listening, then silently dies. Check the URL contains <code>/webhook/</code>, not <code>/webhook-test/</code>.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t22"><span>End-to-end test #1: submit the form as <strong>Peter Prodtest, peter.prod@example.com, +1 555 0101</strong>. Nothing animates in the n8n editor (production runs never do) — instead verify all three artifacts: a new row in Summit Leads, a Telegram alert, and a successful execution in n8n <strong>Overview → Executions</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t23"><span>End-to-end test #2: submit with a different name and leave the <strong>phone field empty</strong>. Check the execution: did the Sheets row still write with a blank Phone cell, and did Telegram still send? Journal one sentence on how missing fields behaved — you just did your first edge-case test.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t24"><span>Deliberately study failure: open one execution in the <strong>Executions</strong> list and note the status column (Success/Error), the run time, and how you can click any node to see its exact input/output for that run. Journal: "If a client says a lead didn't log, my first stop is ___."</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t25"><span>Export and shoot: workflow menu <strong>•••</strong> → <strong>Download</strong> → save as <code>lead-logger-alerts.json</code> in <code>GHL Portfolio/n8n-exports</code>. Screenshots into <code>GHL Portfolio/screenshots</code>: <code>day23-n8n-canvas.png</code> (full workflow, green run), <code>day23-sheet.png</code> (Summit Leads with test rows), <code>day23-telegram.png</code> (the alert), <code>day23-ghl-workflow.png</code> (the GHL workflow with the Webhook action open).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d23-t26"><span>Record a 2–3 minute Loom: start on your architecture drawing, then submit the form live and show the row + alert appearing, then walk the n8n canvas node by node. Save the link in <code>GHL Portfolio/videos</code>.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #10: Lead Logger &amp; Instant Alerts</h2>
+    <p>This is your first cross-platform integration: a GHL form firing a GHL workflow webhook into n8n, fanning out to Google Sheets and Telegram, running on the <strong>production</strong> URL with verified executions. Once the JSON export, four screenshots, and Loom are in your <strong>GHL Portfolio</strong> folder, go to the home page and tick <strong>Portfolio #10</strong> on the tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A live, activated <strong>Lead Logger &amp; Alerts</strong> pipeline: form submission → GHL workflow → n8n production webhook → Summit Leads row + Telegram alert, proven by two end-to-end tests visible in the n8n Executions list — plus <code>lead-logger-alerts.json</code>, the architecture drawing, four screenshots, and the Loom walkthrough.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Three traps today: (1) the GHL Webhook action must be <strong>POST</strong> — a GET sends no body and n8n receives an empty item; (2) the n8n test listener stops after a couple of minutes — press <strong>Test workflow</strong> again right before each form submission; (3) after any change to the GHL workflow you must <strong>Save and re-Publish</strong>, or it keeps running the old version.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL workflow Webhook action: search <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> for <em>"Workflow Action — Webhook"</em>.</li>
+      <li>n8n Google Sheets node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.googlesheets/" target="_blank" rel="noopener">docs.n8n.io — Google Sheets</a>.</li>
+      <li>n8n Telegram node + credential setup: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.telegram/" target="_blank" rel="noopener">docs.n8n.io — Telegram</a>.</li>
+      <li>Telegram bot basics (BotFather): <a href="https://core.telegram.org/bots/features#creating-a-new-bot" target="_blank" rel="noopener">core.telegram.org — creating a new bot</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-22.html">← Day 22: n8n Setup &amp; First Workflow</a>
+  <a href="day-24.html">Day 24: GHL API 2.0 in n8n →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 10 — Portfolio #3: Booking Funnel | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="10">
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 2 · Funnels, Websites &amp; Payments</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 10</span>Portfolio #3: Booking Funnel</h1>
+    <p class="day-goal">By tonight you will have a 3-step booking funnel — landing page → live calendar → confirmation page — with a real "Free Intro Session" calendar behind it, and a test appointment you booked end-to-end sitting in Ironworks' calendar. Booking funnels are the #2 most-requested client build after lead-gen funnels.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Build the "Free Intro Session" calendar</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You configured calendars for Summit Dental on Day 5 — today you do it faster and cleaner for Ironworks. The calendar must exist before the funnel, because the funnel's middle step embeds it.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d10-t01"><span>In the <strong>Ironworks Fitness</strong> sub-account, click <strong>Calendars</strong> in the left sidebar → open the <strong>Calendar Settings</strong> tab (in some versions this lives under <strong>Settings → Calendars</strong>) → click <strong>+ Create Calendar</strong> → choose the simple one-host type (<strong>Simple Calendar</strong> / "Personal Booking"; ignore Round Robin and Class Booking today).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t02"><span>Name it <strong>Free Intro Session</strong>, set the URL slug to <code>free-intro-session</code>, description: <strong>"30 minutes with an Ironworks coach: gym tour, goal chat, and your starter plan. Free, no pressure."</strong> Set <strong>Meeting Duration</strong> to <strong>30 minutes</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t03"><span>Open the calendar's <strong>Availability</strong> settings and set office hours <strong>Monday–Saturday, 8:00 AM – 6:00 PM</strong> (Sunday off). Set the <strong>slot interval</strong> to 30 minutes and add a <strong>15-minute buffer</strong> after each appointment if the option is shown.<em class="why">Buffers stop back-to-back intro sessions from colliding with real gym-floor duties — mention this thinking in your Loom.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t04"><span>Check two more settings while you're in there: <strong>Minimum scheduling notice</strong> (set to 4 hours — nobody should book a session starting in 10 minutes) and <strong>Date range / booking window</strong> (set to 30 days out). Click <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t05"><span>Confirm the calendar's form asks for <strong>Name, Email, Phone</strong> (the default booking form does). Then open the calendar's share/preview option (the <strong>⋮ or Share</strong> icon next to the calendar in the list) → copy the <strong>scheduling link</strong> → open it in a new tab and confirm you see live time slots. Keep this tab open.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build the 3-step funnel</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Structure: <strong>Step 1</strong> sells the free session (yes, free things still need selling), <strong>Step 2</strong> is nothing but the calendar, <strong>Step 3</strong> confirms and prepares them so they actually show up.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d10-t06"><span><strong>Sites → Funnels → + New Funnel</strong> → From Blank → name it <strong>Ironworks — Free Intro Session</strong>. Create three steps with <strong>+ Add New Step</strong>: <strong>Landing</strong> (path <code>/free-session</code>), <strong>Book</strong> (path <code>/book</code>), <strong>Confirmed</strong> (path <code>/confirmed</code>) — blank templates for all three.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t07"><span>Open <strong>Landing</strong> in the editor and build the hero (your Day-8 muscle memory): dark gym photo + overlay, headline <strong>"Your First Session Is On Us"</strong>, sub-headline <strong>"30 minutes with a coach. A tour, a plan, and zero sales pitch. Leave knowing exactly what to do on day one."</strong>, button <strong>Pick My Time →</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t08"><span>Add a white section below with a 3-column row — "What you'll get" cards, each an icon-ish headline + one line: <strong>🏋️ Gym Tour</strong> <em>"Every machine, zone, and unwritten rule."</em> / <strong>🎯 Goal Session</strong> <em>"Tell us where you want to be in 90 days."</em> / <strong>📋 Starter Plan</strong> <em>"Walk out with your first 2 weeks written down."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t09"><span>Add a short objection-killer section: headline <strong>"No contract. No card. No awkward hard-sell."</strong> + one paragraph: <strong>"The intro session is genuinely free. If you love it, we'll tell you about the 21-Day Kickstart Challenge ($21). If not, you keep the plan and we part as friends."</strong> Then a second <strong>Pick My Time →</strong> button.<em class="why">Repeating the CTA after handling objections is standard conversion practice — one button per screenful.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t10"><span>Wire both buttons: click each button → <strong>Actions / Button Action</strong> → choose <strong>Go to Next Step</strong> (if your version only offers URL, paste the Book step's URL). Check mobile view, then <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t11"><span>Open <strong>Book</strong> in the editor. Keep it minimal: a slim top section with headline <strong>"Pick a time that works — takes 30 seconds"</strong>, then add the <strong>Calendar</strong> element (find it in the Add Element panel; drag it into a 1-column row).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t12"><span>Click the calendar element → in its settings panel choose <strong>Free Intro Session</strong> from the calendar dropdown. The live widget with real time slots should render in the editor. Check mobile view — the calendar widget is the element most likely to overflow on phones; give its section little/no side padding. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t13"><span>Open <strong>Confirmed</strong> in the editor and build: headline <strong>"You're Booked! 🎉"</strong>, sub-headline <strong>"We just emailed your confirmation. Here's how to make the most of it:"</strong>, then a bullet block: <em>• Add it to your calendar now (the confirmation email has an Add-to-Calendar link — tap it). • Wear anything comfortable; bring water and closed-toe shoes. • Arrive 5 minutes early and ask for your coach at the front desk. • Need to change the time? Use the reschedule link in the same email — no phone call needed.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t14"><span>Add a final quiet section: <strong>"Questions before your session? Text us at (555) 015-8814 or reply to the confirmation email."</strong> Check mobile, <strong>Save</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Connect the steps &amp; test end-to-end</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">The booking widget doesn't automatically know about your Confirmed page — you have to point the calendar at it. Then you prove the whole chain works by booking like a stranger.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d10-t15"><span>Copy the <strong>Confirmed</strong> step's full URL from the funnel view (click the step, copy its preview URL). Then go to <strong>Calendars → Calendar Settings</strong> → open <strong>Free Intro Session</strong> → find the post-booking behavior — in current versions it's under the <strong>Confirmation</strong> (or "Forms &amp; Payment") section: choose <strong>Redirect to custom URL</strong> (instead of the default thank-you message) and paste the Confirmed step's URL. <strong>Save</strong>. The label varies by version; the setting you want always reads like "after booking, where does the visitor go?"</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t16"><span>Dry-run the click path in a normal tab first: Landing → button → Book → confirm the calendar loads. Fix any button that dead-ends before doing the real test.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t17"><span><strong>Full end-to-end test</strong> in an incognito window: open the Landing preview URL → click <strong>Pick My Time →</strong> → choose tomorrow's earliest slot → fill the booking form as <strong>Bella Booker</strong>, <code>you+bella@gmail.com</code>, valid-format phone → submit → confirm you land on the <strong>Confirmed</strong> page.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t18"><span>Verify in three places: (1) <strong>Calendars → Appointments</strong> (or the calendar view) shows Bella's booking at the right time; (2) <strong>Contacts</strong> has a new record for Bella Booker; (3) open Bella's contact record → the <strong>Appointments</strong> area on the record shows the session.<em class="why">One booking writes to three places — being able to trace it is what "knowing GHL" actually means.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t19"><span>Close yesterday's loop: open Day 9's funnel → <strong>Thank You</strong> page in the editor → select the <strong>Book My Free Session</strong> button → set its action to <strong>Go to website URL</strong> → paste today's <strong>Landing</strong> step URL. Save. Your two funnels are now chained: guide download → session booking.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Package Portfolio #3</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d10-t20"><span>Screenshots to <code>GHL Portfolio/screenshots</code>: <code>day10-landing-desktop.png</code>, <code>day10-landing-mobile.png</code>, <code>day10-calendar-step.png</code> (with live slots visible), <code>day10-confirmed.png</code>, and <code>day10-appointment-in-calendar.png</code> (the booked appointment inside GHL's calendar view).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t21"><span>Record a 2–3 minute <strong>Loom</strong>: walk the funnel as a visitor, book a second test slot live (<strong>Danny Demo</strong>, <code>you+danny@gmail.com</code>), then flip into GHL and show the appointment and contact record appearing. One closing sentence: "Next I'd automate the reminders — that's a workflow build." Save to <code>GHL Portfolio/videos</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t22"><span>Case-study paragraph in <code>GHL Portfolio/case-studies</code>: what the gym needed (show-ups, not just leads), what you built (3-step booking funnel + configured calendar with buffers and minimum notice), and proof (end-to-end test bookings verified in the calendar and CRM).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d10-t23"><span>Journal entry for Day 10, plus this from memory: where do you change what happens after someone books? (Calendar settings → confirmation/redirect — NOT the funnel.) Then tick <strong>Portfolio #3</strong> on the home page.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #3: Booking Funnel</h2>
+    <p>A 3-step booking funnel wired to a real 30-minute calendar with Mon–Sat availability, tested end-to-end with appointments visible in GHL — plus 5 screenshots, a Loom, and a case study. Go to the home page and tick <strong>Portfolio #3</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The <strong>Ironworks — Free Intro Session</strong> funnel live and chained to Day 9's thank-you page, the <strong>Free Intro Session</strong> calendar configured (30 min, Mon–Sat, buffer + minimum notice), two test appointments in the calendar, 5 screenshots, 1 Loom, 1 case study, and a Day 10 journal entry.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Free offers still need persuasion. "Free" answers <em>price</em>, not <em>fear</em> — the landing page's real job is killing "will they pressure me?", "will I look stupid?", "is this a sales trap?". That's why your objection section exists. Reuse that insight for every service business you ever build for.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Calendar element"</em> and <em>"Calendar confirmation redirect"</em>.</li>
+      <li>Loom: <a href="https://www.loom.com" target="_blank" rel="noopener">loom.com</a>.</li>
+      <li>Free photos: <a href="https://unsplash.com" target="_blank" rel="noopener">unsplash.com</a> — search "personal trainer", "gym coach".</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-09.html">← Day 9: Portfolio #2: Lead-Gen Funnel</a>
+  <a href="day-11.html">Day 11: Websites, Blogs &amp; Domains →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

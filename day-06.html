@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 — Forms &amp; Surveys | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="6">
+
+<header class="day-header week-1">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 1 · Foundations &amp; CRM</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 6</span>Forms &amp; Surveys</h1>
+    <p class="day-goal">By tonight Summit Dental will have a styled "New Patient Inquiry" form whose fields map straight into your Day 2 custom fields, a 5-question satisfaction survey with a conditional-logic jump, and half a dozen test submissions proving that data lands exactly where it should — on the contact record.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Build the "New Patient Inquiry" form</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Forms are how strangers become contacts. The single most important idea today: every form field should be <strong>mapped</strong> to a contact field (standard or custom). Mapped fields write into the contact record automatically; unmapped junk fields create data that goes nowhere.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d06-t01"><span>In <strong>Summit Dental</strong>, go to <strong>Sites</strong> in the left sidebar → click the <strong>Forms</strong> tab across the top → <strong>Builder</strong> → click <strong>+ Add Form</strong> (may read <strong>+ New Form</strong>) → choose <strong>Start from scratch / Blank</strong>. The form builder opens: canvas in the middle, a <strong>Fields / elements panel</strong> on one side, and a <strong>Styles</strong> tab.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t02"><span>Name the form first: click the form name at the top (something like "Form 1") and rename it to <strong>New Patient Inquiry</strong>. Unsaved names cause confusion later — do this before anything else.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t03"><span>Add the standard fields by dragging from the fields panel onto the canvas (they're under a group like <strong>Quick Add</strong> or "Contact fields"): <strong>First Name</strong>, <strong>Last Name</strong>, <strong>Email</strong>, <strong>Phone</strong>. These are pre-mapped to the standard contact fields — nothing to configure. Click each one on the canvas and tick <strong>Required</strong> in its settings panel (at minimum for First Name, Email, Phone).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t04"><span>Now the custom-field magic: in the fields panel find the <strong>Custom Fields</strong> group — your Day 2 fields (<strong>Insurance Provider</strong>, <strong>Patient Type</strong>, <strong>Last Visit Date</strong>) are sitting there as draggable elements. Drag <strong>Insurance Provider</strong> onto the form. It arrives as a dropdown ALREADY populated with Delta Dental / Cigna / MetLife / Aetna / Self-Pay — because the options live on the field, not the form.<em class="why">This is field mapping in action: submit the form, and the value writes straight into the contact's Insurance Provider field — no zap, no manual copying. Automation-readiness starts here.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t05"><span>Add a message box: drag a <strong>Multi-line / Text Area</strong> element (if a pre-mapped "Message" custom field group item isn't available, use the generic multi-line text element) → label it <strong>What can we help you with?</strong> → leave it optional.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t06"><span>Add a heading: drag an <strong>HTML / Text</strong> element (under "Layout" or "Custom" elements) to the very top → type <strong>Request an appointment at Summit Dental</strong> and a one-line subtext "We'll get back to you within one business day." Then click the <strong>submit button</strong> on the canvas and change its text from "Submit" to <strong>Request Appointment</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t07"><span>Styling basics: open the <strong>Styles</strong> tab of the builder. Set: form width ~<strong>500px</strong>, background <strong>white</strong>, field corner radius ~<strong>6px</strong>, and button color to a dental-clinic teal or blue (try <code>#0e7c86</code>). Don't gold-plate — 15 minutes max. The lesson is where the knobs are, not pixel-perfection.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t08"><span>Click <strong>Save</strong> (top-right of the builder). Then use the <strong>preview icon (eye)</strong> or the <strong>Integrate → Link</strong> option to open the live form in a new tab and eyeball it. Fix anything glaring, re-save.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — On-submit behavior, submissions &amp; sticky contacts</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d06-t09"><span>In the form builder, open the form's <strong>Options / Settings</strong> tab (a gear or "Options" tab near Styles). Find <strong>On Submit</strong>: two choices — show a <strong>thank-you message</strong> or <strong>redirect to a URL</strong>. Set the message option with: "Thanks, {{contact.first_name}}! Summit Dental will call you within one business day." (If the message box doesn't support merge fields in your version, plain text is fine — note which you got.) Journal one line on when you'd redirect instead: to a thank-you funnel page with tracking, which you'll build in Week 2.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t10"><span>Still in Options, find the <strong>Sticky Contact</strong> toggle and turn it ON. What it does: pre-fills the form with previously-entered info for returning visitors (stored in their browser). One journal line: great for multi-form funnels, but on shared/public computers it can leak the previous person's details — know both halves.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t11"><span>Test-submit round 1: open the form's public link in an <strong>incognito window</strong> and submit as a NEW fake patient: <strong>Carla Reyes</strong>, <code>carla.reyes.demo@example.com</code>, <code>+1 555 010 0031</code>, Insurance Provider = <strong>Aetna</strong>, message "Cracked a tooth, need an appointment this week." Confirm your thank-you message displays.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t12"><span>Trace the submission, three places: (1) <strong>Sites → Forms → Submissions</strong> — pick <strong>New Patient Inquiry</strong> from the form dropdown and see Carla's row with every answer; (2) <strong>Contacts</strong> — Carla now exists as a contact; open her record and verify <strong>Insurance Provider = Aetna</strong> sits in the actual custom field in the left panel (this is mapping, proven); (3) her <strong>Activity</strong> stream on the record shows a form-submission event.<em class="why">When a client says "a lead came in but I can't find their answers", these three places are your debugging route.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t13"><span>Test-submit round 2 — the update path: submit the form again in the same incognito tab (notice sticky contact pre-filled it) using Carla's SAME email but change Insurance Provider to <strong>Cigna</strong>. Then check her contact record: still ONE Carla (dedup by email), field now reads Cigna. Journal: forms update existing contacts, they don't duplicate — because of Day 2's deduplication settings.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t14"><span>Test-submit round 3: one more brand-new fake patient of your own invention (keep the <code>@example.com</code> / <code>+1555010XXXX</code> pattern). You now have submission volume for tomorrow's review.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Build the "Patient Satisfaction Survey" with conditional logic</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Surveys are multi-step forms with slides and <strong>conditional logic</strong> — the answer to one question decides which question comes next. That's the mechanism behind lead-qualification quizzes, one of the most requested builds in agency work.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d06-t15"><span>Go to <strong>Sites → Surveys → Builder</strong> → <strong>+ Add Survey</strong> → <strong>Start from scratch</strong> → rename it <strong>Patient Satisfaction Survey</strong>. Notice the builder looks like the form builder but with <strong>slides</strong> (pages) listed across the top or side — one question-group per slide is the clean pattern.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t16"><span>Build 5 questions across slides:<br>
+      <strong>Slide 1</strong>: Email field (so the survey attaches to the right contact) + Q1 — <strong>Radio</strong>: "How was your visit overall?" options <code>Great</code> / <code>Okay</code> / <code>Poor</code>.<br>
+      <strong>Slide 2</strong>: Q2 — <strong>Radio</strong>: "Would you recommend Summit Dental to a friend?" options <code>Yes</code> / <code>No</code>.<br>
+      <strong>Slide 3</strong>: Q3 — <strong>Single-line text</strong>: "What did we do well?"<br>
+      <strong>Slide 4</strong>: Q4 — <strong>Multi-line text</strong>: "What should we improve?"<br>
+      <strong>Slide 5</strong>: Q5 — <strong>Dropdown</strong>: "How did you first hear about us?" options <code>Google</code> / <code>Friend</code> / <code>Insurance directory</code> / <code>Other</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t17"><span>Add the conditional jump: click Q1 (the "How was your visit?" radio) → in its settings panel find <strong>Logic / Conditional Logic</strong> (in survey builders this may live on the slide or the field — look for an "if answer is…" rule builder) → create the rule: <strong>IF "How was your visit overall?" = Poor → jump to Slide 4</strong> ("What should we improve?"), skipping the recommend/praise questions. Everyone else continues to Slide 2 normally.<em class="why">This is the exact skeleton of review-gating you'll automate on Day 19: happy patients → ask for referral/review; unhappy → capture the complaint privately.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t18"><span>In the survey's <strong>Options</strong>, set the on-submit thank-you message ("Thank you — your feedback goes straight to Dr. Summit.") and <strong>Save</strong> the survey.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t19"><span>Test the logic BOTH ways in incognito: run 1 — answer Q1 = <strong>Great</strong> and confirm you see all five questions in order; run 2 — answer Q1 = <strong>Poor</strong> and confirm it jumps straight to "What should we improve?". Use existing fake-patient emails (e.g. Maria's and Carla's) so results attach to their records. A third run with any answers for volume.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t20"><span>Check results: <strong>Sites → Surveys → Submissions</strong> → pick your survey → open a submission and see per-question answers. Then open Maria's contact record and find the survey submission in her activity. Journal one line: surveys attach to contacts by the email captured on slide 1.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Embed options + wrap-up</h2>
+    <p class="session-time">≈ 0.5–1 hour</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d06-t21"><span>Open the form builder for New Patient Inquiry → click <strong>Integrate</strong> (may be a "&lt;/&gt;" or share icon, top bar). Study the options: <strong>Link</strong> (hosted standalone page — good for SMS/email/QR), <strong>Embed / iframe code</strong> (paste into any website), and layout variants (inline vs popup/sticky if offered). Copy the iframe code into your journal and label each option with its use case in one line. Note for Week 2: inside GHL funnels you won't use the iframe — the page builder has a native form element that drops this form in directly.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t22"><span>Screenshots for the portfolio folder: (a) the styled New Patient Inquiry form as visitors see it → <code>day06-form.png</code>; (b) Carla's contact record showing the mapped Insurance Provider value → <code>day06-mapping.png</code>; (c) the survey builder showing your conditional-logic rule on Q1 → <code>day06-survey-logic.png</code>. All into <code>GHL Portfolio/screenshots</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d06-t23"><span>Journal entry for Day 6: (a) what "mapped to a custom field" means in one sentence; (b) the three places a submission shows up; (c) thank-you message vs redirect — when each; (d) how the Poor-answer jump will become Day 19's review-gating. Tomorrow is your first portfolio day — get sleep.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A live, styled <strong>New Patient Inquiry</strong> form with every field mapped (Insurance Provider proven writing into the contact record), sticky contact on, thank-you message configured, and 3 test submissions — plus a 5-question <strong>Patient Satisfaction Survey</strong> whose "Poor" answer conditionally jumps to the improvement question, tested down both branches — with three screenshots and a Day 6 journal entry.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Before building any client form, list the questions in a doc and decide the mapping FIRST: which standard field, which existing custom field, or which NEW custom field each answer needs. Fields you create before building the form appear ready-to-drag in the builder. Form-first builders end up with orphaned, unmapped data — mapping-first builders look like pros.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>A generic "Dropdown" element dragged from the standard elements panel is NOT the same as dragging your <strong>Insurance Provider</strong> custom field from the Custom Fields group. The generic one stores its answer only in the submission; the custom-field one writes to the contact record. If your mapping test in Session 2 had failed, this mix-up would be the first thing to check.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Form Builder"</em> and <em>"Survey Builder"</em>.</li>
+      <li>Also search the Help Center for <em>"conditional logic surveys"</em> and <em>"Sticky contact"</em>.</li>
+      <li>GHL University: <a href="https://university.gohighlevel.com" target="_blank" rel="noopener">university.gohighlevel.com</a> — the Forms &amp; Surveys module.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-05.html">← Day 5: Calendars &amp; Online Booking</a>
+  <a href="day-07.html">Day 7: Week 1 Review + Portfolio #1: Complete CRM Setup →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 17 — Portfolio #6: Appointment Lifecycle Automation | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="17">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 17</span>Portfolio #6: Appointment Lifecycle Automation</h1>
+    <p class="day-goal">By tonight, every appointment on Summit Dental's "New Patient Consult" calendar will manage itself: instant confirmation, perfectly-timed reminders anchored to the appointment time, automatic no-show recovery, and a post-visit thank-you. Three coordinated workflows, all tested by manually driving appointment statuses — Portfolio #6.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Map the appointment lifecycle</h2>
+    <p class="session-time">≈ 45 minutes</p>
+    <p class="session-intro">For a clinic, no-shows are pure lost revenue — the chair sits empty either way. The fix is a message system anchored to the <strong>appointment's status and start time</strong>, not to when the contact enrolled. GHL models this with the <strong>Appointment Status</strong> trigger and the special <strong>Wait → until an event/appointment time</strong> option.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d17-t01"><span>Draw the lifecycle in your notes as a timeline: <strong>Booked/Confirmed</strong> → instant confirmation → <strong>24 h before</strong> reminder → <strong>1 h before</strong> final reminder → appointment happens → path A <strong>Showed</strong> → thank-you (+ review ask, wired up on Day 19) / path B <strong>No-Show</strong> → apology + rebook link → 2 days later second nudge. Label which workflow owns each arrow: A = Confirmations &amp; Reminders, B = No-Show Recovery, C = Post-Visit.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t02"><span>Learn the status vocabulary — in Summit Dental open <strong>Calendars → Appointments</strong> (or the Appointments list view), click any appointment (or remember from Day 5) and list the possible statuses in your notes: <strong>New/Unconfirmed, Confirmed, Showed, No-Show, Cancelled</strong>. Each status change is a trigger-able event.<em class="why">The three workflows you build today are literally one-per-status-group. Knowing the statuses IS knowing the design.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t03"><span>Verify the calendar: <strong>Calendars → Calendar Settings</strong> → confirm <strong>New Patient Consult</strong> from Day 5 exists and is active, and note whether its settings auto-confirm new bookings (look for a confirmation option in the calendar's Forms &amp; Payment / Confirmation settings). If new bookings land as <strong>Confirmed</strong> automatically, your trigger today will use status <strong>Confirmed</strong>; if they land as New/Unconfirmed, you'd trigger on <strong>Booked</strong> in real life — note which applies to your account.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Workflow A: "Appointment Confirmations &amp; Reminders"</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The heart of today. Key new skill: the <strong>Wait</strong> action's "until appointment time" mode, which parks the contact until a moment relative to their booking — so reminders fire at exactly 24 h and 1 h before, no matter when they booked.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d17-t04"><span>In Summit Dental: <strong>Automation</strong> → open the <strong>Client Systems</strong> folder → <strong>+ Create Workflow</strong> → <strong>Start from Scratch</strong> → rename to <strong>"Appointment Confirmations &amp; Reminders"</strong> → Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t05"><span>Trigger: <strong>Add New Trigger</strong> → <strong>Appointment Status</strong> (listed under Appointments; some UIs call it "Customer Booked Appointment" + a separate status trigger — use the one that lets you filter by status) → <strong>+ Add filters</strong> → filter 1: <strong>Appointment status is Confirmed</strong> → filter 2: <strong>In calendar → New Patient Consult</strong> → name it "Consult confirmed" → <strong>Save Trigger</strong>.<em class="why">The calendar filter matters: a real account has many calendars, and staff-meeting bookings must not get patient reminders.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t06"><span>Action 1 — instant confirmation email: <strong>+</strong> → <strong>Send Email</strong> → Subject: <code>You're booked, {{contact.first_name}}! {{appointment.start_time}}</code> → Body: confirm the appointment using the appointment merge-field group from the picker — include <code>{{appointment.start_time}}</code>, the calendar name, and add address + "reply to reschedule". Browse the <strong>Appointment</strong> section of the merge-field picker and note in your journal 3 more fields it offers (e.g. end time, cancellation/reschedule links if present). <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t07"><span>Action 2 — the anchored wait: <strong>+</strong> → <strong>Wait</strong> → change <strong>Wait Type</strong> from "Time Delay" to the <strong>Event / Appointment Time</strong> option → configure: <strong>24 hours BEFORE the appointment start time</strong>. Read every dropdown in this panel carefully — before/after, amount, unit — this action is the #1 thing people fumble in test tasks. <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t08"><span>Important edge case — write it down: if someone books LESS than 24 h before their slot, a "wait until 24 h before" step is already in the past. Check the Wait panel for how it handles this (an option like "skip / continue immediately if time has passed" or an advanced setting). Note in your journal what your version does — an interviewer-grade detail.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t09"><span>Action 3 — 24 h reminder: <strong>+</strong> → <strong>Send Email</strong> → Subject: <code>See you tomorrow at {{appointment.start_time}}, {{contact.first_name}}</code> → short body with time, address, parking note, "reply CHANGE to reschedule". Then <strong>+</strong> → <strong>Send SMS</strong> with a 1–2 sentence version of the same (A2P caveat applies — build it anyway). <strong>Save</strong> both.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t10"><span>Action 5 — second anchored wait: <strong>+</strong> → <strong>Wait</strong> → Event/Appointment Time → <strong>1 hour BEFORE start</strong> → Save. Action 6 — final reminder: <strong>+</strong> → <strong>Send SMS</strong>: <code>{{contact.first_name}}, we're ready for you at Summit Dental in about an hour. See you soon!</code> plus a matching short email if you want belt-and-braces. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t11"><span>Settings tab: <strong>Allow Re-Entry ON</strong> (patients book more than once — mandatory here) → <strong>Stop on Response OFF</strong> (a reply like "thanks!" must NOT cancel the 1 h reminder) → time window: leave open, because anchored reminders should fire when scheduled. <strong>Save</strong> → toggle <strong>Publish</strong> → Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t12"><span>One design question for your journal (real interview material): what should happen if the appointment is <strong>cancelled or rescheduled</strong> mid-sequence? Write your answer, then read the Wait/appointment docs note: GHL re-evaluates appointment-anchored waits when the appointment moves, and a cancel-status workflow (or Goal — you meet Goals tomorrow) handles exits. You'll harden this on Day 18.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Workflow B: "No-Show Recovery" + Workflow C: "Post-Visit"</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Two shorter builds. B chases the money the clinic almost lost; C banks the goodwill (and sets up Day 19's review machine).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d17-t13"><span>Workflow B: in <strong>Client Systems</strong> → <strong>+ Create Workflow</strong> → Start from Scratch → rename <strong>"No-Show Recovery"</strong>. Trigger: <strong>Appointment Status</strong> → filters: status is <strong>No-Show</strong> + calendar is <strong>New Patient Consult</strong> → Save Trigger.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t14"><span>Action 1 — the apologetic rebook email (tone matters — write it like a human): <strong>Send Email</strong>, subject <code>We missed you today, {{contact.first_name}}</code>, body: no guilt-tripping, "life happens", one-click rebook via the <strong>New Patient Consult booking link</strong>, offer to call. Add a matching gentle <strong>SMS</strong>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t15"><span>Action 3 — <strong>Wait</strong> → Time Delay → <strong>2 days</strong> → Save. Action 4 — second nudge <strong>Send Email</strong>: subject <code>Should we hold your spot?</code>, shorter, booking link again. Action 5 — <strong>Add Contact Tag</strong> → <strong>no-show-recovery</strong>. Save all.<em class="why">The tag lets the front desk build a Smart List of every chased no-show — automation you can report on is automation clients renew.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t16"><span>Settings for B: <strong>Allow Re-Entry ON</strong>, and this time <strong>Stop on Response ON</strong> — if they reply "so sorry, can I come Tuesday?", a human takes over and the day-2 nudge must NOT send. Contrast this with Workflow A's OFF setting in your journal — same switch, opposite correct answer. <strong>Publish + Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t17"><span>Workflow C: <strong>+ Create Workflow</strong> → Start from Scratch → rename <strong>"Post-Visit Thank You"</strong>. Trigger: <strong>Appointment Status</strong> → status is <strong>Showed</strong> + calendar <strong>New Patient Consult</strong> → Save Trigger.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t18"><span>Actions for C: <strong>Wait</strong> Time Delay <strong>2 hours</strong> (thanking someone 4 seconds after they leave feels robotic) → <strong>Send Email</strong>: warm thank-you, what happens next, "questions? just reply" → <strong>Add Contact Tag</strong> → <strong>visit-complete</strong>. Save.<em class="why">On Day 19, the review-request workflow triggers off exactly this moment — you're leaving a hook for future-you.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t19"><span>Settings for C: Re-Entry ON, Stop on Response ON, sending window <strong>8:00–20:00</strong> (a thank-you can wait until morning; a reminder can't — note the reasoning). <strong>Publish + Save</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Drive the lifecycle end to end + package Portfolio #6</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You'll test by doing what a front-desk person does all day: booking an appointment and manually changing its status. Manual status changes fire the same triggers as real life — this is the standard way pros test appointment automations.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d17-t20"><span>Book a test appointment: open the <strong>New Patient Consult</strong> booking link in an incognito window → book as <strong>Testy McTestface</strong> (same email alias as Day 15, your phone) → pick a slot <strong>2–3 days out</strong> (so the 24 h wait genuinely waits). If the booking lands as Unconfirmed, open it in <strong>Calendars → Appointments</strong> and set status to <strong>Confirmed</strong> manually.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t21"><span>Verify Workflow A started: open <strong>"Appointment Confirmations &amp; Reminders"</strong> → <strong>Enrollment History</strong>: Testy enrolled. → <strong>Execution Logs</strong>: confirmation email sent ✓, and the run is now <strong>waiting</strong> at the 24 h anchor. Check your inbox for the confirmation with the real date/time merged in — if you see raw <code>{{appointment.start_time}}</code> text, your merge field is wrong; fix and re-test.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t22"><span>Now force the reminder timing WITHOUT waiting a day: open the appointment in the calendar and <strong>reschedule it to ~90 minutes from now</strong>. GHL recalculates appointment-anchored waits; within a few minutes the 24 h step should evaluate as already-passed (per your t08 note) and the 24 h reminder should send, then it parks at the 1 h wait. Watch <strong>Execution Logs</strong> refresh. If nothing moves after ~10 minutes, note it — some versions only re-anchor forward — and instead book a fresh appointment 65 minutes out to verify the 1 h reminder path.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t23"><span>Test Workflow B: in <strong>Calendars → Appointments</strong> set the test appointment's status to <strong>No-Show</strong>. Check "No-Show Recovery" Enrollment History + Execution Logs: apology email sent ✓, now waiting 2 days. Confirm the email arrived. (Don't wait 2 days — the log proving it's parked at the Wait step is your evidence; note that the day-2 nudge is scheduled.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t24"><span>Test Workflow C: book one more quick appointment for Testy (any slot), then set its status to <strong>Showed</strong>. Verify in "Post-Visit Thank You" logs: enrolled → waiting 2 h (or sent, if you're patient) → and afterwards the <strong>visit-complete</strong> tag lands on Testy. Also confirm the no-show run and the showed run are separate enrollments (Re-Entry ON at work).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t25"><span>Evidence: screenshots into <code>GHL Portfolio/screenshots</code> — <code>day17-reminders-canvas.png</code> (Workflow A full canvas), <code>day17-noshow-canvas.png</code>, <code>day17-postvisit-canvas.png</code>, <code>day17-execution-logs.png</code> (Workflow A's log showing the anchored waits). Record a 3–5 minute <strong>Loom</strong>: walk the lifecycle map, show all three canvases, show the logs, and explain the two Wait types (delay vs appointment-anchored) and why Stop-on-Response differs between A and B. Save to <code>GHL Portfolio/videos</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d17-t26"><span>Journal entry: the three workflows with trigger + purpose each, what the appointment-anchored Wait does, your t08 edge-case finding, and one improvement idea (e.g. a Cancelled-status workflow). Tick <strong>Portfolio #6</strong> on the home-page tracker.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #6: Appointment Lifecycle Automation</h2>
+    <p>Three published, log-verified workflows that take a patient from booked → reminded → showed/no-show → followed-up with zero staff effort. This is the #2 most-sold GHL system after speed-to-lead, and you can now explain appointment-anchored waits — a genuine differentiator in interviews. Go to the home page and tick <strong>Portfolio #6</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p><strong>"Appointment Confirmations &amp; Reminders"</strong>, <strong>"No-Show Recovery"</strong>, and <strong>"Post-Visit Thank You"</strong> — all published in Client Systems, all tested by driving real appointment statuses, with four screenshots (<code>day17-*.png</code>), a Loom walkthrough, and a journal entry covering the anchored-wait edge case.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>When a hiring manager gives you a test task, it is very often "build an appointment reminder sequence." The two things they check: did you anchor the waits to the <strong>appointment time</strong> (not fixed delays), and did you filter the trigger to <strong>one calendar</strong>. You did both today — say so, in those words, when you present it.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — appointment status trigger: <a href="https://help.gohighlevel.com/support/search/solutions?term=appointment+status+trigger" target="_blank" rel="noopener">search "appointment status trigger"</a>.</li>
+      <li>Help Center — the Wait action's modes: <a href="https://help.gohighlevel.com/support/search/solutions?term=wait+action+workflow" target="_blank" rel="noopener">search "wait action workflow"</a>.</li>
+      <li>Help Center — appointment merge fields: <a href="https://help.gohighlevel.com/support/search/solutions?term=appointment+custom+values" target="_blank" rel="noopener">search "appointment custom values"</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-16.html">← Day 16: Portfolio #5: Speed-to-Lead System</a>
+  <a href="day-18.html">Day 18: Advanced Workflow Logic →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 16 — Portfolio #5: Speed-to-Lead System | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="16">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 16</span>Portfolio #5: Speed-to-Lead System</h1>
+    <p class="day-goal">By tonight Summit Dental will respond to every new lead within seconds, automatically: instant email + SMS, tagging, an opportunity in the pipeline, a staff alert, and an intelligent 5-minute follow-up branch — plus missed-call text-back. This is the single most-sold automation in the GHL world, and it becomes Portfolio #5.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Why speed-to-lead is the money automation</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Local businesses lose leads for one dominant reason: they respond too slowly. Studies show that responding within about 5 minutes massively lifts your odds of actually reaching and qualifying a lead compared to waiting even 30 minutes — and most businesses take hours. Automating the first touch is therefore the easiest ROI story an agency can sell. You're building that story today.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d16-t01"><span>In your journal, write a 3–4 sentence "pitch" for speed-to-lead as if explaining it to Summit Dental's owner: leads go cold in minutes; studies show contact rates jump dramatically when you respond within ~5 minutes; this system replies in seconds, 24/7, and alerts staff instantly. Keep the claim honest — say "studies show", don't invent precise numbers.<em class="why">You'll reuse this pitch in your Loom video and in interviews.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t02"><span>Sketch the system on paper (or a notes doc) before touching GHL: <strong>Form Submitted (New Patient Inquiry)</strong> → send email + SMS instantly → tag <strong>new-lead</strong> → create opportunity in <strong>Patient Acquisition / New Inquiry</strong> → notify staff → <strong>wait 5 min</strong> → <strong>If/Else: did they reply?</strong> → if not, send follow-up #2. Ten boxes, arrows between them.<em class="why">Pros design on paper first; the canvas is for building, not thinking.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t03"><span>Verify your Week 1 assets still exist (you'll wire them together today): <strong>Sites → Forms → Builder</strong> — confirm the form <strong>New Patient Inquiry</strong> exists; <strong>Opportunities</strong> — confirm the pipeline <strong>Patient Acquisition</strong> with a first stage named <strong>New Inquiry</strong> (or your equivalent first stage — note its exact name); <strong>Settings → Tags</strong> — confirm the tag <strong>new-lead</strong> exists (create it if missing).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t04"><span>SMS reality check (write this in your notes): without <strong>A2P 10DLC registration</strong>, SMS from your trial number won't reliably deliver to the public. Today: build every SMS step for real, test delivery to <strong>your own verified phone number</strong> where possible, and lean on the email steps as your provable test evidence. When you build this for a real client, A2P registration is a Day-1 onboarding task — mention that in your Loom; it makes you sound experienced.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build the "Speed to Lead" workflow</h2>
+    <p class="session-time">≈ 3 hours</p>
+    <p class="session-intro">Build slowly and deliberately. Every action gets a clear name, every message uses merge fields, and you save after every step. Work inside the <strong>Summit Dental</strong> sub-account.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d16-t05"><span><strong>Automation</strong> → <strong>+ Create Workflow</strong> → <strong>Start from Scratch</strong> → rename it <strong>"Speed to Lead"</strong> → <strong>Save</strong>. Create a folder <strong>Client Systems</strong> on the workflows list and move this workflow into it (Training folder is for practice; this one is a portfolio piece).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t06"><span>Trigger: click <strong>Add New Trigger</strong> → choose <strong>Form Submitted</strong> → <strong>+ Add filters</strong> → filter <strong>Form is</strong> → select <strong>New Patient Inquiry</strong> → name the trigger "New Patient Inquiry submitted" → <strong>Save Trigger</strong>.<em class="why">Without the filter, EVERY form on the account would fire this workflow — a classic rookie bug.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t07"><span>Action 1 — instant email: <strong>+</strong> → <strong>Send Email</strong> → From Name <strong>Summit Dental</strong> → Subject: <code>We got your request, {{contact.first_name}}!</code> → Body (write it properly, ~80 words): thank them, tell them a team member will call shortly, include the booking link for the <strong>New Patient Consult</strong> calendar, sign off as Summit Dental. Use the merge-field picker for <code>{{contact.first_name}}</code>. <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t08"><span>Action 2 — instant SMS: <strong>+</strong> → <strong>Send SMS</strong> → Message: <code>Hi {{contact.first_name}}, this is Summit Dental — thanks for reaching out! We'll call you in the next few minutes. Want to skip ahead? Book here: [booking link]</code>. <strong>Save Action</strong>. (Remember: this step may show failed/pending in logs until A2P is approved — that's expected.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t09"><span>Action 3 — tag: <strong>+</strong> → <strong>Add Contact Tag</strong> → tag <strong>new-lead</strong> → <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t10"><span>Action 4 — opportunity: <strong>+</strong> → <strong>Create Opportunity</strong> (or "Create/Update Opportunity") → Pipeline: <strong>Patient Acquisition</strong> → Stage: <strong>New Inquiry</strong> (your first stage) → Opportunity name: use the merge picker to build <code>{{contact.name}} — Web Inquiry</code> → Status: <strong>Open</strong> → optionally set a lead value (e.g. 350) → <strong>Save Action</strong>.<em class="why">This is what makes the lead VISIBLE to the sales side — automation that only sends messages is half a system.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t11"><span>Action 5 — staff alert: <strong>+</strong> → <strong>Send Internal Notification</strong> → Type: <strong>Email</strong> → recipient: select <strong>your user</strong> (as the assigned staff member) → Subject: <code>🔥 New lead: {{contact.name}}</code> → Body: include <code>{{contact.phone}}</code>, <code>{{contact.email}}</code>, and a line "Call within 5 minutes." → <strong>Save Action</strong>. Then add a SECOND Internal Notification action, Type: <strong>In-app notification</strong>, same recipient — so the alert also pops inside GHL.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t12"><span>Action 7 — the wait: <strong>+</strong> → <strong>Wait</strong> → Time Delay → <strong>5 minutes</strong> → <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t13"><span>Action 8 — the brain: <strong>+</strong> → <strong>If/Else</strong>. Create Branch 1 named <strong>"Replied"</strong>. For its condition, check what your If/Else panel offers: if there's an activity/conversation condition (e.g. <strong>"Replied to SMS/Email"</strong> or a Last Message direction check), use that directly. If your version only offers contact-field and tag conditions, use the pro workaround: set the condition to <strong>Tags → includes → replied</strong>, and in the next task you'll build the tiny helper workflow that applies that tag whenever anyone replies. Leave the other path as the <strong>None</strong>/Else branch — that's your <strong>"No reply"</strong> path. <strong>Save Action</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t14"><span>Build the helper (2 minutes, and a genuinely reusable pattern): create a second workflow <strong>"Helper — Mark Replied"</strong> in Client Systems → Trigger: <strong>Customer Replied</strong> (no filters, or filter to SMS + Email reply channels) → single action: <strong>Add Contact Tag → replied</strong> → Settings: <strong>Allow Re-Entry ON</strong> → <strong>Publish + Save</strong>. Now any reply, ever, stamps the contact — and any workflow can branch on it.<em class="why">Composing small helper workflows is exactly how senior builders think.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t15"><span>Finish the branches in "Speed to Lead": on the <strong>Replied</strong> branch add <strong>Send Internal Notification</strong> ("Lead {{contact.name}} replied — check Conversations"). On the <strong>No reply</strong> branch add <strong>Send Email</strong> — follow-up #2, subject <code>Still want that appointment, {{contact.first_name}}?</code>, short body with the booking link again — and below it a <strong>Send SMS</strong> nudge. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t16"><span>Workflow Settings pass: open the <strong>Settings</strong> tab → <strong>Allow Re-Entry: ON</strong> (the same person may inquire again months later) → <strong>Stop on Response: OFF</strong> (we handle replies ourselves via the If/Else — turning it on would yank replied contacts out before your Replied branch runs; note this trade-off in your journal) → leave the time window OPEN (24/7) for the instant messages — speed is the whole point. <strong>Save</strong>, then set the toggle to <strong>Publish</strong> and Save again.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Missed-call text-back</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">The second half of every speed-to-lead pitch: when the clinic misses a phone call, the caller instantly gets a text. GHL ships this as a dedicated feature — no workflow needed.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d16-t17"><span>In Summit Dental go to <strong>Settings → Phone Numbers</strong>. Confirm you have a number from Day 4 (if not, click <strong>+ Add Number</strong> and claim a trial number now). Note the number in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t18"><span>Find the <strong>Missed Call Text Back</strong> setting: depending on UI version it lives in <strong>Settings → Business Profile</strong> (a "Missed Call Text Back" card) or <strong>Settings → Phone Numbers → your number → edit</strong>. If you can't find it, use the search in Settings or check both spots — write down where YOUR account keeps it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t19"><span>Toggle it <strong>ON</strong> and set the message: <code>Hi, this is Summit Dental — sorry we missed your call! How can we help? Reply here or book directly: [booking link]</code>. Save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t20"><span>Test if your setup allows: call your GHL number from your own phone and hang up before answer. Check <strong>Conversations</strong> for the outbound text-back attempt. If A2P blocks actual delivery, screenshot the configured setting + the attempted message in Conversations instead — that's still valid portfolio evidence. Note the result either way.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — End-to-end test, evidence &amp; portfolio packaging</h2>
+    <p class="session-time">≈ 1.5–2 hours</p>
+    <p class="session-intro">Now prove the whole machine works the way a REAL lead would experience it: through the public form, not by clicking Test.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d16-t21"><span>Open the live form: <strong>Sites → Forms → Builder → New Patient Inquiry</strong> → grab its public link (Integrate/Share → copy link) — or open the Day 9 funnel page that embeds it. Open it in a private/incognito window.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t22"><span>Submit the form as a brand-new fake lead: name <strong>Sally Speedtest</strong>, an email alias you own (<code>you+sally@gmail.com</code>), your own phone number. Submit, then start a 5-minute timer.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t23"><span>Verify the instant layer (should all exist within ~1 minute): (a) welcome email in your inbox, (b) internal-notification email in your inbox, (c) in-app notification bell in GHL, (d) Sally exists in <strong>Contacts</strong> with tag <strong>new-lead</strong>, (e) a new opportunity card in <strong>Opportunities → Patient Acquisition → New Inquiry</strong>. Tick each off on paper.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t24"><span>Do NOT reply. When the 5-minute timer ends, confirm the <strong>No reply</strong> branch fired: follow-up #2 email arrives. Then open the workflow's <strong>Execution Logs</strong>, expand Sally's run, and walk every step: trigger → email ✓ → SMS (note status) → tag ✓ → opportunity ✓ → notifications ✓ → wait ✓ → If/Else took "No reply" ✓ → follow-up ✓.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t25"><span>Test the other branch: submit the form again as <strong>Randy Replyer</strong> (<code>you+randy@gmail.com</code>, your phone). Within the 5-minute window, reply to the welcome email (or send an SMS/email into Conversations from Randy) so the helper workflow stamps the <strong>replied</strong> tag. After the wait, check the logs: Randy's run must take the <strong>Replied</strong> branch and skip follow-up #2. If it doesn't, debug: is "Helper — Mark Replied" published? Did the tag land BEFORE the If/Else evaluated?</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t26"><span>Capture portfolio evidence into <code>GHL Portfolio/screenshots</code>: <code>day16-speedtolead-canvas.png</code> (full workflow, zoomed to fit), <code>day16-execution-log.png</code> (Sally's expanded log), <code>day16-opportunity-card.png</code> (the pipeline card), <code>day16-missedcall-setting.png</code> (the missed-call text-back config).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t27"><span>Record a 3–5 minute <strong>Loom</strong>: open with your Session-1 pitch (why speed matters), screen-share the canvas top to bottom explaining each step, show Sally's execution log, show the missed-call setting, close with "this deploys to any local business in under an hour." Save the link in <code>GHL Portfolio/videos</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d16-t28"><span>Journal entry for Day 16: the final workflow map, which branch tests passed, the A2P caveat in one sentence, and one thing you'd add for a real client (e.g. a second staff member on notifications, or a voicemail drop). Then tick Portfolio #5 below and on the home page.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #5: Speed-to-Lead System</h2>
+    <p>You now own the most-requested automation in the GHL economy: instant multi-channel response, pipeline entry, staff alerts, reply-aware follow-up, and missed-call text-back — built, tested through the real form on both branches, and documented with screenshots + a Loom. Go to the home page and tick <strong>Portfolio #5</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The published <strong>"Speed to Lead"</strong> workflow + <strong>"Helper — Mark Replied"</strong> workflow in a <strong>Client Systems</strong> folder, missed-call text-back configured, two end-to-end tests verified in Execution Logs (one per branch), four screenshots (<code>day16-*.png</code>), a Loom walkthrough, and a Day 16 journal entry.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>If Sally never enrolled: 90% of the time it's one of these — the workflow was left in <strong>Draft</strong>, the trigger filter points at a different form than the one you submitted, or you edited the form and submitted an old cached version. Check those three before anything else. And never "test" by re-submitting with the same email while Re-Entry is off mid-debug — you'll think it's broken when it's just refusing re-entry.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — form trigger: <a href="https://help.gohighlevel.com/support/search/solutions?term=form+submitted+trigger" target="_blank" rel="noopener">search "form submitted trigger"</a>.</li>
+      <li>Help Center — missed call text back: <a href="https://help.gohighlevel.com/support/search/solutions?term=missed+call+text+back" target="_blank" rel="noopener">search "missed call text back"</a>.</li>
+      <li>Help Center — internal notifications: <a href="https://help.gohighlevel.com/support/search/solutions?term=internal+notification" target="_blank" rel="noopener">search "internal notification"</a>.</li>
+      <li>Help Center — A2P status &amp; SMS delivery: <a href="https://help.gohighlevel.com/support/search/solutions?term=A2P+registration" target="_blank" rel="noopener">search "A2P registration"</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-15.html">← Day 15: Workflow Builder Deep Dive</a>
+  <a href="day-17.html">Day 17: Portfolio #6: Appointment Lifecycle Automation →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

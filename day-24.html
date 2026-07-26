@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 24 — GHL API 2.0 in n8n | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="24">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 24</span>GHL API 2.0 in n8n</h1>
+    <p class="day-goal">Yesterday data flowed GHL → n8n. Today you learn the other direction: n8n calling <strong>into</strong> GHL through its API 2.0. By tonight you'll have a Private Integration token with the right scopes, a reusable n8n credential, four successful raw API calls (search, create, update custom field, add tag), and a mini-lab workflow that creates a GHL contact on demand and answers with its new ID.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — API crash course in plain language</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Thirty minutes of vocabulary, zero code. An <strong>API</strong> is just a website for programs instead of people: you send a structured request, you get structured JSON back. Everything you do today is filling in four blanks: <em>where</em> (URL), <em>what kind</em> (method), <em>who you are</em> (headers), <em>what data</em> (body).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d24-t01"><span>Build a glossary in your journal, one plain-English line each: <strong>REST API</strong> (a service you talk to over URLs), <strong>endpoint</strong> (one specific URL that does one thing, e.g. <code>/contacts/</code>), <strong>method</strong> (the verb: <code>GET</code> read, <code>POST</code> create, <code>PUT/PATCH</code> update, <code>DELETE</code> remove), <strong>headers</strong> (metadata sent with every request — including who you are), <strong>token</strong> (a long secret string that proves your identity, like a keycard), <strong>JSON body</strong> (the data you send with POST/PUT), <strong>status code</strong> (the reply's verdict: 200/201 ok, 4xx your mistake, 5xx their mistake).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t02"><span>Memorize GHL API 2.0's two golden facts and write them on a sticky note: base URL <code>https://services.leadconnectorhq.com</code>, and <strong>every request needs two headers</strong>: <code>Authorization: Bearer {token}</code> and <code>Version: 2021-07-28</code>. Missing the Version header is the most common beginner 4xx.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t03"><span>Open the official API 2.0 reference at <strong>highlevel.stoplight.io</strong> → browse to <strong>Contacts</strong>. Skim the list of endpoints and notice the pattern: each page shows the method + path, required headers, parameters, an example body, and an example response. Bookmark it — this is your dictionary for the rest of the week.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t04"><span>Journal: GHL has two auth options. (a) <strong>Private Integration token</strong> — created per sub-account in <strong>Settings → Private Integrations</strong>, simple bearer token, perfect for client work and everything we do this week. (b) <strong>OAuth marketplace apps</strong> (via marketplace.gohighlevel.com) — for building public apps that many agencies install; know it exists, skip it for now.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Token, locationId, and your first authenticated call</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d24-t05"><span>In the <strong>Summit Dental</strong> sub-account: <strong>Settings → Private Integrations</strong> → <strong>+ Create new Integration</strong> (if you don't see the menu item, your plan/permissions may hide it — check you're in the sub-account, not Agency View). Name it <strong>n8n Training</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t06"><span>On the scopes screen, tick at minimum: <strong>View Contacts</strong> (<code>contacts.readonly</code>), <strong>Edit Contacts</strong> (<code>contacts.write</code>), <strong>View Custom Fields</strong>, <strong>Edit Custom Fields</strong>, <strong>View Opportunities</strong>, <strong>Edit Opportunities</strong>. Click <strong>Create</strong> → GHL shows the token <strong>once</strong> — copy it immediately into a private note (it starts with <code>pit-</code>).<em class="why">Scopes are least-privilege security: a token can only do what it was granted. If a call ever returns 401/403, wrong-or-missing scope is suspect #2 (after a typo'd token).</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t07"><span>Get your <strong>locationId</strong> (the sub-account's unique ID — most endpoints require it): in Summit Dental open <strong>Settings → Business Profile</strong> and look for the ID field near the top — or read it straight from your browser's address bar, the ~20-character string after <code>/location/</code> in the URL. Write it next to your token.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t08"><span>In n8n, create a workflow named <strong>GHL API Lab</strong>. Add a <strong>Manual Trigger</strong> ("Trigger manually") node, then an <strong>HTTP Request</strong> node after it. Configure: <strong>Method</strong> <code>GET</code>, <strong>URL</strong> <code>https://services.leadconnectorhq.com/contacts/</code>, turn on <strong>Send Query Parameters</strong> → add <code>locationId</code> = your locationId, turn on <strong>Send Headers</strong> → add <code>Authorization</code> = <code>Bearer pit-…</code> (word "Bearer", space, token) and <code>Version</code> = <code>2021-07-28</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t09"><span>Click <strong>Execute Node</strong>. Success = an output item with a <code>contacts</code> array (your Summit Dental contacts) and a <code>meta</code> object with total/paging info. Skim one contact object and note the fields you recognize: <code>id</code>, <code>firstName</code>, <code>email</code>, <code>tags</code>, <code>customFields</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t10"><span>Now do it properly — never paste tokens into nodes. In the HTTP Request node set <strong>Authentication</strong> = <code>Generic Credential Type</code> → <strong>Generic Auth Type</strong> = <code>Header Auth</code> → <strong>Create new credential</strong>: Name field = <code>Authorization</code>, Value = <code>Bearer pit-…</code>. Save the credential as <strong>GHL Summit Dental (PIT)</strong>. Then delete the Authorization line from the node's manual headers — but <strong>keep the <code>Version</code> header there</strong> (Header Auth stores exactly one header, so Version stays per-node). Re-execute to confirm it still works.<em class="why">One credential, reused by every GHL call you ever make in this workspace — and the token never appears in exported workflow JSON.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — The four drills: search, create, update, tag</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Duplicate the HTTP Request node for each drill (select it → Ctrl/Cmd+C, Ctrl/Cmd+V) so the credential and Version header come along. Wire each copy to the Manual Trigger and use <strong>Execute Node</strong> on one at a time.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d24-t11"><span><strong>Drill 1 — search a contact by email (GET).</strong> Method <code>GET</code>, URL <code>https://services.leadconnectorhq.com/contacts/</code>, query parameters: <code>locationId</code> = yours, <code>query</code> = <code>tessa.trial@example.com</code> (yesterday's test lead). Execute → the <code>contacts</code> array should contain exactly Tessa. Copy her <code>id</code> into your notes — you need it for drills 3 and 4.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t12"><span><strong>Drill 2 — create a contact (POST).</strong> Method <code>POST</code>, URL <code>https://services.leadconnectorhq.com/contacts/</code>, enable <strong>Send Body</strong> → Body Content Type <code>JSON</code> → Specify Body <code>Using JSON</code>, and paste (with your real locationId):
+<pre><code>{
+  "firstName": "Ava",
+  "lastName": "Apitest",
+  "email": "ava.apitest@example.com",
+  "phone": "+15550102",
+  "locationId": "YOUR_LOCATION_ID",
+  "tags": ["api-created"],
+  "source": "n8n API lab"
+}</code></pre>
+Execute → a <code>201</code>-style response with a <code>contact</code> object including its new <code>id</code>. Verify in GHL: <strong>Contacts</strong> → search "Ava Apitest" — she's there with the tag.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t13"><span>Prep for Drill 3: fetch your custom field IDs with a quick GET to <code>https://services.leadconnectorhq.com/locations/YOUR_LOCATION_ID/customFields</code> (same headers/credential; no query params needed). In the response, find a custom field you created in Week 1 (any text field works) and copy its <code>id</code>. Journal note: custom fields are addressed <strong>by ID, never by name</strong>, in the API.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t14"><span><strong>Drill 3 — update a contact's custom field (PUT).</strong> Method <code>PUT</code>, URL <code>https://services.leadconnectorhq.com/contacts/CONTACT_ID</code> (use Ava's id), JSON body:
+<pre><code>{
+  "customFields": [
+    { "id": "YOUR_CUSTOM_FIELD_ID", "field_value": "updated via n8n" }
+  ]
+}</code></pre>
+Execute, then open Ava's contact record in GHL and confirm the field changed. Note: PUT on this endpoint updates only the keys you send — you don't need to resend the whole contact.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t15"><span><strong>Drill 4 — add a tag (POST).</strong> Method <code>POST</code>, URL <code>https://services.leadconnectorhq.com/contacts/CONTACT_ID/tags</code>, JSON body:
+<pre><code>{ "tags": ["hot-lead-test"] }</code></pre>
+Execute → response lists the contact's tags. Confirm in GHL that Ava now carries <code>api-created</code> and <code>hot-lead-test</code>. Then remove the test tag manually in the UI to keep data clean.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t16"><span>Try the shortcut, once: add a <strong>HighLevel</strong> node (n8n ships a HighLevel integration — search <em>HighLevel</em> in the nodes panel) → operation <strong>Contact → Get Many</strong>, create its credential when prompted, and run it. Journal verdict in one sentence: convenient for common operations, but job posts and real client work expect you to speak <strong>raw HTTP + docs</strong>, because the node covers only a fraction of the API.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t17"><span>Debugging cheat-sheet — copy into your journal: <strong>401</strong> = token missing/typo'd/revoked (check the word "Bearer" and the space); <strong>403</strong> = valid token, missing scope or wrong sub-account's token; <strong>404</strong> = wrong URL or wrong ID; <strong>422</strong> = GHL understood you but the body failed validation (read the response's error message — it names the bad field); <strong>429</strong> = rate limit — API 2.0 allows bursts of ~100 requests per 10 seconds and a daily cap per location, so batch and pace big jobs. Force one 401 on purpose: break the credential's token by one character, execute, read the error, fix it back.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Mini-lab: webhook in, GHL contact out</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Glue the week together: an n8n endpoint that anyone (or any system) can POST a lead to, which creates the contact in GHL and replies with the new contact ID. This exact shape — receive → call GHL API → respond — is the skeleton of Days 25–27.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d24-t18"><span>New workflow <strong>Contact Creator API</strong>. Add a <strong>Webhook</strong> trigger: Method <code>POST</code>, <strong>Respond</strong> = <code>Using 'Respond to Webhook' node</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t19"><span>Add an <strong>HTTP Request</strong> node: POST to <code>https://services.leadconnectorhq.com/contacts/</code>, your <strong>GHL Summit Dental (PIT)</strong> credential, <code>Version</code> header, JSON body built from the incoming webhook with expressions:
+<pre><code>{
+  "firstName": "{{ $json.body.firstName }}",
+  "lastName": "{{ $json.body.lastName }}",
+  "email": "{{ $json.body.email }}",
+  "locationId": "YOUR_LOCATION_ID",
+  "source": "n8n contact creator"
+}</code></pre></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t20"><span>Add a <strong>Respond to Webhook</strong> node last: <strong>Respond With</strong> = <code>JSON</code>, body <code>{ "created": true, "contactId": "{{ $json.contact.id }}" }</code> (the HTTP Request node's output nests the new contact under <code>contact</code> — verify the exact path in its output first).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t21"><span>Test it: click <strong>Test workflow</strong>, then from a second n8n tab or any HTTP tool send a POST to the webhook's <strong>Test URL</strong> with body <code>{"firstName":"Leo","lastName":"Labtest","email":"leo.labtest@example.com"}</code>. (Easiest tool: a throwaway n8n workflow with one HTTP Request node pointed at your own test URL, body type JSON.) Confirm: the response contains a real <code>contactId</code>, and Leo Labtest exists in GHL Contacts.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t22"><span>Activate the workflow, repeat the POST against the <strong>Production URL</strong>, and verify the run in <strong>Overview → Executions</strong> (plus a second Leo-style contact in GHL — delete the duplicates afterwards to keep Summit Dental tidy).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d24-t23"><span>Wrap up: <strong>•••</strong> → <strong>Download</strong> both <code>ghl-api-lab.json</code> and <code>contact-creator-api.json</code> into <code>GHL Portfolio/n8n-exports</code>. Screenshots: <code>day24-api-lab.png</code> (canvas with the four drill nodes, green) and <code>day24-private-integration.png</code> (the Private Integrations screen — <strong>with the token hidden/blurred</strong>). Journal entry: the four blanks of any API call, plus your 401/403/422 cheat-sheet from memory.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A Private Integration token with correct scopes stored as a reusable n8n Header Auth credential, four verified raw API calls against Summit Dental (search by email, create contact, update custom field by ID, add tag), a working <strong>Contact Creator API</strong> workflow tested on both test and production URLs, two workflow JSONs in <code>GHL Portfolio/n8n-exports</code>, two screenshots, and your status-code debugging cheat-sheet in the journal.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Treat the <code>pit-</code> token like a password: never paste it into a workflow field (credential only), never screenshot it, and remember it grants live write access to the sub-account. If you ever leak one, delete the Private Integration in GHL and create a new one — that rotates the token instantly.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL API 2.0 reference (Contacts, Custom Fields, and more): <a href="https://highlevel.stoplight.io/docs/integrations/" target="_blank" rel="noopener">highlevel.stoplight.io</a>.</li>
+      <li>Private Integrations how-to: search <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> for <em>"Private Integrations"</em>.</li>
+      <li>Marketplace / OAuth apps (reference only today): <a href="https://marketplace.gohighlevel.com" target="_blank" rel="noopener">marketplace.gohighlevel.com</a>.</li>
+      <li>n8n HTTP Request node: <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/" target="_blank" rel="noopener">docs.n8n.io — HTTP Request</a>.</li>
+      <li>n8n HighLevel node: <a href="https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.highlevel/" target="_blank" rel="noopener">docs.n8n.io — HighLevel</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-23.html">← Day 23: Portfolio #10 — Lead Logger &amp; Instant Alerts</a>
+  <a href="day-25.html">Day 25: Portfolio #11 — AI Lead Qualifier →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

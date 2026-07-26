@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 — Conversations, Email &amp; SMS Channels | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="4">
+
+<header class="day-header week-1">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 1 · Foundations &amp; CRM</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 4</span>Conversations, Email &amp; SMS Channels</h1>
+    <p class="day-goal">By tonight Summit Dental will have a working email sending setup and (budget permitting) a phone number, you'll have sent yourself a real test email from a contact record, built 2 email + 2 SMS templates with merge fields, and you'll be able to explain SPF/DKIM/DMARC and A2P 10DLC well enough to survive an interview question on deliverability.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The Conversations inbox</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Conversations is GHL's unified inbox: every email, SMS, call, voicemail, Facebook/Instagram DM, and WhatsApp message for the whole sub-account lands here, threaded per contact. Enter <strong>Summit Dental</strong> to start.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d04-t01"><span>Click <strong>Conversations</strong> in the left sidebar. Tour the three-pane layout: left = the conversation list with filter tabs <strong>Unread</strong>, <strong>Recents</strong> (or "All"), and <strong>Starred</strong>; center = the message thread; right = the contact's mini-record (tags, fields, opportunities). Yours is mostly empty — that changes today.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t02"><span>Click the <strong>funnel/filter icon</strong> at the top of the conversation list and read the filter options (assigned-to, channel, tags). Then click the <strong>✏️ compose icon</strong> (top of the list) → search <strong>Maria Santos</strong> → open a draft conversation with her. Don't send anything yet — just note that composing starts from here OR from her contact record. Close the draft.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t03"><span>Open any conversation thread (Maria's) and find the message-type tabs above the reply box: <strong>SMS</strong>, <strong>Email</strong>, <strong>WhatsApp</strong> (if enabled), and crucially an <strong>Internal Note</strong> tab (may be a yellow "note" tab or a toggle). Type a test internal note: "Team: Maria prefers afternoon calls" → <strong>Send/Save</strong>. Confirm it renders highlighted (usually yellow) and understand: <strong>internal notes are never sent to the contact</strong> — they're for teammates.<em class="why">Sending a "note" as a live SMS to a real customer is a classic, career-limiting rookie mistake. Learn the difference today, in a sandbox.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t04"><span>Hover a conversation row in the left list and find the row actions: <strong>star</strong>, <strong>mark unread/read</strong>, <strong>archive/delete</strong>. Star Maria's thread, click the <strong>Starred</strong> tab to see it, then unstar it. Also notice the <strong>assignment dropdown</strong> at the top of the thread (assigns the conversation to a team member).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t05"><span>In your journal, one paragraph: how would a front-desk person at a dental office live in this screen all day? (Triage Unread → reply or note → assign → star what needs follow-up.) You'll automate half of that in Week 3.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Email sending: LC Email vs dedicated domain</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">GHL sends email through <strong>LC Email</strong> ("LeadConnector Email"), the built-in provider. Out of the box it sends from a shared LC subdomain — fine for testing, weak for deliverability. Production accounts add a <strong>dedicated sending domain</strong> (e.g. <code>mail.summitdental.com</code>) verified with DNS records. Today you set up what your situation allows and — more importantly — understand both.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d04-t06"><span>Go to <strong>Settings → Email Services</strong>. On the <strong>SMTP Service</strong> tab confirm <strong>LC Email</strong> is the active provider (it is by default on new accounts). Note there's an option to plug in third-party SMTP (Mailgun, SendGrid) — know it exists; don't configure it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t07"><span>Click the <strong>Dedicated Domain</strong> tab (may read <strong>Dedicated Domain and IP</strong>) → click <strong>+ Add Domain</strong>. Read the dialog carefully: it asks for a subdomain like <code>mail.yourdomain.com</code> and then shows the <strong>DNS records</strong> you'd add at your domain registrar. IF you own a domain, enter <code>mail.&lt;yourdomain&gt;</code> and continue; if you don't, type a placeholder, screenshot the DNS-records screen for your notes, then <strong>Cancel</strong> without saving.<em class="why">Even without a domain, you must be able to describe this screen — "set up a dedicated sending domain" is a standard first-week task at any GHL job.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t08"><span>In your journal, define the three DNS records in one line each, in your own words: <strong>SPF</strong> = list of servers allowed to send for the domain; <strong>DKIM</strong> = cryptographic signature proving the message wasn't forged; <strong>DMARC</strong> = policy telling receivers what to do when SPF/DKIM fail (and where to send reports). Then one line on why sending from the shared LC subdomain is worse: your reputation is pooled with strangers.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t09"><span>Set your sender identity: go to <strong>Settings → Business Profile</strong> and confirm the business email is your alias (e.g. <code>you+summit@gmail.com</code>). Then in <strong>Settings → Email Services</strong>, look for the <strong>Reply &amp; Forward Settings</strong> section — set the <strong>reply address</strong> to the same alias so replies to test sends come back to you.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t10"><span>Create a test contact that is really YOU: <strong>Contacts → + Add Contact</strong> → first name <strong>Test</strong>, last name <strong>Me</strong>, YOUR real email address and YOUR real mobile number → <strong>Save</strong> → add tag <code>internal-test</code>.<em class="why">This is the only contact in the account allowed to have real details — it's your safe target for every send test in the program.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t11"><span>Send your first email: open <strong>Test Me</strong>'s contact record → in the conversation panel select the <strong>Email</strong> tab → Subject: <code>Summit Dental test — Day 4</code> → Body: two sentences of anything → click <strong>Send</strong>. Check your real inbox (and spam folder). Open the message and use your mail client's "show original / view headers" to spot the sending domain — that's the LC subdomain unless you verified your own.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t12"><span>Back in GHL, confirm the sent email appears in <strong>Conversations</strong> in Test Me's thread with a delivery status (sent/delivered/opened — hover or click the small status icon under the message). Reply to the email from your real inbox and watch the reply land in the same thread within a minute or two.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Phone numbers, LC Phone &amp; A2P 10DLC</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">SMS in GHL runs on <strong>LC Phone</strong> (built on Twilio under the hood). Two things every specialist must understand: numbers cost real money (about $1–1.15/mo plus per-message fees, usually covered by trial credits), and in the US, business SMS legally requires <strong>A2P 10DLC registration</strong> before messages will deliver reliably.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d04-t13"><span>Go to <strong>Settings → Phone Numbers</strong> → click <strong>+ Add Number</strong> (may read <strong>Add Phone Number → Purchase Number</strong>). Search by your area code, pick any local number, and complete the purchase — it draws from trial credits, no card charge on trial. If your trial account blocks purchases in your country, skim the screen, screenshot it, and do the rest of this session as theory + journal notes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t14"><span>After purchase, click the <strong>⋮ / Edit Configuration</strong> next to your number and skim its settings: forwarding number (where inbound calls ring), whisper message, call recording. Set the <strong>forwarding number</strong> to your real mobile so inbound calls to the GHL number reach you.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t15"><span>A2P 10DLC — read then write. The concept: US carriers require any Application-to-Person SMS over 10-Digit Long Code numbers to come from a <strong>registered brand</strong> with a <strong>registered campaign</strong> (use case) — it's anti-spam law enforcement by the carriers. Unregistered traffic gets filtered: messages silently fail or trickle. In GHL the registration lives at <strong>Settings → Phone Numbers → Trust Center</strong> (may be labeled "A2P Registration" or "Regulatory Bundle"). Open it and read the form — for a real client you'd submit legal business name, EIN, website, sample messages, and opt-in description.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t16"><span>Do NOT submit A2P registration for Summit Dental (it's fictional; registrations cost fees and require a real business). In your journal write the 3-sentence interview answer: what A2P 10DLC is, what happens to unregistered SMS, and what you'd collect from a client to register them.<em class="why">"Client says SMS isn't delivering — what do you check first?" The expected first answer is A2P status. Free interview points.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t17"><span>Test SMS to yourself: open <strong>Test Me</strong>'s record (your real mobile) → conversation panel → <strong>SMS</strong> tab → type <code>Summit Dental test SMS — reply YES if received</code> → <strong>Send</strong>. Trial/unregistered sending may still deliver to your own number in small volume, or it may not — either outcome is a lesson. Check the message's status icon in the thread (sent vs delivered vs failed) and note what you see. If it delivered, reply from your phone and watch it appear in Conversations.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t18"><span>Make a test call: on Test Me's record click the <strong>phone icon</strong> (starts a call via the web dialer from your GHL number) OR call your GHL number from another phone and confirm it forwards to your mobile. Afterwards look in <strong>Conversations</strong> for the call log entry and (if recording was on) the recording player.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Templates, snippets &amp; merge fields</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Merge fields (GHL calls them "custom values" in the picker) personalize messages: <code>{{contact.first_name}}</code> becomes "Maria" at send time. Templates/snippets save canned messages the whole team reuses — and every workflow you build in Week 3 sends them.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d04-t19"><span>Learn the syntax first. In your journal copy this mini-table: <code>{{contact.first_name}}</code>, <code>{{contact.email}}</code>, <code>{{contact.phone}}</code>, <code>{{user.first_name}}</code> (the sending team member), <code>{{location.name}}</code> (the sub-account/business name), and custom fields as <code>{{contact.insurance_provider}}</code> (the field's unique key — GHL shows it in Settings → Custom Fields). Rule: two curly braces, object dot field, no spaces.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t20"><span>Create Email template #1: go to <strong>Marketing → Emails → Templates</strong> (in some versions <strong>Marketing → Templates</strong>) → <strong>+ New</strong> → choose <strong>Blank / Design from scratch</strong> (a simple drag-drop builder opens; pick a basic one-column layout). Name it <strong>Welcome — New Patient</strong>. Subject: <code>Welcome to Summit Dental, {{contact.first_name}}!</code> Body: a 4-line welcome mentioning <code>{{location.name}}</code> and inviting them to book. Click <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t21"><span>Create Email template #2: <strong>+ New</strong> again → name <strong>Consult Follow-Up</strong> → Subject: <code>{{contact.first_name}}, your consult notes from Summit Dental</code> → Body: thanks-for-coming-in, next steps, "reply with any questions". Insert the merge fields using the builder's <strong>merge-field / custom-values picker</strong> (a <code>{{ }}</code> or tag icon in the text toolbar) rather than typing them — learn where the picker lives. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t22"><span>Create the 2 SMS templates as snippets: go to <strong>Marketing → Snippets</strong> (in some versions snippets are created from Conversations via the <strong>snippet icon</strong> in the reply toolbar — both manage the same list) → <strong>+ Add Snippet</strong> → type <strong>Text</strong>/SMS → name <strong>SMS — Appointment Nudge</strong> → body: <code>Hi {{contact.first_name}}, it's {{location.name}}. We have consult openings this week — want me to hold one for you? Reply YES.</code> → <strong>Save</strong>. Then a second: name <strong>SMS — Reactivation</strong> → body: <code>Hi {{contact.first_name}}, it's been a while since your last visit to {{location.name}}! Book a cleaning this month and we'll waive the exam fee. Reply BOOK.</code> → <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t23"><span>Use a template for real: open <strong>Test Me</strong>'s record → <strong>Email</strong> tab → find the <strong>template/snippet icon</strong> in the compose toolbar → insert <strong>Welcome — New Patient</strong> → LOOK at the preview: merge fields should already show "Test" instead of <code>{{contact.first_name}}</code> (or will resolve at send). <strong>Send</strong> it, then open it in your real inbox and confirm every merge field resolved — no raw curly braces anywhere.<em class="why">A sent email showing literal {{contact.first_name}} is the most public kind of automation failure. Always test-send.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t24"><span>Send the <strong>SMS — Appointment Nudge</strong> snippet to Test Me the same way (SMS tab → snippet icon → insert → Send), if SMS worked for you in Session 3.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t25"><span>Other channels, overview only (10 minutes): go to <strong>Settings → Integrations</strong> and note the <strong>Facebook &amp; Instagram</strong> connection (pulls page DMs into Conversations) and <strong>Settings → WhatsApp</strong> (a paid add-on, ~$10/mo, requires Meta business verification). Do not connect anything. One journal line each: what plugs in, what lands in Conversations.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d04-t26"><span>Wrap-up: screenshots — (a) Test Me's conversation thread showing your delivered email (and SMS if it worked), (b) the templates list showing your 4 templates/snippets. Save as <code>day04-conversations.png</code> and <code>day04-templates.png</code> in <code>GHL Portfolio/screenshots</code>. Journal: SPF/DKIM/DMARC one-liners, the A2P answer, and today's biggest surprise.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A live communication stack in Summit Dental: LC Email verified working (test email delivered to your real inbox and reply threaded back), a phone number configured with call forwarding (or documented screenshots if purchase was blocked), 2 email templates and 2 SMS snippets with resolving merge fields, plus two screenshots in your portfolio folder and a journal entry containing your interview-ready SPF/DKIM/DMARC and A2P 10DLC explanations.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Save the deliverability vocabulary from today in one journal block: LC Email, dedicated sending domain, SPF, DKIM, DMARC, LC Phone, A2P 10DLC, brand + campaign registration, sender reputation. Being fluent in these ten terms — even more than clicking skills — is what makes hiring managers believe "this person has actually shipped campaigns."</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Only ever send tests to the <strong>Test Me</strong> contact (your own email/phone). Never send to the fake <code>@example.com</code> patients — bounces hurt your account's sending reputation — and never put anyone else's real number in a training account. Also: SMS costs credits per segment (~160 characters); keep tests short.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Dedicated sending domain"</em> and <em>"A2P 10DLC"</em>; read both articles today.</li>
+      <li>Also search the Help Center for <em>"LC Phone"</em> pricing/limits and <em>"Snippets"</em>.</li>
+      <li>GHL University: <a href="https://university.gohighlevel.com" target="_blank" rel="noopener">university.gohighlevel.com</a> — the Conversations module.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-03.html">← Day 3: Pipelines &amp; Opportunities</a>
+  <a href="day-05.html">Day 5: Calendars &amp; Online Booking →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

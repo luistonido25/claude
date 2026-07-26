@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 12 — Products, Payments &amp; Order Forms | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="12">
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 2 · Funnels, Websites &amp; Payments</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 12</span>Products, Payments &amp; Order Forms</h1>
+    <p class="day-goal">By tonight you will have Stripe connected in test mode, two real products (a $21 one-time challenge and a $49/mo membership), a 2-step order funnel with an order bump and a one-click upsell, a completed test purchase you can find in Transactions, and a sent test invoice. Money flow is where clients get nervous — being calm here makes you hireable.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Connect Stripe in test mode</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Stripe has two parallel universes: <strong>live mode</strong> (real cards, real money) and <strong>test mode</strong> (fake cards, fake money, identical behavior). Everything today happens in test mode — you can "buy" things all day and no money moves anywhere.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d12-t01"><span>Write the rule in your journal first: <strong>test keys/test mode = sandbox, safe to break; live keys = real customer money, touch only with client sign-off.</strong> Also note the magic card number you'll use all day: <strong>4242 4242 4242 4242</strong>, any future expiry (e.g. 12/34), any 3-digit CVC, any ZIP. Stripe accepts it in test mode only.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t02"><span>Log into your Stripe account at <strong>dashboard.stripe.com</strong> (created before Day 1). Find the <strong>Test mode</strong> toggle (top-right of the Stripe dashboard) and switch it ON — the interface gets an orange "TEST" marker. Skim <strong>Payments</strong> and <strong>Products</strong> in Stripe's own sidebar for 5 minutes so the other side of today's integration isn't a mystery box.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t03"><span>In the <strong>Ironworks Fitness</strong> sub-account: click <strong>Payments</strong> in the left sidebar → open the <strong>Integrations</strong> tab → find the <strong>Stripe</strong> card → click <strong>Connect</strong>. A Stripe OAuth window opens — sign in and approve. If your version offers separate <strong>test mode</strong> and live connections, connect <strong>test mode</strong> (some versions connect both at once and let GHL switch between them; either way, confirm the connection shows as active).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t04"><span>Confirm test mode end-to-end: back in <strong>Payments → Integrations</strong>, the Stripe card should show connected. If there's a mode indicator or a test-mode toggle in GHL's payment settings, verify it says <strong>Test</strong>. One journal line: "GHL doesn't process cards itself — Stripe does; GHL sends the charge to Stripe and records the result."</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Create the products</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Products are created once and attached to many things (order forms, invoices, payment links). You'll build Ironworks' three-product ladder: a $7 add-on, a $21 front-end offer, and a $49/mo core membership.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d12-t05"><span>Click <strong>Payments → Products</strong> → <strong>+ Create Product</strong>. Name: <strong>21-Day Kickstart Challenge</strong>. Description: <strong>"21 days of coached workouts, a simple nutrition baseline, and daily accountability texts. Built for absolute beginners."</strong> Add an Unsplash image. Under pricing add a price: type <strong>One-time</strong>, amount <strong>$21.00</strong>. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t06"><span><strong>+ Create Product</strong> again: <strong>Monthly Membership</strong>. Description: <strong>"Unlimited classes + open gym, 5AM–11PM, six days a week. Cancel anytime."</strong> Price type <strong>Recurring</strong>, <strong>$49.00</strong>, billing period <strong>Monthly</strong>. <strong>Save</strong>.<em class="why">One-time vs recurring is a price-level setting, not a product-level one — a product can carry both (e.g. monthly AND annual prices).</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t07"><span><strong>+ Create Product</strong> once more: <strong>21-Day Meal Plan</strong>, description <strong>"Done-for-you meals matched to the Kickstart — grocery lists included."</strong>, One-time, <strong>$7.00</strong>. <strong>Save</strong>. This is tonight's order bump.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t08"><span>Open <strong>dashboard.stripe.com</strong> (test mode) → <strong>Products</strong>, and check whether your GHL products appeared there. Depending on version, GHL syncs products to Stripe on creation or at first checkout — note in your journal which behavior yours shows.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — The order funnel: sales page, order form, bump &amp; upsell</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The money funnel: <strong>sales page → order form (+ $7 bump) → one-click upsell ($49/mo) → thank you</strong>. This exact architecture powers most low-ticket offers on the internet, and you're about to own it.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d12-t09"><span><strong>Sites → Funnels → + New Funnel</strong> → From Blank → name <strong>Ironworks — Kickstart Challenge</strong>. Add two steps: <strong>Sales Page</strong> (path <code>/kickstart</code>) and <strong>Order Form</strong> (path <code>/kickstart-order</code>), blank templates.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t10"><span>Build the <strong>Sales Page</strong> (45 min budget): hero — headline <strong>"The 21-Day Kickstart Challenge"</strong>, sub-headline <strong>"Three weeks. A coach in your corner. Real momentum — for less than a pizza. $21, one time."</strong>, button <strong>Start My Kickstart — $21</strong>. Below: a 3-bullet "what you get" section (<em>21 coached workouts on a beginner-proof schedule · daily accountability text from a real coach · the Kickstart nutrition baseline — no weighing, no apps</em>), one testimonial, and a guarantee line: <strong>"Finish all 21 days and don't feel stronger? We refund the $21 and buy you a coffee."</strong> Repeat the button. Wire both buttons → <strong>Go to Next Step</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t11"><span>Attach the product to the order step: back in the funnel view, select the <strong>Order Form</strong> step and open its <strong>Products</strong> tab → click <strong>+ Add Product</strong> → choose <strong>21-Day Kickstart Challenge</strong> → the $21 price. This is what tells the checkout what to charge.<em class="why">Forgetting this step is the #1 reason beginner order forms show "$0.00" or error out.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t12"><span>Open the <strong>Order Form</strong> page in the editor. Add a slim reassurance header (headline <strong>"You're one step from Day 1"</strong> + a 🔒 <strong>"Secure 256-bit encrypted checkout"</strong> line), then add the <strong>Order Form</strong> element from the Add Element panel (choose the <strong>1-step</strong> version today; the 2-step variant splits contact info and card into two mini-stages — read its description so you know it exists). The element should display the Kickstart product and price automatically.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t13"><span>Add the <strong>order bump</strong>: click the order form element → in its settings find <strong>Order Bump</strong> (in some versions bumps are configured on the step's Products tab or an "Add bump" option inside the element settings) → enable it → select <strong>21-Day Meal Plan ($7)</strong> → set the bump headline to <strong>"Add the 21-Day Meal Plan for just $7? (78% of members do)"</strong>. Preview: it should render as a checkbox offer inside the checkout.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t14"><span>Add the upsell step: in the funnel view click <strong>+ Add New Step</strong> → name <strong>Upsell — Membership</strong>, path <code>/welcome-offer</code>. Open its <strong>Products</strong> tab and attach <strong>Monthly Membership ($49/mo)</strong>. Then edit the page: headline <strong>"Wait — lock in your after-Kickstart plan"</strong>, copy <strong>"Members who join before finishing the challenge keep the momentum. Add the Monthly Membership now — your card is charged $49/mo starting today, cancel anytime."</strong>, then add the <strong>1-Click Upsell</strong> element (its "Yes" button charges the saved card without re-entering details) plus a plain text link <strong>"No thanks, just the Kickstart"</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t15"><span>Add a final <strong>Thank You</strong> step (path <code>/kickstart-confirmed</code>): headline <strong>"Welcome to the Kickstart! 💪"</strong> + next steps (<em>check email for your receipt and Day-1 instructions; your start date is next Monday; reply to our text with your goal</em>). Then wire the sequence: order form's post-purchase goes to the upsell (steps flow in order — confirm in the order form element/step settings if yours asks), and both upsell outcomes ("Yes" and "No thanks" link) go to Thank You. Set the "No thanks" link action to <strong>Go to website URL</strong> → the Thank You step URL if there's no next-step option.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t16"><span><strong>Test purchase, full path,</strong> in an incognito window: Sales Page → Order Form → fill as <strong>Cara Customer</strong>, <code>you+cara@gmail.com</code>, phone, card <strong>4242 4242 4242 4242</strong>, 12/34, 123 → <strong>tick the meal-plan bump</strong> → submit → on the upsell click <strong>Yes</strong> → land on Thank You. If the card is declined, you're in live mode somewhere — stop and re-check Session 1.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t17"><span>Find the money: <strong>Payments → Transactions</strong> — you should see the $28 order ($21 + $7 bump) and the $49 subscription charge for Cara Customer. Also open <strong>Payments → Subscriptions</strong> to see the recurring membership, then check <strong>Contacts</strong> → Cara's record exists. Cross-check the same charges in <strong>dashboard.stripe.com</strong> (test mode) → Payments.<em class="why">Tracing one purchase across GHL and Stripe is exactly what you'll do when a client says "a customer paid but I can't find it."</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Invoices &amp; coupons</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Not every sale runs through a funnel. Gyms invoice for personal training blocks; agencies invoice for retainers. Two more tools and your payments toolkit is complete.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d12-t18"><span>Click <strong>Payments → Invoices</strong> → <strong>+ New / + Create Invoice</strong>. Bill it to one of your test contacts (e.g. Bella Booker), add a line item — click <strong>Add Item</strong> and either pick a product or type a custom item: <strong>"Personal Training — 4-Session Block" @ $180</strong>. Set the due date to a week out and check the invoice number/branding pulled from Business Profile.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t19"><span>Click <strong>Send</strong> (choose email; since the contact uses your alias, it arrives in your inbox). Open the email, click through to the hosted invoice page, and pay it with <strong>4242 4242 4242 4242</strong>. Back in <strong>Payments → Invoices</strong>, confirm the status flipped to <strong>Paid</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t20"><span>Coupons overview: open <strong>Payments → Coupons</strong> → <strong>+ Create Coupon</strong> → name/code <strong>FOUNDER10</strong>, type percentage, <strong>10% off</strong>, apply to the Kickstart product if it asks. Save it, then note in your journal where a customer would enter it (the order form's promo-code field — check your order form element settings for the toggle that shows it).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d12-t21"><span>Wrap up: screenshots to <code>GHL Portfolio/screenshots</code> — <code>day12-salespage.png</code>, <code>day12-orderform-with-bump.png</code>, <code>day12-transactions.png</code> (the Transactions list showing your test charges), <code>day12-invoice-paid.png</code>. Journal entry: test vs live in one sentence, the bump vs upsell difference (bump = checkbox <em>before</em> paying; upsell = one-click offer <em>after</em> paying), and the full money path you built.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Stripe connected in test mode, three products (<strong>$21 Kickstart</strong>, <strong>$49/mo Membership</strong>, <strong>$7 Meal Plan</strong>), a 4-step order funnel with a working bump and one-click upsell, a completed $28 + $49/mo test purchase visible in <strong>Payments → Transactions</strong>, a sent-and-paid test invoice, a FOUNDER10 coupon, 4 screenshots, and a Day 12 journal entry.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Never test with a real card "because it's a small amount", and never build order forms on a client's <em>live-mode</em> connection. If the 4242 card is declined, that's your signal you're accidentally in live mode — stop immediately and fix the integration before touching anything else.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Stripe test cards (bookmark this): <a href="https://docs.stripe.com/testing" target="_blank" rel="noopener">docs.stripe.com/testing</a> — includes decline-simulation cards for edge-case testing.</li>
+      <li>GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Stripe integration"</em>, <em>"Order form"</em>, and <em>"Order bumps and upsells"</em>.</li>
+      <li>Stripe dashboard: <a href="https://dashboard.stripe.com" target="_blank" rel="noopener">dashboard.stripe.com</a> — keep the Test mode toggle ON.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-11.html">← Day 11: Websites, Blogs &amp; Domains</a>
+  <a href="day-13.html">Day 13: Memberships &amp; Courses →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

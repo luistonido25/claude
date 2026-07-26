@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 — Contacts &amp; CRM Foundations | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="2">
+
+<header class="day-header week-1">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 1 · Foundations &amp; CRM</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 2</span>Contacts &amp; CRM Foundations</h1>
+    <p class="day-goal">By tonight Summit Dental will have 25+ contacts (added manually and by CSV import), a set of custom fields and tags designed like a pro would design them, three saved Smart Lists, and you'll be able to explain when to use a tag vs a custom field — a question that comes up in almost every GHL interview.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The contact record, inside and out</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Everything in GHL hangs off the contact record: every email, SMS, appointment, opportunity, and automation is attached to a contact. Enter <strong>Summit Dental</strong> via the account switcher — today never leaves this sub-account.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d02-t01"><span>In the left sidebar click <strong>Contacts</strong>. You'll land on the contact list (GHL calls this "Smart Lists" view — the tabs across the top are saved views). Note the columns: Name, Phone, Email, Created, Last Activity, Tags. Click the <strong>column/gear icon</strong> on the right edge of the header row and see which columns you can show or hide.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t02"><span>Click the <strong>+ (Add Contact)</strong> button top-right (it may read <strong>+ Add Contact</strong> or just a <strong>+</strong> icon). Create your first patient by hand: First name <strong>Maria</strong>, Last name <strong>Santos</strong>, Email <code>maria.santos.demo@example.com</code>, Phone — use a fake but valid-format number like <code>+1 555 010 0001</code>. Click <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t03"><span>Click Maria's name to open her full contact record. Spend 10 minutes touring the layout: left panel = contact details and custom fields; center = <strong>Conversation</strong> / activity area; and tabs or panels for <strong>Notes</strong>, <strong>Tasks</strong>, <strong>Appointments</strong>, <strong>Opportunities</strong>, <strong>Documents</strong>. Write one sentence per area in your journal.<em class="why">You'll live in this screen daily as a specialist — knowing where everything is by reflex saves hours.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t04"><span>On Maria's record, click <strong>Notes</strong> (in the center tabs or the right-hand panel depending on your GHL version) → <strong>+ Add Note</strong> → type "Called about teeth whitening, prefers afternoon appointments." → <strong>Save</strong>. Then click <strong>Tasks</strong> → <strong>+ Add Task</strong> → title "Follow up about whitening consult", due date tomorrow, assigned to yourself → <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t05"><span>Manually add 4 more contacts the same way so you internalize the form: <strong>James Okafor</strong> (<code>james.okafor.demo@example.com</code>, +1 555 010 0002), <strong>Linda Tran</strong> (<code>linda.tran.demo@example.com</code>, +1 555 010 0003), <strong>Robert Miller</strong> (<code>robert.miller.demo@example.com</code>, +1 555 010 0004), <strong>Aisha Khan</strong> (<code>aisha.khan.demo@example.com</code>, +1 555 010 0005).<em class="why">Manual entry is rare in real jobs (imports and forms do it), but you must know what a "clean" record looks like to debug dirty ones.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Custom fields &amp; tags: design your data model</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Before importing 20 patients, build the structure they'll land in. Rule of thumb you should memorize: a <strong>custom field</strong> stores an attribute with one current value per contact ("Insurance Provider: Delta Dental"); a <strong>tag</strong> is a stackable yes/no label used for segmenting and triggering automations ("vip", "new-lead"). Fields answer "what is true about this person?", tags answer "which buckets is this person in?".</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d02-t06"><span>Go to <strong>Settings</strong> (bottom of the sidebar) → <strong>Custom Fields</strong> → click <strong>+ Add Field</strong> (top-right; it may open a panel asking which object — choose <strong>Contact</strong>). Pick field type <strong>Dropdown (Single)</strong> → Name it <strong>Insurance Provider</strong> → add options exactly: <code>Delta Dental</code>, <code>Cigna</code>, <code>MetLife</code>, <code>Aetna</code>, <code>Self-Pay</code> → click <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t07"><span>Click <strong>+ Add Field</strong> again → type <strong>Date Picker</strong> → name it <strong>Last Visit Date</strong> → <strong>Save</strong>. Then one more: type <strong>Radio</strong> → name it <strong>Patient Type</strong> → options <code>New Patient</code>, <code>Active Patient</code>, <code>Lapsed Patient</code> → <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t08"><span>While you're here, notice the <strong>folder</strong> option (a <strong>+ Add Folder</strong> button or a folder dropdown when creating a field). Create a folder called <strong>Patient Info</strong> and move your three new fields into it (checkbox-select the fields → <strong>Move to folder</strong>, or edit each field and change its folder).<em class="why">Real client accounts accumulate 50+ fields; folder discipline is a mark of a professional build.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t09"><span>Now tags: go to <strong>Settings → Tags</strong> → click <strong>+ New Tag</strong> and create these four, one at a time: <code>new-lead</code>, <code>patient-active</code>, <code>patient-lapsed</code>, <code>vip</code>. Use lowercase-with-hyphens exactly as written.<em class="why">Consistent tag naming (lowercase, hyphens, no spaces-vs-underscores chaos) prevents the duplicate-tag mess you'll see in every inherited account.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t10"><span>Open <strong>Contacts</strong> → click <strong>Maria Santos</strong> → in the left panel find the <strong>Tags</strong> box → type <code>vip</code> and select it, and add <code>patient-active</code>. Then scroll the left panel to your <strong>Patient Info</strong> folder (expand it if collapsed) and set: Insurance Provider = <strong>Delta Dental</strong>, Patient Type = <strong>Active Patient</strong>, Last Visit Date = pick a date about 2 months ago. Changes save automatically or via a small <strong>Save</strong> button under the fields.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t11"><span>In your journal, answer in your own words: "A dental client wants to track which patients are interested in Invisalign. Tag or custom field?" (Answer: tag — it's a segment for campaigns, not a single-valued attribute.) And: "Which hygienist the patient is assigned to?" (Custom field — one current value.) Write two more examples of each from your own head.<em class="why">This exact judgment call is a common interview question and a daily job decision.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Build a practice CSV and import it</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Importing lists is a bread-and-butter task for GHL specialists — clients constantly hand over spreadsheets from old systems. You'll build a 20-row patient CSV, then import it with proper field mapping.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d02-t12"><span>Open Google Sheets (or Excel) and create a sheet with EXACTLY these column headers in row 1: <code>First Name</code>, <code>Last Name</code>, <code>Email</code>, <code>Phone</code>, <code>Tags</code>, <code>Insurance Provider</code>, <code>Patient Type</code>, <code>Last Visit Date</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t13"><span>Copy these 3 starter rows, then invent 17 more in the same pattern (vary the insurance, types, tags, and dates; keep emails on <code>@example.com</code> and phones in the <code>+1555010XXXX</code> range so nothing is real):<br>
+      <code>Derek,Alvarez,derek.alvarez.demo@example.com,+15550100006,new-lead,Cigna,New Patient,</code><br>
+      <code>Priya,Nair,priya.nair.demo@example.com,+15550100007,patient-active,Delta Dental,Active Patient,2026-05-14</code><br>
+      <code>Tom,Becker,tom.becker.demo@example.com,+15550100008,"patient-lapsed,vip",MetLife,Lapsed Patient,2025-08-02</code><br>
+      Note the third row: multiple tags go in one cell separated by commas, wrapped in quotes. Dates in <code>YYYY-MM-DD</code> import most reliably. Include at least 5 lapsed patients and 5 new leads — you need them for Smart Lists later.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t14"><span>Download it as CSV: in Google Sheets, <strong>File → Download → Comma Separated Values (.csv)</strong>. Name it <code>summit-dental-patients.csv</code> and also save a copy into your <code>GHL Portfolio</code> folder.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t15"><span>In GHL: <strong>Contacts</strong> → click the <strong>import icon / ⋮ three-dot menu</strong> top-right → <strong>Import Contacts</strong> (in newer versions there's a dedicated <strong>Import</strong> button that opens the "Import Documents" wizard) → choose object <strong>Contacts</strong> if asked → <strong>Upload file</strong> → select your CSV → <strong>Next</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t16"><span>Now the crucial screen: <strong>field mapping</strong>. GHL shows each CSV column and its guessed destination field. Verify every row: First Name → First Name, Email → Email, <strong>Insurance Provider → your custom field Insurance Provider</strong> (search the dropdown if it guessed wrong), Patient Type → Patient Type, Last Visit Date → Last Visit Date, Tags → Tags. Never leave a column on "Don't import" unless you mean it. Click <strong>Next</strong>.<em class="why">Bad mapping silently destroys client data — mapping care is what separates pros from button-clickers.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t17"><span>On the final step: name the import <code>day02-practice-import</code>, and if offered a checkbox to <strong>add a tag to all imported contacts</strong>, add <code>import-day02</code> (type it — it will create the tag). Choose the option to <strong>create new AND update existing</strong> contacts if asked, then click <strong>Submit / Start Import</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t18"><span>Wait ~1 minute, refresh <strong>Contacts</strong>, and verify: you should now have 25 contacts (5 manual + 20 imported). Open 3 imported records and confirm the custom fields populated (Insurance Provider shows a value, Last Visit Date shows a date). If a field is empty, find the import log (<strong>Contacts → ⋮ menu → Bulk Actions</strong> or the <strong>Import</strong> screen's history tab) and check for errors — then fix the CSV and re-import. Do not skip the verification.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Smart Lists, bulk actions, DND &amp; duplicates</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A Smart List is a saved, live-updating filter — the backbone of segmentation. Build the three views a dental office would actually use.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d02-t19"><span>In <strong>Contacts</strong>, click <strong>More Filters</strong> (or the <strong>filter icon</strong> top-right) → <strong>+ Add Filter</strong> → search for your field <strong>Patient Type</strong> → set it to <strong>Lapsed Patient</strong> → <strong>Apply</strong>. The list shrinks to your lapsed patients. Now click <strong>Save as Smart List</strong> (button may be under the ⋮ menu or next to the filters) → name it <strong>Lapsed Patients</strong> → <strong>Save</strong>. It appears as a new tab across the top of Contacts.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t20"><span>Build Smart List #2: clear filters (click the <strong>x</strong> on the active filter or <strong>Clear All</strong>), then filter <strong>Tag → is → new-lead</strong> AND <strong>Created → is after → the 1st of this month</strong> (the date filter may be labeled "Date Added"). Save as <strong>New Leads This Month</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t21"><span>Build Smart List #3: filter <strong>Tag → is → vip</strong>. Save as <strong>VIP Patients</strong>. Now click between your three Smart List tabs and <strong>All</strong> a few times — notice each remembers its own filters and columns.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t22"><span>Bulk action drill: open <strong>Lapsed Patients</strong> → tick the <strong>checkbox in the header row</strong> to select all → in the action bar that appears above the list, click the <strong>tag icon (Add Tag)</strong> → choose <code>patient-lapsed</code> → confirm. GHL queues it as a bulk action — check progress under <strong>Contacts → ⋮ menu → Bulk Actions</strong> (the page may be called "Bulk Actions" in the left sub-menu).<em class="why">Reactivation campaigns on Day 19 start exactly like this: segment, then bulk-tag.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t23"><span>Export drill: still on a Smart List, select all → click the <strong>export icon (cloud/down-arrow)</strong> → confirm. Save the downloaded CSV as <code>day02-export-test.csv</code> — open it and skim what GHL includes. Delete it after; it was just to learn the path.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t24"><span>DND: open <strong>Robert Miller</strong>'s record → in the left panel find <strong>DND (Do Not Disturb)</strong> → expand it and note you can toggle DND for <strong>all channels</strong> or per-channel (Email, SMS, Calls). Toggle DND ON for all channels, screenshot it, then toggle it back OFF. Write one journal line: "DND = the compliance kill-switch; automations must respect it."</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t25"><span>Deduplication: go to <strong>Settings → General</strong> (the page may be labeled "Business Profile" — scroll to the section called <strong>Contact Deduplication Preferences</strong> or "Allow Duplicate Contact"). Read the options: GHL normally merges/blocks duplicates by <strong>email and/or phone</strong>. Leave duplicates DISALLOWED. Test it: try to manually add a contact with Maria's exact email — observe what GHL does, then cancel/clean up.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d02-t26"><span>Wrap-up: screenshot (a) your Contacts list showing 25 contacts and the three Smart List tabs, (b) Maria's record with tags + custom fields filled. Save as <code>day02-contacts.png</code> and <code>day02-record.png</code> in <code>GHL Portfolio/screenshots</code>. Journal entry: tag vs custom field rule in one sentence, plus one thing that surprised you about importing.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Summit Dental now holds 25 clean contacts imported with correct field mapping, three custom fields in a <strong>Patient Info</strong> folder, four standard tags, three saved Smart Lists (<strong>Lapsed Patients</strong>, <strong>New Leads This Month</strong>, <strong>VIP Patients</strong>), plus two screenshots in your portfolio folder and a Day 2 journal entry with the tag-vs-field rule in your own words.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Keep <code>summit-dental-patients.csv</code> forever. On Day 7 you'll re-import it into a test account under time pressure, and in job interviews "I can build and import a mapped CSV in five minutes" is a concrete, checkable claim — most applicants can't.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Never put real people's emails or phone numbers in practice data. Stick to <code>@example.com</code> addresses and <code>+1 555 01XX XXXX</code> numbers. On Day 4 you'll connect real sending channels, and stray real addresses in a test account can lead to accidental sends — a fireable offense in a real job.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"How to Import Contacts"</em> and read it before Session 3.</li>
+      <li>Also search the Help Center for <em>"Custom Fields"</em> and <em>"Smart Lists"</em> — skim both articles.</li>
+      <li>GHL University: <a href="https://university.gohighlevel.com" target="_blank" rel="noopener">university.gohighlevel.com</a> — the CRM/Contacts module pairs well with today.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-01.html">← Day 1: GHL Orientation &amp; Account Setup</a>
+  <a href="day-03.html">Day 3: Pipelines &amp; Opportunities →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

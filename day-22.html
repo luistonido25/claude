@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 22 — n8n Setup &amp; First Workflow | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="22">
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 4 · GHL + n8n Integration</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 22</span>n8n Setup &amp; First Workflow</h1>
+    <p class="day-goal">By tonight you will be able to navigate the entire n8n interface without hunting, you'll have built, tested, and activated two working workflows (a scheduled email and a webhook responder), and you'll understand the four ideas that make everything else this week click: items, JSON in/out, expressions, and test vs production URLs.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Why n8n next to GHL + first login and UI tour</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">GHL workflows are powerful, but they hit a wall: they can't reshape data with real logic, call arbitrary third-party APIs, chain AI models, or round-trip spreadsheets. <strong>n8n</strong> is a visual automation tool where every step ("node") receives JSON, does something, and passes JSON on. Agencies pay a premium for people who can bridge GHL and n8n — that combination is exactly what this week trains, and it's the differentiator line on your resume.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d22-t01"><span>In your GHL Training Journal, write the answer to "Why would an agency add n8n when they already pay for GHL?" Cover all four gaps in your own words: (1) <strong>complex data transforms</strong> (split names, reformat phone numbers, compute values), (2) <strong>any third-party API</strong> (GHL's native integrations are a short list; n8n's HTTP Request node reaches anything), (3) <strong>AI chains</strong> (score, summarize, classify leads with an LLM), (4) <strong>spreadsheet round-trips</strong> (Google Sheets as a client-facing dashboard or import source).<em class="why">Interviewers for "GHL + automation" roles ask this exact question. Job posts that say "n8n/Make/Zapier a plus" pay noticeably more.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t02"><span>Log into your n8n Cloud account (created before Day 1) at <strong>app.n8n.cloud</strong>. After login you land in your workspace at a URL like <code>https://yourname.app.n8n.cloud</code> — bookmark that exact URL.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t03"><span>One-sentence journal note: n8n can also be <strong>self-hosted</strong> for free with Docker (<code>docker run -it --rm -p 5678:5678 n8nio/n8n</code>) — clients with privacy or cost concerns ask for this. We use <strong>Cloud</strong> for the rest of this program because it gives you stable public webhook URLs with zero server admin.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t04"><span>Tour the left sidebar of your workspace: click <strong>Overview</strong> and notice its three tabs — <strong>Workflows</strong> (your saved automations), <strong>Credentials</strong> (saved logins/API keys, stored once and reused by nodes), <strong>Executions</strong> (a run log of every time any workflow fired). Write one sentence about each in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t05"><span>Click <strong>Create Workflow</strong> (orange button, top-right). You're now on the <strong>canvas</strong> — the empty grid where workflows are drawn. Locate, without clicking yet: the big <strong>+</strong> in the middle (adds your first node), the <strong>+</strong> at the top-right edge of the canvas (opens the nodes panel), the workflow name "My workflow" at top-left (click it later to rename), the <strong>Inactive/Active</strong> toggle at top-right, the <strong>Save</strong> button, and the <strong>Test workflow</strong> button that appears at the bottom-center once a trigger exists.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t06"><span>Click the central <strong>+</strong>. The <strong>nodes panel</strong> slides in from the right, showing trigger options first ("What triggers this workflow?"). Type a few searches to feel the catalog — <em>gmail</em>, <em>sheets</em>, <em>webhook</em>, <em>http</em>, <em>schedule</em> — then press <strong>Esc</strong> to close without adding anything.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t07"><span>Practice canvas controls for 5 minutes: scroll to zoom, drag empty space to pan, and note the zoom / fit-view buttons in the bottom-left corner. Then click the workflow name, rename it to <strong>Daily Hello</strong>, and click <strong>Save</strong>.<em class="why">You'll build in this exact workflow in Session 2 — renaming and saving early is a habit that prevents a graveyard of "My workflow 7" later.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — First real workflow: Schedule → Set → Email</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The classic first build: every morning at 9:00, n8n emails you "n8n is alive". Trivial output, but it forces you through the three core motions — adding nodes, connecting a credential via OAuth, and testing before activating.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d22-t08"><span>In the <strong>Daily Hello</strong> workflow, click the central <strong>+</strong> and search <strong>Schedule Trigger</strong> → click it. Its <strong>parameter panel</strong> opens (this panel is where every node is configured). Set <strong>Trigger Interval</strong> to <code>Days</code>, <strong>Days Between Triggers</strong> to <code>1</code>, and <strong>Trigger at Hour</strong> to <code>9am</code>. Close the panel with the <strong>← Back to canvas</strong> arrow (top-left of the panel).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t09"><span>Click the small <strong>+</strong> on the right edge of the Schedule Trigger node → search <strong>Edit Fields (Set)</strong> → add it. In its panel, under <strong>Fields to Set</strong>, click <strong>Add Field</strong> twice and create: field <code>name</code> (type String) = your first name, and field <code>message</code> (String) = <code>n8n is alive</code>.<em class="why">The Set node is n8n's "create/reshape data" workhorse — you'll use it constantly to prepare clean fields for later nodes.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t10"><span>With the Set node's panel open, click <strong>Execute Node</strong> (its individual test button). Look at the <strong>OUTPUT</strong> side of the panel: one item containing your two fields. Toggle the output between <strong>Table</strong>, <strong>JSON</strong>, and <strong>Schema</strong> views — every node in n8n shows its data this way.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t11"><span>Back on the canvas, click the <strong>+</strong> after the Set node → search <strong>Gmail</strong> → choose the <strong>Send a message</strong> action. (No Gmail? Use the plain <strong>Send Email</strong> node with any SMTP details instead — but Gmail via OAuth is the smoother path and the one clients usually have.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t12"><span>In the Gmail node's panel, open the <strong>Credential to connect with</strong> dropdown → <strong>Create new credential</strong> → click <strong>Sign in with Google</strong>. A Google window opens: pick your account → Google may warn about permissions — review the requested Gmail scopes → click <strong>Continue / Allow</strong> on each consent screen until the window closes and the credential shows a green "Account connected" state.<em class="why">This OAuth dance is identical for Google Sheets, Drive, Calendar, and Docs later this week — learn it once here.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t13"><span>Fill the Gmail node: <strong>To</strong> = your own email, <strong>Subject</strong> = <code>n8n is alive</code>, <strong>Message</strong> — here's your first <strong>expression</strong>: hover over the Message field, switch it from <strong>Fixed</strong> to <strong>Expression</strong>, and type <code>Good morning {{ $json.name }} — {{ $json.message }}!</code>. Notice the live preview underneath resolving the values from the incoming item.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t14"><span>Click the expression field's expand icon to open the full <strong>expression editor</strong>: left pane = the input item's JSON tree, right pane = result preview. Drag <code>name</code> from the left pane into the editor and watch n8n write <code>{{ $json.name }}</code> for you. Close the editor.<em class="why">Drag-to-map from the input pane is how you'll wire GHL lead data into Sheets and APIs all week — faster and typo-proof.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t15"><span>Full test: go back to the canvas and click <strong>Test workflow</strong> (bottom-center). Watch the nodes execute left to right with green check-marks, then check your inbox for the "n8n is alive" email. If a node turns red, click it and read the error in the output panel — fix and re-test.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t16"><span>Rename each node so the canvas reads like a sentence: double-click the node name (or use the node's ••• menu → Rename) → <strong>Every day 9:00</strong>, <strong>Build message</strong>, <strong>Email me</strong>. Click <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t17"><span>Flip the <strong>Inactive → Active</strong> toggle (top-right) and confirm the dialog. Journal note: a Schedule Trigger only fires on its schedule while the workflow is <strong>Active</strong>; <strong>Test workflow</strong> runs it manually regardless. Tomorrow after 9:00, confirm the email arrived on its own.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — The mental model: items, JSON, expressions, pinning</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Ten minutes of theory now saves hours of confusion on Days 23–27. Everything in n8n is <strong>items flowing between nodes</strong>.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d22-t18"><span>Copy this into your journal and then rewrite it in your own words: every node outputs a <strong>list of items</strong>; each item is a JSON object under a <code>json</code> key. Most nodes run <strong>once per incoming item</strong> — send 5 items into the Gmail node and it sends 5 emails. One GHL lead will arrive as one item; a page of 100 contacts arrives as 100 items.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t19"><span>Prove it: open <strong>Build message</strong>, and in <strong>Fields to Set</strong> temporarily note what one item looks like in the JSON output view — something like <code>[ { "name": "Sam", "message": "n8n is alive" } ]</code>. The square brackets are the item list; the curly braces are one item.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t20"><span>Expression drill — open the expression editor on the Gmail <strong>Subject</strong> field and try each of these, watching the preview: <code>{{ $json.name }}</code>, <code>{{ $json.name.toUpperCase() }}</code>, <code>{{ $now }}</code>, <code>{{ $now.format('yyyy-MM-dd') }}</code>. Set the subject back to normal afterwards and Save.<em class="why">Expressions are JavaScript inside <code>{{ }}</code> — this is 80% of the "data transformation" skill employers list.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t21"><span>Learn <strong>data pinning</strong>: open <strong>Build message</strong>, click <strong>Execute Node</strong>, then click the <strong>pin icon</strong> (📌) at the top of the OUTPUT panel. The output turns purple = pinned. Now downstream nodes reuse this exact data on every test without re-running earlier nodes. Unpin it afterwards. Journal note: pinned data is used in <strong>tests only</strong> — production executions ignore pins.<em class="why">Tomorrow you'll pin a real GHL webhook payload so you can build the rest of the workflow without re-submitting the form 50 times.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Webhook drill: test URL vs production URL</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Webhooks are the front door GHL will knock on for the rest of the week. Build a tiny "echo" workflow and burn the test-vs-production URL distinction into memory — it is the #1 cause of "my integration stopped working" tickets.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d22-t22"><span>From <strong>Overview → Workflows</strong>, click <strong>Create Workflow</strong>, name it <strong>Webhook Echo</strong>, Save. Add a <strong>Webhook</strong> node as the trigger (central <strong>+</strong> → search <em>Webhook</em>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t23"><span>In the Webhook node's panel, note the two tabs at the top: <strong>Test URL</strong> and <strong>Production URL</strong>. Copy both into your journal and write the rule underneath: the <strong>Test URL</strong> (contains <code>/webhook-test/</code>) only works while the editor is open and listening after you press <strong>Test workflow</strong>, and shows results live on the canvas; the <strong>Production URL</strong> (contains <code>/webhook/</code>) only works when the workflow is <strong>Active</strong>, and its runs appear only in the <strong>Executions</strong> list.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t24"><span>Leave <strong>HTTP Method</strong> = <code>GET</code> for this drill. Set <strong>Respond</strong> = <code>When Last Node Finishes</code> → <strong>Respond With</strong>: First Entry JSON (defaults are fine).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t25"><span>Add an <strong>Edit Fields (Set)</strong> node after the webhook with two fields: <code>status</code> = <code>received</code>, and <code>echo</code> set via expression to <code>{{ $json.query.who }}</code> (webhook query-string parameters arrive under <code>query</code>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t26"><span>Test it: click <strong>Test workflow</strong> — the canvas says it's listening. In a new browser tab, paste the <strong>Test URL</strong> and add <code>?who=me</code> at the end → Enter. The browser shows the JSON response <code>{"status":"received","echo":"me"}</code>, and back in n8n the nodes show green with the request data in the Webhook node's output.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t27"><span>Production run: <strong>Save</strong>, toggle <strong>Active</strong>, then call the <strong>Production URL</strong> (again with <code>?who=production</code>) from the browser. Nothing animates on the canvas — that's expected. Open <strong>Overview → Executions</strong>, find the new execution row for Webhook Echo, click it, and inspect every node's input/output in the read-only viewer.<em class="why">Reading past executions is exactly how you'll debug live client integrations — get comfortable in this screen today.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d22-t28"><span>Wrap up: create the folder <code>GHL Portfolio/n8n-exports</code>. In each of the two workflows, open the workflow menu (<strong>•••</strong> next to the Save button) → <strong>Download</strong> — this exports the workflow as JSON. Save them as <code>daily-hello.json</code> and <code>webhook-echo.json</code>. Take <code>day22-first-workflow.png</code> (Daily Hello canvas, all green) and <code>day22-webhook-execution.png</code> (the Executions detail view) into <code>GHL Portfolio/screenshots</code>. Journal entry: the items/expressions/pinning model in your own words + one thing that confused you.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Two working, <strong>activated</strong> n8n workflows — <strong>Daily Hello</strong> (Schedule → Set → Gmail, tested to your inbox) and <strong>Webhook Echo</strong> (called on both its test and production URLs, verified in the Executions list) — plus both workflow JSONs in <code>GHL Portfolio/n8n-exports</code>, two screenshots, and a journal entry explaining items, expressions, pinning, and test vs production URLs in your own words.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Keyboard habits that make you look senior in a screen-share: <strong>Tab</strong> on the canvas opens the nodes panel, <strong>Ctrl/Cmd+S</strong> saves, and double-clicking a node opens its parameters. Also: rename every node the moment you add it — an n8n canvas that reads like a sentence is a portfolio asset in itself.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>n8n quickstart: <a href="https://docs.n8n.io/try-it-out/quickstart/" target="_blank" rel="noopener">docs.n8n.io/try-it-out/quickstart</a> — a 10-minute complement to Session 2.</li>
+      <li>Data structure (items) explained: <a href="https://docs.n8n.io/data/data-structure/" target="_blank" rel="noopener">docs.n8n.io/data/data-structure</a>.</li>
+      <li>Expressions reference: <a href="https://docs.n8n.io/code/expressions/" target="_blank" rel="noopener">docs.n8n.io/code/expressions</a>.</li>
+      <li>Webhook node docs (test vs production URLs): <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook/" target="_blank" rel="noopener">docs.n8n.io — Webhook node</a>.</li>
+      <li>Data pinning: <a href="https://docs.n8n.io/data/data-pinning/" target="_blank" rel="noopener">docs.n8n.io/data/data-pinning</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-21.html">← Day 21: Week 3 Review</a>
+  <a href="day-23.html">Day 23: Portfolio #10 — Lead Logger &amp; Instant Alerts →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

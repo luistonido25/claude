@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 — Calendars &amp; Online Booking | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="5">
+
+<header class="day-header week-1">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 1 · Foundations &amp; CRM</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 5</span>Calendars &amp; Online Booking</h1>
+    <p class="day-goal">By tonight Summit Dental will have two live booking calendars synced two-ways with your Google Calendar, you'll have booked a real test appointment on yourself through the public scheduling link and watched it appear everywhere, and you'll understand appointment statuses — the fuel for the automations you'll build on Day 17.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Calendar concepts + create "New Patient Consult"</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">GHL has three calendar-ish things — keep them straight: a <strong>calendar</strong> is one bookable event type ("New Patient Consult, 30 min"); a <strong>group</strong> bundles several calendars onto one page so the visitor picks a service; a <strong>service menu</strong> is a fancier storefront version of a group (used for salons/clinics with many services). You'll build calendars today and peek at groups.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d05-t01"><span>In <strong>Summit Dental</strong>, go to <strong>Settings → Calendars</strong>. You'll see tabs like <strong>Calendars</strong>, <strong>Calendar Groups</strong> (or "Groups"), <strong>Service Menu</strong>, and <strong>Preferences</strong>. Click through each tab for a minute; write one line per tab in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t02"><span>On the <strong>Calendars</strong> tab click <strong>+ Create Calendar</strong>. A type-picker appears — options like <strong>Simple Calendar</strong> (may read "Event Booking"), <strong>Round Robin</strong>, <strong>Class Booking</strong>, <strong>Collective</strong>, <strong>Service Calendar</strong>. Read each card's description. Pick <strong>Round Robin</strong> (it distributes bookings among team members — with one user, you, it behaves like a simple calendar, but you'll learn the more employable type). If Round Robin isn't offered on your plan/version, pick <strong>Simple Calendar</strong> — everything below still applies.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t03"><span>Basic details: Calendar name <strong>New Patient Consult</strong> → the <strong>URL slug</strong> auto-fills (something like <code>new-patient-consult</code>; edit it to exactly that if not) → Description: "30-minute consultation for new patients — bring your insurance card." → under <strong>Team members</strong> add yourself. Click <strong>Save / Continue</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t04"><span>Open the <strong>Availability</strong> tab of the calendar editor. Set: <strong>Meeting duration = 30 minutes</strong>; <strong>Slot interval = 30 minutes</strong> (a new slot starts every 30 min); <strong>Buffer = 15 minutes</strong> after each appointment (the field may read "Post buffer" or "Buffer time"). Weekly availability: toggle ON <strong>Mon–Fri</strong>, hours <strong>9:00 AM – 5:00 PM</strong>; toggle OFF Sat/Sun.<em class="why">Duration vs interval vs buffer confuses everyone once. Duration = how long the meeting is; interval = how often slots start; buffer = protected gap after. Say it out loud.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t05"><span>Still in Availability (or an "Advanced" section, depending on version), find and set: <strong>Minimum scheduling notice = 4 hours</strong> (no one books a slot 10 minutes away), <strong>Date range / booking window = 30 days</strong> into the future, and <strong>Max appointments per day = 8</strong> if the option exists. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t06"><span>In your journal, sketch a mini-glossary from memory: calendar vs group vs service menu, duration vs interval vs buffer, scheduling notice vs booking window. Six lines. Check yourself against the settings screen.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Connect Google Calendar (conflicts + add-to)</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Two different sync jobs, two different settings: the <strong>conflict calendar</strong> (GHL checks your Google Calendar and hides slots where you're busy) and the <strong>add-to calendar</strong> (GHL writes new bookings INTO your Google Calendar). Both live on your user profile, not on the calendar itself.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d05-t07"><span>You connected Google on Day 1 (Settings → Integrations). Verify: go to <strong>Settings → My Profile</strong> → scroll to <strong>Calendar Settings</strong> (may be labeled "Calendar Configuration" or a "User Calendar Settings" section). If Google isn't listed, click <strong>Connect / Add New</strong> → choose <strong>Google</strong> → sign in → allow ALL requested calendar permissions.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t08"><span>In Calendar Settings, set the <strong>Linked Calendar</strong> (the add-to target — where GHL bookings get written): choose your primary Google calendar. Then under <strong>Check for conflicts</strong> (may read "Conflict calendars"), tick your primary Google calendar as well. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t09"><span>Prove the conflict sync works: open Google Calendar in another tab → create an event tomorrow from <strong>10:00–11:00 AM</strong> called "BLOCK TEST". Wait ~2 minutes, then preview your GHL booking page (next session gives you the link — or use the <strong>eye/preview icon</strong> next to the calendar in Settings → Calendars). Tomorrow's 10:00 and 10:30 slots must NOT be offered. Delete "BLOCK TEST" after and confirm the slots come back (may take a couple of minutes).<em class="why">"Why is my calendar showing slots when I'm busy?" is a top-3 client support ticket. You just learned the fix: conflict calendar not ticked.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t10"><span>Journal: draw the two arrows. Google → GHL = conflict check (hides busy slots). GHL → Google = linked/add-to calendar (writes bookings). Note where each is configured: <strong>Settings → My Profile → Calendar Settings</strong>, per USER not per calendar.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Booking form, confirmations, and a real test booking</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d05-t11"><span>Reopen the <strong>New Patient Consult</strong> calendar (Settings → Calendars → click its name or <strong>⋮ → Edit</strong>) and go to the <strong>Forms &amp; Payment</strong> tab (may read "Forms" or "Booking Form"). The default form asks Name, Email, Phone. Keep the default for now, but note the dropdown where you could swap in a custom form (you'll build real forms tomorrow — Day 6). Confirm <strong>Phone</strong> is required.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t12"><span>Go to the <strong>Notifications &amp; Additional Options</strong> tab (naming varies: "Notifications", "Confirmation"). Review what's on by default: a <strong>confirmation email</strong> to the booker, and toggles for notifying the assigned user. Make sure the booker confirmation email is ON. Find the <strong>Thank-you / confirmation page</strong> setting: default is GHL's built-in confirmation message — leave it, but note you could redirect to a URL instead.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t13"><span>Also on this tab (or "Additional Options"): find <strong>Allow rescheduling</strong> and <strong>Allow cancellation</strong> toggles — turn both ON. These add reschedule/cancel links to the confirmation email.<em class="why">Day 17's no-show automation depends on patients being able to self-reschedule instead of just ghosting.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t14"><span>Get the public link: in <strong>Settings → Calendars</strong>, on the New Patient Consult row, click the <strong>⋮ three-dot menu → Share</strong> (or a link icon). Copy two things into your journal: the <strong>Scheduling Link</strong> (a URL like <code>…/widget/booking/XXXXXXXX</code>) and the <strong>Embed Code</strong> (an <code>&lt;iframe&gt;</code> snippet). One line each on when you'd use which: link for SMS/email, iframe for a website page.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t15"><span>Open the scheduling link in an <strong>incognito/private window</strong> (so you see it as a patient would). Walk through it slowly: pick a day, notice only Mon–Fri 9–5 slots appear at 30-min intervals, pick a slot 2+ days out, and book it as <strong>Test Me</strong> with your REAL email and phone (the same details as your Day 4 test contact — GHL will match the existing contact instead of duplicating). Submit.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t16"><span>Now trace the booking through all four surfaces and screenshot each: (1) the on-screen confirmation page; (2) the confirmation email in your real inbox; (3) <strong>Google Calendar</strong> — the event appears on your linked calendar; (4) in GHL, click <strong>Calendars</strong> in the LEFT SIDEBAR (the day-to-day appointments view — different from Settings → Calendars!) and find the appointment on the calendar grid.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t17"><span>Open <strong>Test Me</strong>'s contact record → find the <strong>Appointments</strong> section — the booking is attached to the contact too, with its status. Also check <strong>Conversations</strong>: the confirmation email GHL sent is threaded there. In your journal: "One booking, five places it shows up" — list them.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t18"><span>Reschedule test: in the confirmation email, click the <strong>reschedule link</strong> → move the appointment to a different slot → confirm the change propagates to Google Calendar and the GHL Calendars view.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Appointment statuses, second calendar &amp; groups</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d05-t19"><span>In the sidebar <strong>Calendars</strong> view, click your test appointment → a detail panel opens with a <strong>status dropdown</strong>: <strong>Confirmed</strong>, <strong>Showed</strong>, <strong>No-Show</strong>, <strong>Cancelled</strong> (plus "Invalid" in some versions; new bookings may start as "New/Unconfirmed" depending on calendar settings). Change the status to <strong>Showed</strong> and save.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t20"><span>Journal — why statuses matter: on Day 17 you'll build workflows triggered by exactly these values (No-Show → send "sorry we missed you" rebooking SMS; Showed → send review request; Cancelled → offer new times). Write those three trigger→action pairs down now; you're designing Day 17 today without knowing it.<em class="why">Statuses only power automations if staff actually set them — in a real job you'll train the front desk to do this after every appointment.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t21"><span>Build calendar #2 solo (no instructions — that's the point): <strong>Settings → Calendars → + Create Calendar</strong> → <strong>Hygiene Cleaning</strong>, slug <code>hygiene-cleaning</code>, duration <strong>60 minutes</strong>, interval 60, buffer 15, Mon–Fri 9–5, min notice 4h, rescheduling+cancellation ON. Time yourself — under 15 minutes means yesterday stuck.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t22"><span>Groups: go to <strong>Settings → Calendars → Calendar Groups</strong> tab → <strong>+ Create Group</strong> → name <strong>Summit Dental Booking</strong>, slug <code>summit-booking</code> → add BOTH calendars to it → <strong>Save</strong>. Open the group's share link in incognito: the patient now picks "New Patient Consult" or "Hygiene Cleaning" from one page. Screenshot it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t23"><span>Skim <strong>Settings → Calendars → Preferences</strong> tab: account-wide defaults like date format and the "In what timezone…" behavior for bookers. Just read it — defaults are fine. One journal line on what lives here.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d05-t24"><span>Wrap-up: make sure you've saved <code>day05-booking-page.png</code> (the public booking page), <code>day05-confirmation.png</code> (confirmation email), <code>day05-gcal-sync.png</code> (the event in Google Calendar), and <code>day05-group.png</code> (the group page) into <code>GHL Portfolio/screenshots</code>. Journal entry: the five-places-one-booking list, the status→automation pairs, and duration/interval/buffer definitions from memory.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Two live, tested booking calendars (<strong>New Patient Consult</strong> 30-min and <strong>Hygiene Cleaning</strong> 60-min) bundled in a <strong>Summit Dental Booking</strong> group, two-way Google Calendar sync proven with a conflict test and a real self-booking traced through confirmation page, email, Google Calendar, the GHL Calendars view, and the contact record — plus four screenshots and a journal entry mapping appointment statuses to the Day 17 automations they'll trigger.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>Always test booking pages in an incognito window. Logged-in GHL sessions can behave differently from what a real visitor sees (cached widgets, pre-filled data), and "works for me, broken for the client's customers" is an embarrassing bug class you can avoid with this one habit.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Don't confuse the two calendar places in the sidebar: <strong>Calendars</strong> (main sidebar) is the day-to-day appointment view where staff see and status bookings; <strong>Settings → Calendars</strong> is where calendars are built and configured. When a tutorial says "go to calendars", check which one it means — half of all beginner confusion on this topic is just that.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Create a calendar"</em> and <em>"Google Calendar integration"</em>.</li>
+      <li>Also search the Help Center for <em>"Appointment status"</em> — confirms today's status list and what each means for reporting.</li>
+      <li>GHL University: <a href="https://university.gohighlevel.com" target="_blank" rel="noopener">university.gohighlevel.com</a> — the Calendars module.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-04.html">← Day 4: Conversations, Email &amp; SMS Channels</a>
+  <a href="day-06.html">Day 6: Forms &amp; Surveys →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>

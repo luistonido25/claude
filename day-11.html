@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 11 — Websites, Blogs &amp; Domains | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="11">
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 2 · Funnels, Websites &amp; Payments</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+    </div>
+    <h1><span class="day-num">Day 11</span>Websites, Blogs &amp; Domains</h1>
+    <p class="day-goal">By tonight Ironworks Fitness will have the skeleton of a real multi-page website — Home, About, Classes, Contact — with a shared global header/footer and working navigation, a published blog post with SEO settings, and you'll be able to explain exactly how a custom domain gets connected (even though you'll keep using the free preview URL).</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Create the website + page structure + navigation</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Same editor as funnels, different container: a <strong>Website</strong> in GHL holds many pages joined by navigation instead of a linear step sequence. On Day 14 you'll polish this into Portfolio #4 — today you build the frame.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d11-t01"><span>In <strong>Ironworks Fitness</strong>, click <strong>Sites</strong> → <strong>Websites</strong> tab → <strong>+ New Website</strong> (some versions: <strong>+ Create Website</strong>, then <strong>From Blank</strong> — skip the template gallery today; you learn more building bare). Name it <strong>Ironworks Fitness</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t02"><span>Create four pages. The website opens with one default page — rename it <strong>Home</strong> (path <code>/</code> or <code>/home</code>). Then click <strong>+ New Page</strong> three times: <strong>About</strong> (path <code>/about</code>), <strong>Classes</strong> (path <code>/classes</code>), <strong>Contact</strong> (path <code>/contact</code>). Blank templates for all.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t03"><span>Open <strong>Home</strong> in the editor and build the header band: add a section at the very top with a 2-column row — left column: an <strong>Image</strong> element with the Ironworks logo (small, ~150px wide); right column: a <strong>Navigation Menu</strong> element if your version has one, otherwise four small text links. Menu items: <strong>Home, About, Classes, Contact</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t04"><span>Link each menu item: click the nav element (or each text link) → in its settings add/edit the items → set each one's link to the matching page (the link picker lets you choose website pages directly; if yours only takes URLs, paste each page's path like <code>/about</code>). Test nothing yet — pages are still blank.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t05"><span>Make the header <strong>global</strong>: select the header section → in its settings/toolbar find <strong>Save as Global Section</strong> (in some versions: right-click the section, or a globe icon on the section toolbar). Name it <strong>Site Header</strong>. Now open <strong>About</strong>, <strong>Classes</strong>, and <strong>Contact</strong> and add the global <strong>Site Header</strong> to the top of each (global sections appear in their own tab of the Add Section panel).<em class="why">Global = edit once, updates everywhere. Employers specifically look for this — per-page copy-pasted headers are a maintenance nightmare.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t06"><span>Write one sentence in your journal: "A global section is stored once and referenced by many pages; editing it anywhere edits it everywhere." Then test it: change a menu label in the header on the Home page, open About, and confirm the change appeared.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build the Home page + global footer</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Four blocks make a credible local-business home page: hero, three features, social proof, footer with a contact form. You have the copy below — assembly is Day-8 muscle memory.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d11-t07"><span><strong>Hero:</strong> under the header on Home, build your standard hero — gym photo + overlay, headline <strong>"The Gym Where Beginners Become Regulars"</strong>, sub-headline <strong>"Coaching, community, and a plan that fits your life — in the heart of your neighborhood."</strong>, button <strong>Book a Free Intro Session</strong> → action <strong>Go to website URL</strong> → paste your Day-10 booking funnel's Landing URL.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t08"><span><strong>3-feature row:</strong> white section, 3-column row, each column an image (Unsplash) + headline + line: <strong>Small-Group Classes</strong> <em>"Max 10 people, so the coach actually coaches."</em> / <strong>Open Gym 5AM–11PM</strong> <em>"Train around your life, not our schedule."</em> / <strong>The 21-Day Kickstart</strong> <em>"Our $21 on-ramp that turns 'someday' into day one."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t09"><span><strong>Testimonial section:</strong> light-grey background section, centered: a large quote paragraph — <strong>"I hadn't set foot in a gym in 10 years. Three months at Ironworks and I'm deadlifting my bodyweight. The coaches remember your name AND your goals."</strong> — attributed <strong>— Priya S., member since 2025</strong>, with a small circular face photo (Unsplash "portrait"). Duplicate the quote block twice for 3 testimonials in a 3-column row if you have the energy.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t10"><span><strong>Footer with form:</strong> first build the form — <strong>Sites → Forms → Builder → + Add Form</strong>, name <strong>Website Contact Form</strong>, fields: Full Name, Email, Phone, and a <strong>Multi-line / Text Area</strong> field labeled "How can we help?". Save it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t11"><span>Back on Home, add a dark footer section: 3-column row — column 1: logo + address + phone; column 2: the same four nav links + <strong>"Free Gym Starter Guide"</strong> linking to your Day-9 opt-in URL; column 3: a <strong>Form</strong> element with <strong>Website Contact Form</strong> selected, headline above it <strong>"Say hello"</strong>. Under everything, a full-width line: <strong>© 2026 Ironworks Fitness · 214 Foundry Ave · (555) 015-8814</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t12"><span>Save the footer as a <strong>Global Section</strong> named <strong>Site Footer</strong>, then add it to the bottom of About, Classes, and Contact — every page now has the real header and footer sandwiching an empty middle.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t13"><span>Give the three inner pages a minimum viable middle (10 minutes each, don't gold-plate — Day 14 is polish day): <strong>About</strong> — headline "Built by two coaches who hated big-box gyms" + one paragraph + team photo. <strong>Classes</strong> — 2×2 or 4-column grid of class cards: <strong>Foundations</strong> (beginners), <strong>Strength 101</strong>, <strong>Conditioning</strong>, <strong>Mobility</strong>, each with one line and a "Book intro session" button → booking funnel URL. <strong>Contact</strong> — address, hours (Mon–Sat 5AM–11PM), phone, and the Website Contact Form again.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t14"><span>Mobile pass on all four pages (toggle to the phone icon on each, fix stacking and font sizes), <strong>Save</strong> each, then click <strong>Preview</strong> on Home and click through the entire nav like a visitor. Fix any dead link.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Blogs: create, write, publish</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">GHL has a native blog engine — a big deal for local SEO, and a feature many "GHL specialists" have never touched. Being able to say "I've shipped a GHL blog post with SEO settings" puts you ahead.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d11-t15"><span>Click <strong>Sites</strong> → <strong>Blogs</strong> tab → <strong>+ New Blog</strong> (older versions drop you straight into a single-blog view — same features). Name it <strong>The Ironworks Blog</strong>, upload any gym image for the blog header if prompted.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t16"><span>Click <strong>+ New Post</strong>. Title: <strong>5 Beginner Gym Mistakes (and the 5-Minute Fixes)</strong>. Paste and lightly personalize this ~200-word draft: <em>"Walking into a gym for the first time is intimidating — and most beginners quit because of five fixable mistakes. <strong>Mistake 1: Doing only cardio.</strong> Treadmills feel safe, but strength training is what changes your body and protects your joints. Fix: two 30-minute strength sessions a week. <strong>Mistake 2: Copying advanced lifters.</strong> That person supersetting five exercises has years of practice. Fix: master three basics — squat, press, row. <strong>Mistake 3: Going too hard on day one.</strong> Soreness that lasts a week kills momentum. Fix: leave every early session feeling like you could do more. <strong>Mistake 4: No plan.</strong> Wandering between machines burns time and confidence. Fix: write your session down before you arrive — or grab our free Gym Starter Guide. <strong>Mistake 5: Training alone too long.</strong> Feedback beats guesswork. Fix: book a free 30-minute intro session at Ironworks and leave with a plan built for you. Every regular you see was once a nervous beginner. The only real mistake is waiting another month to start."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t17"><span>Add a <strong>cover image</strong> (Unsplash: "gym beginner"), set the post <strong>category</strong> (create one: <strong>Beginners</strong>) and <strong>author</strong> (you, as "Coach" — add your name and a photo if the author dialog asks).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t18"><span>Open the post's <strong>SEO settings</strong> (a tab or gear inside the post editor): <strong>SEO title</strong> "5 Beginner Gym Mistakes (and How to Fix Them) | Ironworks Fitness", <strong>meta description</strong> "New to the gym? Avoid these 5 common beginner mistakes with quick fixes from Ironworks Fitness coaches — plus a free starter guide.", URL slug <code>beginner-gym-mistakes</code>. Then click <strong>Publish</strong> and view the live post.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t19"><span>Wire the blog into the site: copy the published post/blog URL, then edit the <strong>Site Footer</strong> global section — add a <strong>Blog</strong> link in the footer nav column. (One edit, all four pages updated — enjoy that.)</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Domains explained + SEO pass</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You will NOT buy a domain today — the free preview URL is fine for the whole program. But you must be able to explain domain connection fluently, because it's a day-one task in almost every GHL job.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d11-t20"><span>Go to <strong>Settings → Domains</strong> → click <strong>+ Add Domain</strong> (or <strong>Connect Domain</strong>) and read the dialog carefully — <strong>then cancel without saving</strong>. Note what it asks for: the domain/subdomain name, and which DNS records to create. GHL shows you the exact record target on this screen when you do it for real.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t21"><span>Learn the DNS model and write it in your journal: DNS records live at the <strong>registrar</strong> (GoDaddy, Namecheap, Cloudflare…), not in GHL. An <strong>A record</strong> points a root domain (<code>yourgym.com</code>) at an IP address. A <strong>CNAME record</strong> points a subdomain (<code>go.yourgym.com</code>) at another hostname — and GHL's Add Domain screen tells you the exact target hostname to use. After adding the records you return to GHL and verify; propagation can take minutes to a few hours, and GHL issues the SSL certificate automatically once verified.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t22"><span>Learn the agency convention and note it: clients usually keep their main website at <code>yourgym.com</code> and give GHL a <strong>subdomain</strong> like <code>go.yourgym.com</code> or <code>book.yourgym.com</code> for funnels — zero risk to the existing site. Then rehearse saying this 60-second explanation out loud twice, no notes: what record, where it's created, what GHL provides, what "propagation" means.<em class="why">"Can you connect a client's domain?" is a near-universal screening question — you now answer it from understanding, not memorized steps.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t23"><span>Find where a connected domain would be attached: inside the website's settings (and each funnel's <strong>Settings</strong> tab) there's a <strong>Domain</strong> dropdown listing connected domains, plus a <strong>default/homepage</strong> setting choosing which page the bare domain shows. Look at both dropdowns now so they're familiar. Your builds keep using the system preview URLs — totally fine for a portfolio.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t24"><span><strong>SEO pass:</strong> for each of the four website pages, open its page settings / <strong>SEO Meta Data</strong> and set a title and description. Pattern: <strong>Home</strong> "Ironworks Fitness — Beginner-Friendly Gym in [Your City]"; <strong>About</strong> "About Ironworks Fitness — Coaches, Story &amp; Values"; <strong>Classes</strong> "Classes at Ironworks — Foundations, Strength, Conditioning &amp; Mobility"; <strong>Contact</strong> "Contact Ironworks Fitness — Hours, Location &amp; Directions". One-sentence descriptions each.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d11-t25"><span>Wrap up: screenshots <code>day11-home-desktop.png</code>, <code>day11-home-mobile.png</code>, and <code>day11-blogpost.png</code> into <code>GHL Portfolio/screenshots</code>. Journal entry: the global-sections sentence, the A-vs-CNAME sentence, and the one page section you're least happy with (Day 14 fixes it).</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A 4-page Ironworks Fitness website with working navigation and a global header/footer, a published blog post with full SEO settings, an SEO title/description on every page, a rehearsed 60-second domain-connection explanation in your journal, and 3 screenshots in your portfolio folder.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Watch out</h3>
+    <p>Do not point any real domain's DNS at GHL "just to try it" if that domain currently runs a live website or email — a wrong A record can take a site down. This is exactly why agencies use a fresh subdomain for GHL. In this program, the preview URL is all you need.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>GHL Help Center: <a href="https://help.gohighlevel.com" target="_blank" rel="noopener">help.gohighlevel.com</a> — search <em>"Connect a domain"</em>, <em>"Global sections"</em>, and <em>"Blogging"</em>.</li>
+      <li>Free DNS explainer: <a href="https://www.cloudflare.com/learning/dns/what-is-dns/" target="_blank" rel="noopener">cloudflare.com/learning/dns</a> — 10-minute read that makes Session 4 stick.</li>
+      <li>Free photos: <a href="https://unsplash.com" target="_blank" rel="noopener">unsplash.com</a>.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-10.html">← Day 10: Portfolio #3: Booking Funnel</a>
+  <a href="day-12.html">Day 12: Products, Payments &amp; Order Forms →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
