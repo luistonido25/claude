@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 21 — Week 3 Review + Portfolio #9: Agency Snapshot | GHL 30-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-day="21">
+
+<header class="day-header week-3">
+  <div class="container">
+    <a class="back-link" href="index.html">← All days</a>
+    <div class="day-meta">
+      <span class="week-badge">Week 3 · Workflows &amp; Automation Mastery</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+    </div>
+    <h1><span class="day-num">Day 21</span>Week 3 Review + Portfolio #9: Agency Snapshot</h1>
+    <p class="day-goal">By tonight, everything you built this week will be audited, consistently named, documented in a workflow inventory — and then packaged into an <strong>Account Snapshot</strong> called "Dental Growth Suite v1": a one-click-deployable product that agencies literally sell for hundreds of dollars. You'll prove it works by loading it into a fresh sub-account. That snapshot, plus its one-pager and sales-style Loom, is Portfolio #9.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Morning audit + workflow inventory</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Before you package the week's work, you audit it the way an agency lead audits a build before client handoff: every workflow opened, verified published, consistently named, and logged in an inventory document. This document itself becomes portfolio material — it screams "professional".</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d21-t01"><span>In Summit Dental open <strong>Automation</strong> and list every workflow you built this week. You should find at least: Hello World (+v2), Logic Lab, Goal Demo, Webhook Out (Training folder) — and Speed to Lead, Helper — Mark Replied, Appointment Confirmations &amp; Reminders, No-Show Recovery, Post-Visit Thank You, Lead Nurture 7-Day, Review Request, DBR — Spring Reactivation, Treatment Accepted — Ops (Client Systems folder). Anything missing or sitting outside a folder: fix now.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t02"><span>Adopt a professional naming convention and apply it to every <strong>Client Systems</strong> workflow: <code>[SD] {System} v1</code> — e.g. <strong>"[SD] Speed to Lead v1"</strong>, <strong>"[SD] Appointment Reminders v1"</strong>, <strong>"[SD] DBR Spring v1"</strong>. Rename each (open → click the name → edit → Save). Leave Training-folder items as-is.<em class="why">Prefix = client, name = system, version = change safety. In an agency with 40 sub-accounts, this convention is the difference between order and chaos — and it photographs well in your portfolio.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t03"><span>Published-state pass: open EACH Client Systems workflow and confirm the toggle says <strong>Published</strong>, and that testing leftovers are gone — production wait durations restored (Days 18–19), no test-only tags in triggers, time windows set where they should be. Fix and re-save anything off.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t04"><span>Create the <strong>Workflow Inventory</strong> doc (Google Doc or Sheet, saved in <code>GHL Portfolio/case-studies</code>) using this exact table — one row per Client Systems workflow, 5 columns: <strong>Name</strong> | <strong>Trigger</strong> | <strong>Purpose (one sentence)</strong> | <strong>Key settings (re-entry / stop-on-response / window)</strong> | <strong>Status (Published + last tested date)</strong>. Fill all ~9 rows from the actual builder screens, not memory.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t05"><span>Spot-check the machine still runs after all that renaming: fire ONE end-to-end smoke test — submit the New Patient Inquiry form as <strong>Final Check</strong> (<code>you+final@gmail.com</code>) and confirm in Execution Logs that <strong>[SD] Speed to Lead v1</strong> ran clean. (Renaming doesn't break anything — prove it rather than assume it.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t06"><span>Week 3 closed-book quiz — answer in your journal WITHOUT opening GHL, then verify: (1) trigger vs action in one sentence; (2) what does a Goal event do to a mid-sequence contact? (3) Allow Re-Entry: when ON for reminders but OFF for nurture — why? (4) the two Wait types that aren't plain delays; (5) name 5 items from your failure catalog; (6) webhook action vs inbound webhook trigger. Score yourself /6; re-study anything you missed.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t07"><span>Screenshot the tidy Client Systems folder (all [SD]-named, all Published) → <code>day21-workflow-audit.png</code>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Build the snapshot: "Dental Growth Suite v1"</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A <strong>Snapshot</strong> is a saved template of a sub-account's assets — pipelines, workflows, calendars, forms, funnels, custom fields/values, and more — that can be loaded into any other sub-account in one click. Agencies use snapshots to onboard new clients in minutes instead of weeks, and they SELL them as products ($97–$997 is a normal range). You're about to turn this week's work into one.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d21-t08"><span>Switch to <strong>Agency View</strong> (account switcher, top-left → your agency). Click <strong>Account Snapshots</strong> in the agency sidebar. Look at the list (you may see imported/default snapshots from onboarding) and note the actions available on a snapshot row (push/load, share, refresh, delete — varies by version).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t09"><span>Click <strong>+ Create Snapshot</strong> (top-right) → name: <strong>Dental Growth Suite v1</strong> → select source sub-account: <strong>Summit Dental</strong> → continue to the asset-selection step.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t10"><span>Asset selection — go category by category and be deliberate, not select-all: INCLUDE your <strong>pipelines</strong> (Patient Acquisition, Reactivation), <strong>workflows</strong> (all the [SD] Client Systems ones — SKIP the whole Training folder), <strong>calendars</strong> (New Patient Consult), <strong>forms</strong> (New Patient Inquiry, Private Feedback), <strong>funnels/websites</strong> (Week 2 builds), <strong>custom fields</strong>, <strong>custom values</strong> (booking_link!), <strong>tags</strong>, and email templates if listed. EXCLUDE contacts/conversations if offered — a product ships empty of personal data. Click <strong>Save / Create</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t11"><span>While it saves, write the include/exclude rules in your journal: snapshots carry <strong>structure</strong> (pipelines, workflows, funnels, forms, calendars, fields, values, tags, templates) but NOT <strong>data or credentials</strong> — no contacts, no conversation history, no connected integrations (Google, Stripe), no phone numbers, no A2P registration, and user-specific assignments won't match the new account's team. Everything in the NOT list becomes your post-load checklist in Session 3.<em class="why">"What doesn't a snapshot carry?" is a real interview question — most candidates can't answer it.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t12"><span>Write the money paragraph in your journal — why agencies sell these: a snapshot converts weeks of expert configuration into a one-click product with near-zero marginal cost; the SAME suite deploys to every dental client (niche snapshots are the product: "Dental Growth Suite", "Roofer Lead Machine"). Then list the 5 systems inside yours in sales language: instant lead response, appointment lifecycle, review generation, database reactivation, sales-ops automation.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t13"><span>Screenshot the snapshot's asset-selection/contents screen (re-open it from the snapshot list if needed) → <code>day21-snapshot-contents.png</code>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Prove it: load into a throwaway sub-account</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">An untested snapshot is a rumor. The professional move — and the exact procedure for onboarding a real client — is: create account → load snapshot → verify assets → fix what snapshots can't carry. You'll run the whole drill on a throwaway.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d21-t14"><span>In Agency View → <strong>Sub-Accounts</strong> → <strong>+ Create Sub-Account</strong> → <strong>Blank Snapshot</strong> → add manually → Business name: <strong>ZZ Test Clinic (DELETE ME)</strong>, any address, your timezone, an alias email → Save. (Trial plans allow a limited number of sub-accounts; the DELETE-ME name guarantees you clean up.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t15"><span>Load the snapshot: two routes — take whichever your UI offers: (a) <strong>Account Snapshots</strong> → find <strong>Dental Growth Suite v1</strong> → its actions/⋮ menu → <strong>Push to sub-account(s)</strong> → select ZZ Test Clinic → confirm; or (b) <strong>Sub-Accounts</strong> → hover ZZ Test Clinic → its actions → load/apply snapshot. Choose the "push all assets" option if asked. Loading takes a few minutes — note that GHL processes it in the background.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t16"><span>Verify like an onboarder — switch into <strong>ZZ Test Clinic</strong> and check each category against your Workflow Inventory doc: <strong>Automation</strong> (all [SD] workflows present — and note their Draft/Published state on arrival; many versions load workflows as DRAFTS on purpose), <strong>Opportunities</strong> (both pipelines, empty of cards), <strong>Calendars</strong>, <strong>Sites → Forms + Funnels</strong>, <strong>Settings → Custom Fields / Custom Values / Tags</strong>. Tick each item off IN the inventory doc — that ticked column is portfolio evidence.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t17"><span>Write the <strong>post-load checklist</strong> (from your t11 NOT-carried list) as a reusable numbered procedure in your journal: 1) connect Google/Stripe integrations; 2) claim a phone number + start A2P registration; 3) update custom values (booking_link → THIS client's calendar URL); 4) reconnect calendar staff + round-robin users; 5) re-point user assignments/notifications; 6) publish workflows after review; 7) run one end-to-end smoke test. This checklist is Day 27 capstone fuel.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t18"><span>Screenshot ZZ Test Clinic's Automation list showing the arrived workflows → <code>day21-snapshot-loaded.png</code>. Then clean up: switch to Agency View → <strong>Sub-Accounts</strong> → ZZ Test Clinic's actions/⋮ → <strong>Delete</strong> → type the confirmation it demands → confirm it's gone from the list. (Deleting a sub-account is irreversible — enjoy being CAREFUL and read the dialog fully; that habit matters when real client accounts sit in the same list.)</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Package Portfolio #9 + close out Week 3</h2>
+    <p class="session-time">≈ 1–1.5 hours</p>
+    <p class="session-intro">Portfolio #9 is different from #5–#8: the artifact isn't a workflow, it's a PRODUCT. So the documentation is a product one-pager and the Loom is a sales demo, not a build walkthrough.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="d21-t19"><span>Write the <strong>"What's inside" one-pager</strong> (Google Doc → <code>GHL Portfolio/case-studies</code>, title "Dental Growth Suite v1"). Structure: one-line pitch ("A complete patient-acquisition and retention system for dental practices — deployed in one click"); the 5 systems as benefit bullets (each: system name + the outcome it drives, e.g. "Speed-to-Lead — responds to every inquiry in under 60 seconds, 24/7"); the asset manifest (X workflows, 2 pipelines, 1 calendar, 2 forms, funnels, fields/values/tags — real counts from your inventory); the deployment story ("load snapshot → 7-step onboarding checklist → live in under a day"). One page, no fluff.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t20"><span>Record the <strong>sales-style Loom</strong> (4–6 min) — sell it as if the viewer were an agency owner: open on the one-pager pitch, show the snapshot contents screen in Agency View, switch into Summit Dental and tour 2–3 flagship workflows (Speed to Lead, Appointment Reminders) at canvas level ("here's what it does", not "here's every click"), mention the proof ("loaded into a fresh account and verified this morning"), close with the deployment story. Save the link in <code>GHL Portfolio/videos</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t21"><span>Assemble the Portfolio #9 bundle and check it's complete in <code>GHL Portfolio</code>: <code>day21-workflow-audit.png</code>, <code>day21-snapshot-contents.png</code>, <code>day21-snapshot-loaded.png</code>, the Workflow Inventory doc (with verification ticks), the one-pager, the Loom link.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t22"><span>Week 3 retrospective in your journal: the five systems you can now build from scratch; your quiz score and weakest topic; the three settings you'll never forget (Re-Entry, Stop on Response, time window); and one honest paragraph titled "what I'd charge to build this week's work for a real dentist" — put a number on it and defend it in two sentences.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="d21-t23"><span>Tick <strong>Portfolio #9</strong> on the home-page tracker. Then preview tomorrow in one minute: Week 4 starts with <strong>n8n</strong> — the external automation engine — and Day 20's webhook payload is the exact data you'll be catching. Confirm your n8n Cloud account from the pre-program checklist still logs in, so Day 22 starts fast.</span></label></li>
+    </ol>
+  </section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio #9: Agency Snapshot — "Dental Growth Suite v1"</h2>
+    <p>You didn't just build automations this week — you productized them: an audited, consistently-named 5-system suite packaged as a snapshot, PROVEN by loading it into a fresh sub-account, and documented with an inventory, a "what's inside" one-pager, and a sales-style Loom. This is a sellable asset, and it's the strongest "thinks like an agency" signal in your entire portfolio. Go to the home page and tick <strong>Portfolio #9</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The <strong>Dental Growth Suite v1</strong> snapshot in Agency View (load-tested and verified, throwaway account deleted), a completed Workflow Inventory doc, every Client Systems workflow renamed <code>[SD] … v1</code> and confirmed Published, three screenshots (<code>day21-*.png</code>), the one-pager, the sales Loom, and a Week 3 retrospective with your quiz score.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Pro tip</h3>
+    <p>In interviews, most candidates say "I know GHL workflows." You can now say: <em>"I built a five-system dental automation suite — speed-to-lead, appointment lifecycle, reviews, reactivation, and sales ops — packaged it as a snapshot, and verified deployment into a clean account with a documented onboarding checklist."</em> Practice saying that sentence out loud today until it's smooth. It's all true, and it's rare.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Help Center — creating snapshots: <a href="https://help.gohighlevel.com/support/search/solutions?term=create+snapshot" target="_blank" rel="noopener">search "create snapshot"</a>.</li>
+      <li>Help Center — loading/pushing snapshots &amp; what they include: <a href="https://help.gohighlevel.com/support/search/solutions?term=load+snapshot+sub-account" target="_blank" rel="noopener">search "load snapshot sub-account"</a>.</li>
+      <li>Help Center — deleting a sub-account: <a href="https://help.gohighlevel.com/support/search/solutions?term=delete+sub-account" target="_blank" rel="noopener">search "delete sub-account"</a>.</li>
+      <li>Tomorrow's tool: <a href="https://docs.n8n.io" target="_blank" rel="noopener">docs.n8n.io</a> — skim the "Quickstart" page tonight if you're curious (optional).</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="day-20.html">← Day 20: Pipeline Automation, Internal Ops &amp; Webhooks</a>
+  <a href="day-22.html">Day 22: n8n Setup &amp; First Workflow →</a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
