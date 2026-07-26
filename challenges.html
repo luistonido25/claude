@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Lab — Real-Client Automation Challenges</title>
+<meta name="description" content="18 realistic client briefs — repetitive business problems solved with Make.com, GHL, or GHL + n8n. Each comes with a node-level architecture guide so every build becomes a portfolio project.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="challenges">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html">Make.com 14-Day</a><a href="challenges.html" class="active">Portfolio Lab</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="hero hero-lab">
+  <div class="container">
+    <h1>🧪 Portfolio Lab</h1>
+    <p class="tagline">18 real-client briefs — repetitive business problems worth money. Build the solution, record the demo, add it to your portfolio.</p>
+
+    <div class="profile-bar"></div>
+
+    <p class="progress-label">Built: <span class="ch-done-count">0 / 0</span> · every build here is a portfolio piece</p>
+
+    <div class="stat-row">
+      <div class="stat"><b>8</b>GHL + n8n</div>
+      <div class="stat"><b>7</b>Make.com</div>
+      <div class="stat"><b>3</b>GHL only</div>
+      <div class="stat"><b>🎲</b><button type="button" class="btn-random-challenge">Pick one for me</button></div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <h2 class="section-title">How to use the Lab</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Treat every brief as a paying client.</strong> Read it like a job post, write a one-paragraph proposal in your journal, THEN look at the architecture guide.</li>
+      <li><strong>The guide tells you what to connect, not what to click.</strong> It names the exact nodes/modules and the flow — wiring them, mapping fields, and testing is your job. That's the skill that gets hired.</li>
+      <li><strong>Done means demoed.</strong> A build counts when it passes the acceptance list, has a Loom walkthrough, and a one-page case study framed honestly as a demonstration build.</li>
+      <li><strong>Filter by stack</strong> to match the tool you're currently sharpening, or hit 🎲 for a random unbuilt challenge.</li>
+    </ul>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Stack:</span>
+      <button type="button" class="filter-chip active" data-group="stack" data-value="all">All</button>
+      <button type="button" class="filter-chip" data-group="stack" data-value="ghl+n8n">GHL + n8n</button>
+      <button type="button" class="filter-chip" data-group="stack" data-value="make">Make.com</button>
+      <button type="button" class="filter-chip" data-group="stack" data-value="ghl">GHL only</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Difficulty:</span>
+      <button type="button" class="filter-chip active" data-group="diff" data-value="all">All</button>
+      <button type="button" class="filter-chip" data-group="diff" data-value="intermediate">Intermediate</button>
+      <button type="button" class="filter-chip" data-group="diff" data-value="advanced">Advanced</button>
+    </div>
+  </div>
+
+  <div id="challenge-list"><p>Loading challenges…</p></div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>Portfolio Lab · All briefs are fictional but modeled on real freelance requests. Present builds honestly as demonstration projects — the architecture is real, the client is not.</p>
+  </div>
+</footer>
+
+<script src="challenges.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

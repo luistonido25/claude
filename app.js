@@ -246,6 +246,7 @@
         set("task:" + id, box.checked ? "1" : "0");
         updateDayProgress();
         updatePortfolioCount();
+        updateChallengeCount();
       });
     });
   }
@@ -355,6 +356,130 @@
     badge.textContent = best >= 0 ? "🧠 Quiz: " + best + "/" + questions.length : "";
   }
 
+  /* ---------- Portfolio Lab (challenges page) ---------- */
+
+  function chTaskId(c) { return "ch-" + c.id.slice(1); } // c07 -> ch-07
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // Data strings may carry **bold** markers for node/module names.
+  function md(s) {
+    return esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+
+  var STACK_LABEL = { "make": "Make.com", "ghl": "GHL only", "ghl+n8n": "GHL + n8n" };
+
+  function renderChallengesPage() {
+    if (document.body.getAttribute("data-page") !== "challenges") return;
+    var host = document.getElementById("challenge-list");
+    var data = window.PORTFOLIO_CHALLENGES || [];
+    if (!host) return;
+    if (!data.length) { host.innerHTML = "<p>Challenge data failed to load.</p>"; return; }
+
+    var html = "";
+    data.forEach(function (c) {
+      var stackClass = c.stack.replace("+", "-");
+      html += '<details class="challenge-card" id="' + c.id + '" data-stack="' + c.stack + '" data-diff="' + c.difficulty + '">' +
+        '<summary>' +
+          '<span class="ch-badges">' +
+            '<span class="stack-badge stack-' + stackClass + '">' + STACK_LABEL[c.stack] + "</span>" +
+            '<span class="diff-pill diff-' + c.difficulty + '">' + c.difficulty + "</span>" +
+            '<span class="ch-meta">' + esc(c.industry) + " · ~" + esc(c.hours) + "</span>" +
+            '<span class="ch-built-flag" data-ch="' + c.id + '"></span>' +
+          "</span>" +
+          '<span class="ch-title">' + esc(c.title) + "</span>" +
+        "</summary>" +
+        '<div class="ch-body">' +
+          '<h3>📩 The client brief</h3>' +
+          c.brief.map(function (p) { return "<p>" + md(p) + "</p>"; }).join("") +
+          '<h3>🔥 What the manual process costs them</h3><ul>' +
+          c.painPoints.map(function (p) { return "<li>" + md(p) + "</li>"; }).join("") + "</ul>" +
+          '<h3>🧰 Why ' + STACK_LABEL[c.stack] + "</h3><p>" + md(c.whyStack) + "</p>" +
+          '<h3>🗺️ Architecture guide — nodes &amp; connections</h3>' +
+          '<ol class="ch-guide">' +
+          c.guide.map(function (g) {
+            return '<li><span class="ch-tool ch-tool-' + esc(g.tool).toLowerCase().replace(/[^a-z0-9]+/g, "-") + '">' + esc(g.tool) + "</span> <strong>" + esc(g.step) + "</strong><br>" + md(g.detail) + "</li>";
+          }).join("") + "</ol>" +
+          '<h3>🗃️ Data model to set up</h3><ul>' +
+          c.dataModel.map(function (d) { return "<li>" + md(d) + "</li>"; }).join("") + "</ul>" +
+          '<h3>⚠️ Edge cases a senior builder handles</h3><ul>' +
+          c.edgeCases.map(function (e) { return "<li>" + md(e) + "</li>"; }).join("") + "</ul>" +
+          '<h3>✅ Client signs off when…</h3><ul>' +
+          c.acceptance.map(function (a) { return "<li>" + md(a) + "</li>"; }).join("") + "</ul>" +
+          '<h3>🎥 Portfolio packaging</h3><ul>' +
+          c.portfolio.map(function (p) { return "<li>" + md(p) + "</li>"; }).join("") + "</ul>" +
+          '<h3>🚀 Stretch goals</h3><ul>' +
+          c.stretch.map(function (s) { return "<li>" + md(s) + "</li>"; }).join("") + "</ul>" +
+          '<label class="ch-built"><input type="checkbox" data-task="' + chTaskId(c) + '"> <span>I built this — it’s in my portfolio</span></label>' +
+        "</div></details>";
+    });
+    host.innerHTML = html;
+
+    initChallengeFilters(data);
+    initRandomPicker(data);
+
+    // deep link
+    if (location.hash) {
+      var target = document.getElementById(location.hash.slice(1));
+      if (target && target.classList.contains("challenge-card")) {
+        target.open = true;
+        setTimeout(function () { target.scrollIntoView({ behavior: "smooth" }); }, 100);
+      }
+    }
+  }
+
+  function initChallengeFilters(data) {
+    var active = { stack: "all", diff: "all" };
+    function apply() {
+      document.querySelectorAll(".challenge-card").forEach(function (card) {
+        var show = (active.stack === "all" || card.getAttribute("data-stack") === active.stack) &&
+                   (active.diff === "all" || card.getAttribute("data-diff") === active.diff);
+        card.style.display = show ? "" : "none";
+      });
+    }
+    document.querySelectorAll(".filter-chip").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        var group = chip.getAttribute("data-group");
+        active[group] = chip.getAttribute("data-value");
+        document.querySelectorAll('.filter-chip[data-group="' + group + '"]').forEach(function (c) {
+          c.classList.toggle("active", c === chip);
+        });
+        apply();
+      });
+    });
+  }
+
+  function initRandomPicker(data) {
+    var btn = document.querySelector(".btn-random-challenge");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var open = data.filter(function (c) { return get("task:" + chTaskId(c)) !== "1"; });
+      var pool = open.length ? open : data;
+      var pick = pool[Math.floor(Math.random() * pool.length)];
+      var card = document.getElementById(pick.id);
+      if (card) {
+        document.querySelectorAll(".challenge-card").forEach(function (x) { x.style.display = ""; });
+        card.open = true;
+        card.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
+
+  function updateChallengeCount() {
+    var countEl = document.querySelector(".ch-done-count");
+    var data = window.PORTFOLIO_CHALLENGES || [];
+    var done = 0;
+    data.forEach(function (c) {
+      var built = get("task:" + chTaskId(c)) === "1";
+      if (built) done++;
+      var flag = document.querySelector('.ch-built-flag[data-ch="' + c.id + '"]');
+      if (flag) flag.textContent = built ? "✓ built" : "";
+    });
+    if (countEl) countEl.textContent = done + " / " + data.length;
+  }
+
   /* ---------- index page ---------- */
 
   function updateIndex() {
@@ -427,10 +552,12 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     renderProfileBar();
+    renderChallengesPage(); // must run before initCheckboxes so ch- boxes get wired
     initCheckboxes();
     updateDayProgress();
     renderQuiz();
     updateIndex();
+    updateChallengeCount();
     initReset();
     if (currentUser()) {
       pullFromServer(function () {
@@ -439,6 +566,7 @@
         updateDayProgress();
         updateIndex();
         updateQuizBadge();
+        updateChallengeCount();
       });
     }
   });

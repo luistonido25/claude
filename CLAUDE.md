@@ -15,7 +15,7 @@ There is **no build step and no test suite**. Plain HTML/CSS/JS; the only depend
 
 ## Structure
 
-The site is multi-track: GHL 30-Day (original, at `index.html` + `day-XX.html`) and Make.com 14-Day (`make.html` + `make-day-XX.html`); n8n and Zapier tabs are "soon" placeholders. Every page carries a `<nav class="track-nav">` tab bar.
+The site is multi-track: GHL 30-Day (original, at `index.html` + `day-XX.html`), Make.com 14-Day (`make.html` + `make-day-XX.html`), and the Portfolio Lab challenge library (`challenges.html`); n8n and Zapier tabs are "soon" placeholders. Every page carries a `<nav class="track-nav">` tab bar.
 
 - `index.html` — GHL track hub: program overview, profile bar, week-by-week day cards, portfolio tracker, "Before Day 1" setup checklist. `<body data-page="index">` (no `data-track` = GHL, legacy keys).
 - `make.html` — Make track hub, same mechanics. `<body data-page="index" data-track="make" data-total-days="14">`.
@@ -23,6 +23,7 @@ The site is multi-track: GHL 30-Day (original, at `index.html` + `day-XX.html`) 
 - `styles.css` — all styling. Week color coding via `week-1` … `week-5` classes; light/dark via `prefers-color-scheme`.
 - `app.js` — progress engine: named profiles, localStorage persistence, cloud sync, quiz rendering. No frameworks.
 - `quizzes.js` / `make-quizzes.js` — `window.GHL30_QUIZZES` / `window.MAKE_QUIZZES = {dayNumber: [{q, options[4], correct, explain}]}`, 5 questions per day. app.js picks the registry by `data-track`.
+- `challenges.html` + `challenges.js` — Portfolio Lab: `window.PORTFOLIO_CHALLENGES` is an array of 18 client-brief objects (`id` c01–c18, `stack` "make"|"ghl"|"ghl+n8n", `brief[]`, `guide[]` of `{step, tool, detail}` with `**bold**` node names rendered by `md()` in app.js, `dataModel[]`, `edgeCases[]`, `acceptance[]`, `portfolio[]`, `stretch[]`). Cards are rendered once by `renderChallengesPage()`; filters only toggle visibility. "Built" checkboxes use `data-task="ch-NN"` and ride the normal tasks sync.
 - `netlify/functions/progress.mjs` — GET/PUT `/api/progress?user=<name>`; stores per-user JSON in the Netlify Blobs store `progress`. Name-only identity (no passwords) by design.
 
 ## Progress data model
