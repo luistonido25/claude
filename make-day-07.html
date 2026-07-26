@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 7 — Data Stores, Text Parser &amp; Tools | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="7">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 5–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 7</span>Data Stores, Text Parser &amp; Tools</h1>
+    <p class="day-goal">By tonight you'll run Make's built-in mini database — all five record modules — and use it for the classic dedupe pattern that stops the same lead being processed twice. You'll extract emails, phones, and names from messy text with three regex drills, tour the Tools modules properly, and ship a v2 of your Lead Intake Machine with a dedupe gate in front. Everything here is a direct prerequisite for tomorrow's two-way sync.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Data stores: the five record modules</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">A <strong>Data store</strong> is a small key-value database living inside Make — no external service, no API latency, made for lookups mid-scenario: "have I seen this email before?", "what record ID maps to this row?". A <strong>data structure</strong> defines its columns. You get limited storage per plan (the free plan's allowance is tiny but plenty for ledgers).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m07-t01"><span>Journal the placement rule before building: <em>Sheets = human-visible data the client owns; Data store = machine bookkeeping no human needs to read (dedupe ledgers, ID mappings, counters).</em> If a client would ever open it, it doesn't belong in a data store.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t02"><span>Create one: left sidebar → <strong>Data stores</strong> → <strong>Add data store</strong> → name <code>leads_seen</code>. Next to <strong>Data structure</strong> click <strong>Add</strong> → name <code>lead_record</code> → <strong>Add item</strong> for each field: <code>email</code> (Text), <code>name</code> (Text), <code>source</code> (Text), <code>first_seen</code> (Date) → <strong>Save</strong>. <strong>Data storage size</strong>: <code>1</code> MB. <strong>Save</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t03"><span>New scenario <code>[TRAIN] Data store lab</code>. Module 1: <strong>Tools &gt; Set multiple variables</strong> — <code>email</code> = <code>Maria.Lopez@Example.com</code>, <code>name</code> = <code>Maria Lopez</code>. Module 2: <strong>Data store &gt; Add/replace a record</strong> → data store <code>leads_seen</code> → <strong>Key</strong> = <code>lower(email)</code> (mapping panel!) → map <code>email</code> (also lowercased), <code>name</code>, <code>source</code> = <code>lab</code>, <code>first_seen</code> = <code>now</code>. <strong>Run once</strong>, then open <strong>Data stores → leads_seen → Browse</strong> — there's your record, keyed by the clean email.<em class="why">The KEY is the whole game: one canonical key (lowercased email) per real-world entity is what makes lookups and dedupes reliable.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t04"><span><strong>Get a record</strong>: add it after, <strong>Key</strong> = <code>lower(email)</code>, run — the stored fields come back as chips. Now change the Set variables email to <code>nobody@example.com</code> and run again: observe exactly how a missing key behaves in the Get module's output and in the run.<em class="why">This experiment is why the dedupe pattern uses SEARCH with a "continue anyway" toggle instead of Get — Get is for keys you already know exist.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t05"><span><strong>Update a record</strong> vs Add/replace: point <strong>Update a record</strong> at the existing maria key and change <code>source</code> to <code>lab-updated</code> — works. Point it at a made-up key — note the failure. Journal the rule: <em>Update = must exist; Add/replace with "Overwrite an existing record" ON = upsert (create or overwrite); that upsert is tomorrow's ledger workhorse.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t06"><span><strong>Search records</strong>: add it, filter <strong>source</strong> <em>equal to</em> <code>lab-updated</code>, run — searching by field values, not just key. Open its settings and find the toggle <strong>Continue the execution of the route even if the module finds no records</strong> — flip it ON and run a search that matches nothing: one empty-handed bundle continues instead of the route dying. That toggle is the hinge of Session 2.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t07"><span><strong>Delete a record</strong> (by key) — delete the maria record, confirm in <strong>Browse</strong>, then re-add her with the first modules. Also find bulk cleanup: the <strong>Browse</strong> panel's delete-all option — you'll use it whenever a test ledger needs a reset (tomorrow's warning callout mentions exactly this).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t08"><span>Journal the five-module cheat sheet from memory, one line each: <code>Add/replace (upsert) · Get (by known key) · Update (must exist) · Search (by fields, continue-toggle) · Delete (by key)</code>. Then check against the UI and correct.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — The classic dedupe pattern</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">The most-billed five modules in freelance automation: <em>input → search ledger by key → filter "not seen" → add to ledger + continue → duplicates die cheap.</em> Once you can build this cold, every "our tool keeps double-sending" client problem is a payday.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m07-t09"><span>Draw it in your journal before the canvas: <code>[input bundle] → Search records (key = lower(email), continue-if-none ON) → filter: key does not exist → Add/replace record → rest of flow</code> — and the duplicate path: dies at the filter after ~2 operations. Label the op counts.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t10"><span>Build it standalone in the Data store lab: <strong>Google Sheets &gt; Search Rows</strong> on the <strong>Leads</strong> sheet (limit 10) as input → <strong>Data store &gt; Search records</strong> on <code>leads_seen</code>, filter <strong>key</strong> <em>equal to</em> <code>lower(Email)</code>, continue-if-none <strong>ON</strong> → wrench-filter labelled <code>New only</code>: the search result's <strong>key</strong> <strong>Does not exist</strong> → <strong>Data store &gt; Add/replace a record</strong> (key = <code>lower(Email)</code>, map name/email/source, <code>first_seen</code> = <code>now</code>) → <strong>Tools &gt; Compose a string</strong>: <code>NEW: </code>+ Email chip.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t11"><span><strong>Run once</strong> — every lead row is new, the ledger fills, Compose fires per row. <strong>Run once again immediately</strong> — every bundle now dies at the <code>New only</code> filter. Open both runs in <strong>History</strong> and write the op counts side by side. That second run's cheapness IS the pattern's sales pitch.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t12"><span>Duplicate-visibility variant: sometimes clients want to KNOW about duplicates (a returning lead is a buying signal). Swap the filter for a <strong>Router</strong>: route <code>First time</code> (key does not exist) → ledger add + Compose; route <code>Seen before</code> as the <strong>fallback</strong> → Compose <code>REPEAT CONTACT: </code>+ Email. Run and verify both paths. Journal when silence vs alert is right.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t13"><span><strong>Drill (10 min, from memory):</strong> blank scenario, rebuild the plain dedupe gate — input → search → filter → add — and prove it with two consecutive runs. Delete the scenario after. Under 10 minutes = pass.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Text parser: three regex drills</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Real-world text is sludge: emails buried in signatures, phone numbers formatted nine ways, names in one field that should be two. The <strong>Text parser &gt; Match pattern</strong> module runs a regular expression over text and outputs the captures as chips — one bundle per match when <strong>Global match</strong> is on.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m07-t14"><span>Rig up: in the lab scenario (or a fresh one), <strong>Tools &gt; Set variable</strong> <code>blob</code> = <code>Fwd: pls contact Maria Lopez &lt;Maria.Lopez@summit-supplies.io&gt; or call +1 (555) 010-0199 after 2pm, she said budget ok</code>. Add <strong>Text parser &gt; Match pattern</strong> and map <code>blob</code> into <strong>Text</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t15"><span><strong>Regex drill 1 — extract the email.</strong> Pattern: <code>[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}</code>. Run once → the match comes out as a chip. Decode the pattern in your journal piece by piece (character class, <code>+</code> = one-or-more, escaped literal dot, <code>{2,}</code> = TLD length). Then lowercase it downstream with <code>lower()</code> — parsed data still needs cleaning.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t16"><span><strong>Regex drill 2 — extract the phone.</strong> Pattern: <code>\+?\d[\d\s().-]{7,}\d</code>. Run once and confirm it grabs <code>+1 (555) 010-0199</code>. Journal the reading: optional <code>+</code>, a digit, then 7+ of digits/spaces/parens/dots/dashes, ending on a digit (so it doesn't swallow the trailing comma or "after").</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t17"><span><strong>Regex drill 3 — split a full name with named groups.</strong> New Set variable <code>fullname</code> = <code>maria de la cruz</code>, new Match pattern with <code>(?&lt;first&gt;\S+)\s+(?&lt;last&gt;.+)</code>. Run once → <code>first</code> and <code>last</code> arrive as separate chips. Compose <code>capitalize(first)</code> + space + <code>capitalize(last)</code>. Journal: <em>named groups (?&lt;name&gt;…) become output fields — this is the from-one-column-to-two fix for every "First/Last name" spreadsheet request.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t18"><span><strong>Global match:</strong> set <code>blob2</code> = <code>attendees: ana@x.io, bo@y.co and carla@z.dev came</code>, run the email pattern with <strong>Global match</strong> = <strong>Yes</strong> → THREE bundles come out, one per address — the module behaves like an iterator. Chain a <strong>Text aggregator</strong> to fold them back into one comma-separated line (Day 2 muscle). Also journal the no-match behavior you observe when you run a pattern that matches nothing — and that a filter or error handler downstream should expect it.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Tools tour + Lead Intake Machine v2</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">First a fast, honest tour of the <strong>Tools</strong> family you haven't formally met — then the day's keeper build: import your Day-4 blueprint and bolt the dedupe gate in front of it. Same machine, professional-grade behavior.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m07-t19"><span>Tools tour in the lab, one run each, one journal line each: <strong>Set variable / Set multiple variables</strong> (scratch values — old friends), <strong>Get variable</strong> (read a variable set earlier in the SAME run — variables don't survive between runs; that's what data stores are for), <strong>Increment function</strong> (a counter — check its <strong>Reset value</strong> options and note "never" makes it count across runs), <strong>Sleep</strong> (pause up to 300 s — Day 5 politeness), <strong>Compose a string</strong> (your debug printf all track).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t20"><span>Import the Day-4 build: <strong>Scenarios → + Create a new scenario → More → Import Blueprint</strong> → pick <code>Make Portfolio/blueprints/m1-lead-intake.json</code>. Re-link what blueprints don't carry: each module's <strong>connection</strong> (Sheets, Gmail, Telegram — click the red-flagged modules and reselect), and the webhook (open the Custom webhook module → <strong>Add</strong> a new hook, name <code>lead-intake-v2</code>, copy the new URL). Rename the scenario <code>[M1] Lead intake machine v2</code>.<em class="why">Import → re-link → extend is exactly how agencies hand builds between developers; doing it once teaches you what blueprints do and don't contain.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t21"><span>Insert the dedupe gate on the <strong>Valid lead</strong> route, between the route's filter and the Sheets module: <strong>Data store &gt; Search records</strong> (<code>leads_seen</code>, key = <code>lower(email)</code>, continue-if-none ON) → then a <strong>Router</strong>: route <code>First time</code> (search key <strong>Does not exist</strong>) → the existing chain (Sheets row → autoresponse → Telegram) <em>plus</em> a <strong>Data store &gt; Add/replace a record</strong> at the end (key = <code>lower(email)</code>, fields mapped, <code>first_seen</code> = <code>now</code>); route <code>Duplicate</code> as <strong>fallback</strong> → single <strong>Telegram Bot</strong> message: <code>♻️ Repeat submission from </code>+ email chip +<code> — no row added, no email sent.</code></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t22"><span>Prove v2 with the double-tap test: Run once, send a payload via curl/reqbin with a fresh email (<code>you+dedupe@gmail.com</code>) → full happy path fires and the ledger gains a record (check <strong>Browse</strong>). Run once again and send the <em>identical payload</em> → only the ♻️ Telegram message; no second row, no second autoresponse. Screenshot both History runs side by side — before/after op counts included.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m07-t23"><span>Wrap up Phase 2's first week: export <code>Make Portfolio/blueprints/day07-lead-machine-v2.json</code> and <code>day07-datastore-lab.json</code>. Screenshots → <code>Make Portfolio/screenshots/makeday07-*.png</code>: the ledger Browse view, the v2 canvas, the duplicate run. Journal from memory: the five data store modules, the three regex patterns, and the dedupe diagram. Every scenario switch <strong>OFF</strong> — tomorrow the two-way sync build reuses <code>Leads</code>, your data-store skills, AND your dedupe thinking.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The <code>leads_seen</code> data store with all five record modules exercised, a from-memory dedupe gate passing the double-tap test, three regex extractions working in the Text parser, and <code>[M1] Lead intake machine v2</code> — imported, extended with dedupe, tested, and exported alongside the lab blueprint.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Where the data belongs — the 5-second decision</h3>
+    <p><strong>Client will read it → Sheet/Airtable. Only the scenario needs it → Data store. Only this run needs it → variable.</strong> Say that rule out loud in interviews and you sound like someone who's cleaned up other people's messes. Tomorrow raises the stakes: the two-way sync uses a data store as a ledger holding record-ID mappings <em>and</em> change-hashes — everything from today, load-bearing.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Data stores"</em>, <em>"Text parser"</em>, and <em>"Tools"</em>.</li>
+      <li>Regex playground: <a href="https://regex101.com" target="_blank" rel="noopener">regex101.com</a> — paste today's three patterns and hover each token for a plain-English explanation.</li>
+      <li>Free course: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the data-stores lesson; watch it tonight as tomorrow's warm-up.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-06.html">← Day 6: Portfolio M2: AI Lead Scorer</a>
+  <a href="make-day-08.html">Day 8: Portfolio M3: Sheets ⇄ Airtable Two-Way Sync →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

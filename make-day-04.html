@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 4 — Portfolio M1: Lead Intake Machine | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="4">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 4</span>Portfolio M1: Lead Intake Machine</h1>
+    <p class="day-goal">First portfolio build. By tonight a real webhook URL will accept lead submissions from anywhere on the internet, validate them with a router, log clean data to a Google Sheet, send the lead a polished autoresponse, and ping your phone on Telegram within seconds — with a separate alert branch for broken submissions. Tested with three payloads, exported, recorded, ticked on the tracker.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Custom webhook: your scenario gets a public URL</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Everything so far ran on a schedule. A <strong>Custom webhook</strong> makes a scenario <em>instant</em>: Make gives you a unique URL, and any system that can send an HTTP request (a website form, another tool, a script) fires your scenario the moment data arrives. This is the trigger behind most real client work.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m04-t01"><span>Create a new scenario named <code>[M1] Lead intake machine</code>. Click the <strong>+</strong> circle → search <strong>Webhooks</strong> → choose <strong>Custom webhook</strong>. In its settings click <strong>Add</strong> next to Webhook → name it <code>lead-intake</code> → <strong>Save</strong>. Click <strong>Copy address to clipboard</strong> and paste the URL into your journal.<em class="why">That URL is live on the public internet from this second — treat it like a semi-secret.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t02"><span>Teach the webhook its data shape. Click <strong>Run once</strong> — the scenario waits, and the webhook module shows it's listening (0 of 1). Now send it a sample request from <strong>reqbin.com</strong>: paste your webhook URL, set method to <strong>POST</strong>, Content type <strong>application/json</strong>, body exactly:<br><code>{"name":"Ana Torres","email":"ana@example.com","phone":"+1 555 0100","source":"website form","message":"Interested in a quote for onboarding automation"}</code><br>→ click <strong>Send</strong>. Make replies <code>Accepted</code>, the run completes, and the webhook has now <strong>determined the data structure</strong> — its fields are mappable chips from here on.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t03"><span>Same thing from a terminal, so you can do it without a browser tool (swap in your URL):<br><code>curl -X POST -H "Content-Type: application/json" -d '{"name":"Ana Torres","email":"ana@example.com","phone":"+1 555 0100","source":"website form","message":"Interested in a quote"}' https://hook.YOUR-ZONE.make.com/YOUR-ID</code><br>Run it once and watch the run fire again. Save both the reqbin setup and this curl line in your journal — they're your test rig all day.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t04"><span>Click the webhook module's output bubble from the last run and inspect the bundle: <code>name</code>, <code>email</code>, <code>phone</code>, <code>source</code>, <code>message</code> chips. Then open the module settings once more and find <strong>Redetermine data structure</strong> — journal when you'd click it (the sender adds or renames fields).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t05"><span>Build the destination: create a Google Sheet named <strong>Leads</strong> with headers <code>Name</code>, <code>Email</code>, <code>Phone</code>, <code>Status</code>, <code>Source</code>, <code>Message</code> — no sample rows needed; the machine fills it.<em class="why">Days 6 (AI scorer) and 8 (Airtable sync) build directly on this exact sheet — the headers matter.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t06"><span>Journal the queue fact before moving on: requests sent while the scenario is <strong>OFF</strong> aren't lost — they wait in the webhook's queue (<strong>Webhooks</strong> in the left sidebar → your hook → queue) and process when the scenario turns on or runs once. Send one curl request with the scenario idle and watch it sit in the queue, then Run once to consume it.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Telegram bot: alerts in your pocket</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Telegram bots are free, instant, and take ten minutes to wire — which is why they're the default "ping the owner" channel in the automation world. You need two things: a <strong>bot token</strong> (the credential) and your <strong>chat ID</strong> (the address).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m04-t07"><span>In Telegram, search for <strong>@BotFather</strong> (verified blue check) → tap <strong>Start</strong> → send <code>/newbot</code> → give it a display name like <code>My Lead Alerts</code> → then a username ending in <code>bot</code>, e.g. <code>ana_leadalerts_bot</code>. BotFather replies with the <strong>HTTP API token</strong> — copy it somewhere safe and never into a screenshot.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t08"><span>Open a chat with your new bot (BotFather's message links it) → press <strong>Start</strong> → send it any message, e.g. <code>hello</code>.<em class="why">A bot can't see your chat ID until you've messaged it first — this step is what makes the next one work.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t09"><span>Get your chat ID: in a browser open <code>https://api.telegram.org/bot&lt;YOUR-TOKEN&gt;/getUpdates</code> (paste your token after <code>bot</code>, no angle brackets). In the JSON response find <code>"chat":{"id":123456789,...}</code> — that number is your chat ID. Save it next to the token.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t10"><span>Wire it in Make: temporarily add a <strong>Telegram Bot &gt; Send a Text Message or a Reply</strong> module anywhere on the canvas → <strong>Add</strong> connection → paste the token → <strong>Chat ID</strong> = your number → <strong>Text</strong> = <code>Bot wired ✅</code>. Right-click → <strong>Run this module only</strong> → the message lands on your phone. Delete the module afterwards (the connection stays saved).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t11"><span>Journal the security one-liner: <em>token = password (rotate it via BotFather's /revoke if it ever leaks), chat ID = address (harmless alone).</em> Blur tokens in every portfolio screenshot you ever take.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Validation router + the happy path</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">Production rule: <strong>never trust inbound data</strong>. The router splits valid leads from broken ones; the happy path cleans the data with Day-2 functions before anything touches the sheet. Build order: router first, then the valid route module by module, then the error branch.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m04-t12"><span>Click right of the webhook → add a <strong>Router</strong> (Flow control). On Route 1, click the route's wrench → <strong>Set up a filter</strong> → label <code>Valid lead</code> → condition <strong>email</strong> <strong>Exists</strong>, then <strong>Add AND rule</strong>: <strong>email</strong> <strong>Text operators &gt; Contains</strong> <code>@</code>.<em class="why">Two cheap checks catch the two common breaks: field missing entirely, or filled with junk like "call me".</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t13"><span>On the Valid route, add <strong>Google Sheets &gt; Add a Row</strong> → spreadsheet <strong>Leads</strong>, sheet <strong>Sheet1</strong>. Map with cleaning functions (mapping panel, Text tab): <strong>Name</strong> = <code>trim(name)</code>, <strong>Email</strong> = <code>lower(trim(email))</code>, <strong>Phone</strong> = <code>trim(phone)</code>, <strong>Status</strong> = type <code>new</code> literally, <strong>Source</strong> = <code>ifempty(source; unknown)</code> (find <strong>ifempty()</strong> in the <strong>General</strong> tab), <strong>Message</strong> = <code>trim(message)</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t14"><span>Next on the same route: <strong>Gmail &gt; Send an Email</strong> (or Email &gt; Send an Email). <strong>To</strong> = the webhook's <strong>email</strong> chip. <strong>Subject</strong>: <code>Thanks — we got your request</code>. <strong>Content</strong>: greet by first name using <code>capitalize(get(split(trim(name); " "); 1))</code>, confirm you received their message, say a human replies within one business day, sign with a plain name. Keep it 4 lines — autoresponses that read human get replies.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t15"><span>Last on the Valid route: <strong>Telegram Bot &gt; Send a Text Message or a Reply</strong> (connection saved from Session 2) → Chat ID → Text:<br><code>🔔 New lead: </code>+ name chip +<code> — </code>+ email chip +<code> — via </code>+ source chip. One glance, full context.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t16"><span>Route 2 = the error branch. Open its filter panel and tick <strong>The route is the fallback route</strong> (Day-3 skill — anything failing the valid filter lands here). Add a <strong>Telegram Bot</strong> message: <code>⚠️ Broken lead submission — no valid email. Name: </code>+ <code>ifempty(name; -)</code> +<code>, phone: </code>+ <code>ifempty(phone; -)</code> +<code>. Check the source form.</code><em class="why">Silently dropping bad submissions loses real customers who just typo'd — the alert lets a human rescue them.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t17"><span>Optional but professional: on the fallback route, also add <strong>Google Sheets &gt; Add a Row</strong> writing whatever arrived with <strong>Status</strong> = <code>needs-review</code>, so even broken leads are on record. Your call — journal the trade-off either way (completeness vs a messy sheet).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t18"><span>Housekeeping before testing: right-click every module → <strong>Rename</strong> to a verb phrase (<code>Catch lead</code>, <code>Valid?</code>, <code>Log to Leads</code>, <code>Autoresponse</code>, <code>Alert me</code>, <code>Alert: bad payload</code>). Screenshot the canvas — this is a portfolio image, and named modules read like documentation.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Three-payload test, proof, packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A build you haven't tried to break isn't finished. Three payloads: one perfect, one broken, one ugly. Use reqbin or the curl line — for the autoresponse, put YOUR own address (or a <code>you+test@gmail.com</code> alias) in the email field so you actually receive it.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m04-t19"><span><strong>Test 1 — complete payload:</strong> Run once, then send:<br><code>{"name":"Ben Okafor","email":"you+lead1@gmail.com","phone":"+1 555 0102","source":"website form","message":"Need help automating client onboarding"}</code><br>Verify all four artifacts: clean row in <strong>Leads</strong> (Status <code>new</code>), autoresponse in your inbox greeting "Ben", Telegram alert, green run in <strong>History</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t20"><span><strong>Test 2 — missing email:</strong> Run once, send <code>{"name":"Carla No-Mail","phone":"+1 555 0103","source":"instagram"}</code>. Verify: the ⚠️ Telegram warning fires, NO autoresponse is attempted, and (if you built task 17) a <code>needs-review</code> row appears. Open the run in History and watch the bundle take the fallback route.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t21"><span><strong>Test 3 — ugly formatting:</strong> Run once, send:<br><code>{"name":"  dANA lopez  ","email":" YOU+LEAD2@GMAIL.COM ","phone":"+1 555 0104","source":"","message":"pricing?"}</code><br>Verify the sheet row shows the email lowercased and trimmed, the name trimmed, Source = <code>unknown</code> (ifempty caught the empty string), and the autoresponse still greeted a capitalized first name. This screenshot — ugly in, clean out — is the single best image of the day.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t22"><span>Package it: <strong>More</strong> → <strong>Export Blueprint</strong> → <code>Make Portfolio/blueprints/m1-lead-intake.json</code>. Screenshots to <code>Make Portfolio/screenshots</code>: <code>makeday04-canvas.png</code>, <code>makeday04-history-3-tests.png</code>, <code>makeday04-sheet.png</code>, <code>makeday04-telegram.png</code> (token nowhere visible). Write the case-study paragraph in <code>Make Portfolio/case-studies</code>: the problem (leads scattered, slow follow-up), the build (instant webhook intake with validation, cleaning, logging, autoresponse, owner alerts), the proof (three-payload test including failure handling).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m04-t23"><span>Record a 2–3 minute <strong>Loom</strong>: fire the curl request live, show the Telegram ping arriving, the sheet row, the autoresponse, then the History run — narrate the fallback branch as "and here's what happens when the data is broken". Save to <code>Make Portfolio/videos</code>. Then go to the Make track home page and tick <strong>Portfolio M1</strong>. Journal entry, and leave the scenario <strong>OFF</strong> — remember, requests queue safely while it's off.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M1: Lead Intake Machine</h2>
+    <p>A live webhook intake with router validation, function-cleaned data, Sheets logging, a human-sounding autoresponse, Telegram alerts on both the happy and broken paths — proven with three test payloads. With the blueprint, four screenshots, the case-study paragraph, and the Loom saved, go to the Make track home page and tick <strong>Portfolio M1</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p><code>[M1] Lead intake machine</code> passing all three payload tests, a working Telegram bot connection you'll reuse for the rest of the track, the exported blueprint, screenshots, case study, and Loom in your portfolio folder.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Webhook URLs are public</h3>
+    <p>Anyone who has your webhook URL can POST to it — there's no login in front. For training that's fine; for clients, mention (and journal now) the defenses: keep the URL out of public code and screenshots, validate payload shape with the router exactly as you did today, and for real security add a shared-secret field to the payload and filter on it. Rotating a leaked webhook = delete the hook in <strong>Webhooks</strong> and create a fresh one.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Webhooks"</em> (structure determination, queue) and <em>"Telegram Bot"</em>.</li>
+      <li>Telegram bot docs: <a href="https://core.telegram.org/bots" target="_blank" rel="noopener">core.telegram.org/bots</a> — what BotFather can configure (name, photo, /revoke).</li>
+      <li>Test tools: <a href="https://reqbin.com" target="_blank" rel="noopener">reqbin.com</a> — online POST sender; keep your curl line in your journal as the offline fallback.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-03.html">← Day 3: Routers, Filters &amp; Error Handlers</a>
+  <a href="make-day-05.html">Day 5: HTTP Module &amp; APIs →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

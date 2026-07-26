@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 6 — Portfolio M2: AI Lead Scorer | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="6">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 6</span>Portfolio M2: AI Lead Scorer</h1>
+    <p class="day-goal">By tonight, every new row landing in your Day-4 Leads sheet gets read by an AI model, scored 1–10 with a two-sentence summary, written back into the sheet — and if it scores 7+, a 🔥 HOT LEAD alert hits your Telegram. The engineering star of the build isn't the AI call; it's the guardrails around it: a strict-JSON prompt, safe parsing, and an error handler for the day the model rambles.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — OpenAI key, connection, and sheet prep</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">One credential and two sheet columns before any canvas work. Note the double billing reality up front: the OpenAI module costs Make <strong>1 operation</strong> per call like any module — but OpenAI bills the <strong>tokens</strong> separately on your OpenAI account. Two meters, two invoices.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m06-t01"><span>Go to <strong>platform.openai.com</strong> → sign in → <strong>Settings → Billing</strong> → add a small credit (5 USD is more than enough for this whole track). Then <strong>API keys</strong> → <strong>Create new secret key</strong> → name it <code>make-training</code> → copy the <code>sk-…</code> value immediately (it's shown exactly once) into a safe note.<em class="why">A ChatGPT subscription does NOT include API credit — they're separate products on the same account. Interview trivia and a real gotcha.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t02"><span>While you're there, set a spending guard: <strong>Billing → Limits</strong> (or usage limits page) → set a low monthly budget cap. Then look at <strong>Usage</strong> — this dashboard is where you'll verify token spend after testing tonight.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t03"><span>Prep the sheet: open the Day-4 <strong>Leads</strong> spreadsheet and add three headers to the right: <code>Score</code>, <code>Summary</code>, <code>Scored At</code>. Leave existing rows as they are.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t04"><span>Create the connection: new scenario <code>[M2] AI lead scorer</code> → add an <strong>OpenAI</strong> module (search <strong>OpenAI</strong>, pick the ChatGPT/DALL-E/Whisper app, module <strong>Create a Completion</strong>) → <strong>Add</strong> connection → paste the API key (Organization ID can stay empty) → <strong>Save</strong>. Don't configure the module yet — you need the trigger's chips first. Journal the model decision now though: <code>gpt-4o-mini</code> — small, cheap, more than smart enough for a scoring task; reach for bigger models only when small ones demonstrably fail.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t05"><span>Note the vendor-independence fallback in your journal (Day-5 skill, verbatim shape): no OpenAI module? An <strong>HTTP &gt; Make a request</strong> does the identical job — POST <code>https://api.openai.com/v1/chat/completions</code>, Header <code>Authorization</code> = <code>Bearer sk-…</code>, JSON body with <code>model</code> and <code>messages</code>. Any LLM provider with an API fits the same three-part shape: endpoint + bearer header + messages body.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Trigger, filter, and the strict-JSON prompt</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Flow: <strong>Watch Rows</strong> on the Leads sheet → filter out already-scored rows → AI call. The prompt is the contract: you're not asking the model to chat, you're demanding a machine-readable object — and you'll still assume it can break that contract.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m06-t06"><span>Add the trigger BEFORE the OpenAI module: click the canvas <strong>+</strong> → <strong>Google Sheets &gt; Watch Rows</strong> → spreadsheet <strong>Leads</strong>, sheet <strong>Sheet1</strong>, <strong>Limit</strong> = <code>5</code>. In <em>Choose where to start</em> pick <strong>All</strong> (so your existing Day-4 test rows flow through on the first run). Drag the module to position 1 and connect it so the chain reads Watch Rows → OpenAI.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t07"><span>Add the cost guard: wrench on the line between them → <strong>Set up a filter</strong> → label <code>Not yet scored</code> → condition <strong>Score</strong> <strong>Does not exist</strong>.<em class="why">Without this, any re-processing accident re-scores every row — every re-score is an operation AND a token bill. Filter-early, Day 3's law.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t08"><span>Configure the OpenAI module: <strong>Model</strong> = <code>gpt-4o-mini</code>. Under <strong>Messages</strong> click <strong>Add a message</strong> — <strong>Role</strong> = <strong>System</strong>, and paste this prompt <em>verbatim</em>:<br><code>You are a B2B lead-qualification assistant. You will receive one lead's details. Score how promising this lead is from 1 to 10, where 10 is a hot buyer. Signals worth points: a concrete request or budget in the message, a company email domain rather than a free one, a phone number provided, a strong source like referral. Respond with ONLY a valid JSON object in exactly this shape, with no code fences, no markdown and no text before or after it: {"score": 7, "summary": "Two sentences explaining the score."} The score must be an integer from 1 to 10. The summary must be exactly two sentences.</code></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t09"><span>Add the second message — <strong>Role</strong> = <strong>User</strong> — built from chips: <br><code>Name: </code>+ Name chip + newline + <code>Email: </code>+ Email chip + newline + <code>Phone: </code>+ Phone chip + newline + <code>Source: </code>+ Source chip + newline + <code>Message: </code>+ Message chip.<em class="why">System = the rules, User = the data. Keeping them separate is both prompt hygiene and what makes the scenario reusable when the data source changes.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t10"><span>Open the module's advanced settings: <strong>Max Tokens</strong> = <code>200</code> (the reply is tiny; capping tokens caps cost), <strong>Temperature</strong> = <code>0.2</code> (scoring wants consistency, not creativity). Journal both choices with their one-line reasons.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t11"><span>First contact: <strong>Run once</strong> — one existing row flows through. Open the OpenAI bubble and find the reply text in <strong>Result</strong> (also visible under <code>choices[].message.content</code>). Read it: it should be bare JSON. Journal the trust rule anyway: <em>an LLM is probabilistic — a prompt makes bad output rare, never impossible. Parsing without a guard is a production incident on a timer.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Safe parsing, the hot/cold router, write-back</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Now the engineering: <strong>Parse JSON</strong> turns the model's text into real <code>score</code>/<code>summary</code> chips, an error handler catches the day it doesn't, and a router splits hot from standard. Day 3 and Day 2 skills, composed.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m06-t12"><span>Add <strong>JSON &gt; Parse JSON</strong> after OpenAI → map the <strong>Result</strong> chip into <strong>JSON string</strong>. Run once → the output bubble shows <code>score</code> and <code>summary</code> as clean mappable chips.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t13"><span>Guard it: right-click the Parse JSON module → <strong>Add error handler</strong>. On the handler route, first add <strong>Telegram Bot &gt; Send a Text Message or a Reply</strong>: <code>⚠️ Scorer: unparseable AI reply for </code>+ Name chip +<code> — raw: </code>+ the OpenAI Result chip. Then end the route with the <strong>Resume</strong> directive, substitute output: <code>score</code> = <code>0</code>, <code>summary</code> = <code>AI output could not be parsed — review manually.</code><em class="why">Resume (Day 3) means a rambling model never kills the run: you get told, the row still gets written, and score 0 routes it to the standard branch.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t14"><span>Optional robustness (+10 min): some models wrap JSON in <code>```json … ```</code> fences despite instructions. Pre-clean the mapping in Parse JSON's field: <code>trim(replace(replace(Result; "```json"; ""); "```"; ""))</code>. Add it, run, confirm nothing broke. Journal why this plus the error handler covers ~99% of malformed-output cases.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t15"><span>Add a <strong>Router</strong> after Parse JSON. Route 1: wrench → label <code>Hot lead</code> → condition <strong>score</strong> with <strong>Numeric operators &gt; Greater than or equal to</strong> value <code>7</code>. Route 2: open its filter panel and tick <strong>The route is the fallback route</strong>.<em class="why">Fallback beats a "less than 7" filter here: the parse-failure score 0, or a model answering "seven" (text!), still land safely in the standard branch instead of vanishing.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t16"><span>Hot route, module 1: <strong>Google Sheets &gt; Update a Row</strong> → spreadsheet <strong>Leads</strong> → <strong>Row number</strong> = the Watch Rows module's <strong>Row number</strong> chip → fill ONLY <strong>Score</strong>, <strong>Summary</strong>, and <strong>Scored At</strong> = <code>now</code> (leave every other column unmapped so you never clobber lead data). Module 2: <strong>Telegram Bot</strong> → <code>🔥 HOT LEAD (</code>+ score chip +<code>/10): </code>+ Name chip + newline + summary chip + newline + <code>Email: </code>+ Email chip.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t17"><span>Fallback route: the same <strong>Google Sheets &gt; Update a Row</strong> (Score, Summary, Scored At only) — no alert. Then rename every module (<code>New lead?</code>, <code>Score with AI</code>, <code>Parse verdict</code>, <code>Hot?</code>, <code>Write score</code>, <code>🔥 alert</code>…) and screenshot the canvas: trigger → filter → AI → guarded parse → router. That picture is the portfolio money shot.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Hot lead, cold lead, broken model: prove all three</h2>
+    <p class="session-time">≈ 1.5–2 hours</p>
+    <p class="session-intro">Craft the test data to force each path. Feed rows in through the Day-4 webhook if you want the full pipeline demo (intake machine writes the row, scorer picks it up), or paste rows straight into the sheet — both are legitimate; the Loom looks best with the webhook.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m06-t18"><span><strong>Test 1 — the hot lead.</strong> Add this row (webhook payload or direct paste): Name <code>Dana Reyes</code>, Email <code>dana.reyes@apexbuild.com</code>, Phone <code>+1 555 0107</code>, Status <code>new</code>, Source <code>referral</code>, Message <code>We need onboarding automation for a 40-person sales team this quarter — budget is approved.</code> <strong>Run once</strong> on the scorer. Expect: score ≥ 7, a two-sentence summary in the sheet, <strong>Scored At</strong> stamped, and the 🔥 alert on your phone. If the score surprises you, read the summary — the model explains itself.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t19"><span><strong>Test 2 — the cold lead.</strong> Row: Name <code>Sam Lee</code>, Email <code>samlee123@gmail.com</code>, Phone empty, Status <code>new</code>, Source <code>instagram</code>, Message <code>just curious what this is lol</code>. Run once. Expect: low score written, summary written, <strong>no</strong> Telegram alert. Check History: the bundle took the fallback route.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t20"><span><strong>Test 3 — break the model on purpose.</strong> Temporarily replace the System message with <code>Reply in flowery plain English sentences. Never output JSON.</code> Add one more test row and run: watch the handler fire — ⚠️ Telegram warning with the raw reply, Resume supplies score 0, the row is still written, run ends green. <strong>Restore the real System prompt</strong>, and screenshot that History run — an error handler caught mid-save is rare proof most portfolios can't show.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t21"><span>Read both meters: Make <strong>History</strong> — count ops per lead (~5–6: trigger + AI + parse + update ± alert) — then <strong>platform.openai.com → Usage</strong> for the token cost of your test runs (gpt-4o-mini scoring calls are fractions of a cent). Journal the client-pitch estimate: <em>"per 100 leads: ~550 Make operations + roughly pennies of model tokens."</em><em class="why">Being able to quote BOTH meters unprompted is exactly the operations-cost discipline clients pay for.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m06-t22"><span>Package and tick: export the blueprint → <code>Make Portfolio/blueprints/m2-ai-lead-scorer.json</code>. Screenshots → <code>Make Portfolio/screenshots/makeday06-*.png</code>: canvas, sheet with Score/Summary columns filled, 🔥 Telegram alert, the handled-failure History run. Record the 2–3 minute <strong>Loom</strong>: submit the hot lead through the Day-4 webhook, show the row appear, run the scorer, show score + alert — then say the sentence "and if the model returns garbage, this error handler catches it" while pointing. Case-study paragraph, tick <strong>Portfolio M2</strong> on the Make track home page, journal entry, scenario switch <strong>OFF</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M2: AI Lead Scorer</h2>
+    <p>A Sheets-triggered AI pipeline with a strict-JSON prompt, guarded parsing (error handler + Resume defaults + fence-stripping), a hot/cold router with write-back and Telegram alerts — proven with a hot lead, a cold lead, and a deliberately broken model reply. With the blueprint, four screenshots, the case study, and the Loom saved, go to the Make track home page and tick <strong>Portfolio M2</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p><code>[M2] AI lead scorer</code> passing all three tests, Score/Summary/Scored At columns populating themselves, the two-meter cost estimate (operations + tokens) written in client-pitch form, and the blueprint + screenshots + Loom in your portfolio folder.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Two meters, one reputation</h3>
+    <p>AI modules bill twice: <strong>1 Make operation</strong> per call AND <strong>tokens</strong> on the provider account. Before any client work: set a spending cap on the provider account (you did — keep that habit), cap <strong>Max Tokens</strong> in the module, and keep the not-yet-scored filter in front of the AI call so a re-run can never re-bill an entire sheet. And the <code>sk-…</code> key is a password: never in a screenshot, a Loom frame, or a blueprint you share (connections aren't exported, but check anyway).</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"OpenAI"</em> for the module reference and <em>"JSON"</em> for Parse JSON.</li>
+      <li>OpenAI docs: <a href="https://platform.openai.com/docs" target="_blank" rel="noopener">platform.openai.com/docs</a> — read the short "structured outputs" page; it's the grown-up version of today's strict-JSON prompt.</li>
+      <li>Free course: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the AI-modules lesson shows the same message-roles pattern.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-05.html">← Day 5: HTTP Module &amp; APIs</a>
+  <a href="make-day-07.html">Day 7: Data Stores, Text Parser &amp; Tools →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

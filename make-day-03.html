@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 3 — Routers, Filters &amp; Error Handlers | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="3">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 1 · Fast Fundamentals</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 3</span>Routers, Filters &amp; Error Handlers</h1>
+    <p class="day-goal">By tonight you'll branch scenarios with routers (including the fallback route most beginners never find), pick the right filter operator on the first try, and — the skill that separates hobby scenarios from production ones — attach all five error-handler directives and explain when each is the right call. You'll close Phase 1 by rebuilding three canonical patterns from memory against the clock.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Routers: one bundle in, many roads out</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A <strong>Router</strong> splits the flow into parallel routes. Critical mental-model correction for n8n users: a Make router is NOT an IF/Switch node. It <em>copies every bundle down every route</em>, in order, top to bottom — the per-route <strong>filters</strong> are what make it behave like a switch. No filter on a route = every bundle travels it.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m03-t01"><span>Prep the data: open your <strong>Make Practice</strong> sheet and edit the rows so <code>Status</code> covers all cases — at least one <code>new</code>, one <code>contacted</code>, one <code>won</code>, one left <strong>blank</strong>, and one junk value like <code>maybe?</code>. Six or seven rows total.<em class="why">The blank and junk rows exist to prove what your fallback route catches later.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t02"><span>Create a new scenario named <code>[TRAIN] Lead router</code>. First module: <strong>Google Sheets &gt; Search Rows</strong> (reuse your connection, spreadsheet <strong>Make Practice</strong>, sheet <strong>Sheet1</strong>, <strong>Maximum number of returned rows</strong> = <strong>10</strong>). Run the module only to confirm bundles.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t03"><span>Click right of the Sheets module → search <strong>Flow control</strong> → add <strong>Router</strong>. It appears with two empty routes. Hover the router and click the <strong>+</strong> that appears to add a third, then a fourth route (you'll use route 4 for the fallback).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t04"><span>Route 1: add a <strong>Tools &gt; Compose a string</strong> at its end with text <code>NEW: </code> + the <strong>Name</strong> chip. Then click the <strong>wrench on the route line itself</strong> (between router and Compose) → <strong>Set up a filter</strong> → label <code>New leads</code>, condition <strong>Status</strong> — operator dropdown → under <strong>Text operators</strong> pick <strong>Equal to</strong> — value <code>new</code>.<em class="why">Filters live on the connection lines, not inside modules — same as Day 1's wrench, just on a router route this time.</em> Then repeat for Route 2 (<code>Contacted</code>, Status equal to <code>contacted</code>, Compose <code>FOLLOW UP: Name</code>) and Route 3 (<code>Won</code>, Status equal to <code>won</code>, Compose <code>CELEBRATE: Name</code>). Note while you're in the filter panel: the default text <strong>Equal to</strong> is case-insensitive; there's a separate <strong>Equal to (case sensitive)</strong> — journal that distinction.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t05"><span>Route 4: add a Compose with <code>NEEDS REVIEW: </code> + <strong>Name</strong> + <code> — status was: </code> + <strong>Status</strong>. Open the route's filter panel, and instead of writing conditions, tick <strong>The route is the fallback route</strong> at the bottom. The route line changes its look.<em class="why">A fallback route ONLY receives bundles that matched no other route — it's your safety net for blank and junk data.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t06"><span><strong>Run once</strong> and audit: click each route's Compose bubble and count bundles — new rows on route 1, contacted on 2, won on 3, and your blank + <code>maybe?</code> rows on the fallback. In your journal, write the two router laws: <em>(1) routes process in order, top to bottom (right-click the router → you can reorder routes); (2) without filters, a router duplicates — it never divides.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Filter operators lab: text, numeric, exists, date</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">The operator dropdown in every filter has grouped sections — <strong>Text</strong>, <strong>Numeric</strong>, <strong>Date/Time</strong>, <strong>Boolean</strong>, <strong>Array</strong>, plus <strong>Exists / Does not exist</strong>. Picking from the wrong group is the #1 silent filter bug in Make, because everything coming out of a sheet or webhook is a <em>string</em> until an operator says otherwise.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m03-t07"><span>Open your <code>[TRAIN] Function gym</code> scenario from Day 2. Replace the first module's setup with <strong>Tools &gt; Set multiple variables</strong>: <code>score</code> = <code>9</code>, <code>score2</code> = <code>10</code>, <code>signup</code> = <code>2026-07-01</code>, <code>email</code> = (leave the value completely empty). Keep a <strong>Compose a string</strong> after it with any text, so there's something for a filter to let through.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t08"><span><strong>The string trap, demonstrated:</strong> on the line before Compose, set a filter <code>score2 bigger?</code> — condition <strong>score2</strong>, operator <strong>Text operators &gt; Equal to</strong>… wait, no: pick <strong>Text operators</strong> → there is no "greater than" for text in the way you'd hope, so people grab the wrong one. Instead test this: condition <strong>score2</strong> (value <code>10</code>) with <strong>Numeric operators &gt; Greater than</strong> against <code>9</code> → passes. Then switch the SAME condition to a text comparison mindset and journal why <code>"10" &lt; "9"</code> alphabetically (strings compare character by character — <code>1</code> sorts before <code>9</code>).<em class="why">"My filter worked until scores hit double digits" is a real support-ticket classic. Numeric operators cast to numbers; text operators never do.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t09"><span><strong>Text operator tour:</strong> run the filter through four variants against variable values you set — <strong>Contains</strong>, <strong>Starts with</strong>, <strong>Ends with</strong>, and <strong>Matches pattern</strong> (it takes a regex — try <code>^\d+$</code> against <code>score</code>: passes only if the value is all digits). Run once after each change and note pass/blocked.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t10"><span><strong>Exists drill:</strong> change the filter to <strong>email</strong> <strong>Exists</strong> → blocked (you left it empty). Change to <strong>Does not exist</strong> → passes. Journal the subtlety: <em>Exists checks whether the field has any value at all; "Not equal to" against an empty string is a different, weaker test — a missing field and an empty field are not the same thing to an operator.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t11"><span><strong>Date drill:</strong> filter condition <code>parseDate(signup; YYYY-MM-DD)</code> (build it in the filter's value field with the mapping panel — yes, filters accept functions) with <strong>Date time operators &gt; Later than</strong> against <code>parseDate(2026-01-01; YYYY-MM-DD)</code> → passes. Swap to <strong>Earlier than</strong> → blocked. Journal: <em>date operators need real dates — parseDate() turns a string into one, formatDate() turns one back into a string.</em> Finish the lab by adding two more conditions to one filter with the <strong>AND</strong> and <strong>OR</strong> buttons (e.g. score greater than 5 AND email does not exist) and journal the evaluation shape: <em>OR-groups of AND-conditions.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Error handlers: all five directives, hands on</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">When a module throws an error and nothing handles it, the run stops, the whole thing is rolled back where possible, and after enough consecutive failures Make <em>disables the scenario</em>. Error handlers are transparent routes hanging off a module that decide what happens instead. You'll force a real error and attach every directive to it, one by one.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m03-t12"><span>Make a sacrificial copy: open <code>[TRAIN] Daily sheet digest v1</code>, confirm the switch is <strong>OFF</strong>, and clone it (<strong>More</strong> menu → <strong>Clone</strong>) as <code>[TRAIN] Error lab</code>. In the clone, open the Sheets module → switch the sheet selection to manual entry (click the map/manual toggle on the <strong>Sheet Name</strong> field) → type <code>Sheet99</code>.<em class="why">A sheet that doesn't exist is the perfect trainer error: instant, harmless, and 100% reproducible.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t13"><span><strong>Run once</strong> → the module turns red with an error badge. Click the badge and read the message properly: note the error <em>type</em> line at the top and the human sentence under it. Open <strong>History</strong> → the run shows as an error too. Journal: <em>"Unhandled error = run stops; the History entry is where I find the exact module and message."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t14"><span><strong>Directive 1 — Ignore:</strong> right-click the failing Sheets module → <strong>Add error handler</strong>. A new transparent route appears with a module picker showing the directive tiles: <strong>Break</strong>, <strong>Commit</strong>, <strong>Ignore</strong>, <strong>Resume</strong>, <strong>Rollback</strong>. Pick <strong>Ignore</strong>. Run once: the error is swallowed, the failing bundle is dropped, the run finishes green. Use when: the item is skippable and nobody needs to know (e.g. one bad row in a batch).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t15"><span><strong>Directive 2 — Resume:</strong> right-click the <strong>Ignore</strong> directive → <strong>Delete</strong>, then re-add an error handler and pick <strong>Resume</strong>. Resume asks you to supply <em>substitute output</em> for the failed module — fill the fields the next module expects (e.g. <code>Name</code> = <code>UNKNOWN</code>, <code>Status</code> = <code>new</code>). Run once: downstream modules run with your defaults as if nothing failed. Use when: a sensible fallback value exists (default price, empty list, "N/A").</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t16"><span><strong>Directive 3 — Break (+ incomplete executions):</strong> Break needs storage first. Open <strong>Scenario settings</strong> (the gear/settings icon in the bottom toolbar) → tick <strong>Allow storing of incomplete executions</strong> → OK. Now swap the directive for <strong>Break</strong> and open its settings: <strong>Automatically complete execution</strong> = Yes, <strong>Number of attempts</strong> = <code>3</code>, <strong>Interval between attempts</strong> = <code>1</code> minute. Run once, then open the <strong>Incomplete executions</strong> tab (next to History): your failed bundle sits there, retrying. Use when: the error is <em>transient</em> — rate limits, timeouts, a service briefly down.<em class="why">Break is the professional's default for API work: it retries automatically and preserves the bundle so nothing is lost.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t17"><span><strong>Directives 4 &amp; 5 — Rollback and Commit:</strong> swap in <strong>Rollback</strong>, read its tooltip, run once, then check the Incomplete executions tab — nothing stored; the run stops immediately and transaction-capable modules revert their work. Then read <strong>Commit</strong>'s tooltip (stop, but <em>keep</em> everything already done). You can't see the difference on this tiny scenario, so journal it instead: Rollback = "pretend the run never happened" (default behavior of an unhandled error, made explicit); Commit = "stop here but keep what succeeded". Both matter when a scenario writes to multiple systems.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t18"><span>Copy this when-to-use table into your journal, one row per line, from memory first, then correct it: <br><code>Ignore — drop bundle, run continues, nothing stored → skippable items</code> · <code>Resume — substitute output, downstream continues → safe defaults exist</code> · <code>Break — store incomplete execution + retry → transient failures</code> · <code>Rollback — stop + revert transactions → data must stay consistent</code> · <code>Commit — stop + keep completed work → partial success is acceptable</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t19"><span><strong>The error-notify pattern</strong> (you'll reuse this all track): delete the bare directive, add an error handler again, but this time put a module ON the handler route before the directive — <strong>Gmail &gt; Send an Email</strong> (or Email) to yourself, subject <code>⚠ Scenario failed: Error lab</code>, body <code>Module errored at </code> + <code>now</code> — and end the route with <strong>Break</strong>. Run once: you get the alert AND the retry behavior. This is a real production pattern, not a toy.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t20"><span>Repair and reflect: set the Sheet Name back to <code>Sheet1</code>, run once to confirm green end to end. Then find the related safety net: <strong>Scenario settings</strong> → the <strong>Number of consecutive errors</strong> option — after that many failed runs in a row, Make deactivates the scenario (error handlers prevent the counter from ticking). Journal one sentence on why a handled scenario stays alive and an unhandled one eventually switches itself off.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Scheduling recap + three from-memory drills</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Phase 1 exit exam. First a five-minute scheduling refresher, then three timed rebuilds of the canonical patterns you now own. Timer visible, notes closed. From Day 4 you'll be using these patterns inside portfolio builds without thinking about them.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m03-t21"><span><strong>Scheduling recap:</strong> click the clock icon on any trigger module and walk the <strong>Run scenario</strong> dropdown: <strong>At regular intervals</strong>, <strong>Once</strong>, <strong>Every day</strong>, <strong>Days of the week</strong>, <strong>Days of the month</strong>, <strong>On demand</strong> — plus the <strong>Advanced scheduling</strong> panel where you can restrict to time windows (e.g. every 15 min, but only 9:00–18:00 on weekdays). Journal the ops math: every-15-minutes = ~2,880 trigger polls/month vs daily = 30. On a 1,000-op free plan, one number is a plan-killer.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t22"><span><strong>Drill 1 — router-by-status (15 min):</strong> blank scenario, from memory: Sheets Search Rows → Router → three filtered routes (new / contacted / won) each ending in a Compose, plus a fallback route. Pass = correct bundles on every route in one Run once. Delete the scenario after.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t23"><span><strong>Drill 2 — filter-early (10 min):</strong> rebuild Day 1's digest shape — Sheets → filter (<code>Status</code> equal to <code>new</code>) → email — and then write the one-sentence justification: <em>the filter sits immediately after the cheap module so expensive modules never see bundles they'd discard.</em> Count the ops difference for 100 rows with 10 "new" (12 ops vs 102). Delete the scenario after.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t24"><span><strong>Drill 3 — error-notify (15 min):</strong> blank scenario, from memory: any module you can break (Sheets with a bad sheet name) → error handler route → email alert → <strong>Break</strong> with 3 retries — including turning ON incomplete-execution storage, which is the step everyone forgets. Pass = alert email received and a stored incomplete execution. Delete after.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t25"><span><strong>No-clicks drill:</strong> from memory, write the exact click-paths for: adding a route to a router, marking a fallback route, adding an error handler, enabling incomplete executions, and setting a weekday-only schedule. Verify each in the UI and correct your notes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m03-t26"><span>Wrap up: export the <code>[TRAIN] Lead router</code> and <code>[TRAIN] Error lab</code> blueprints (<strong>More</strong> → <strong>Export Blueprint</strong>) to <code>Make Portfolio/blueprints/day03-*.json</code>. Screenshot the router canvas with all four routes and the Incomplete executions tab → <code>Make Portfolio/screenshots/makeday03-*.png</code>. Journal: the five-directive table from memory + drill pass/fail. Confirm every scenario switch is <strong>OFF</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A four-route router scenario with a working fallback, an error lab where you attached and ran all five directives (with the retry visible in Incomplete executions), the error-notify pattern working end to end, two exported blueprints, and the five-directive when-to-use table written from memory in your journal.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 The interview answer</h3>
+    <p>"How do you handle errors in Make?" — the answer that lands: <strong>"Depends on whether the failure is skippable, substitutable, or transient."</strong> Skippable → Ignore. Substitutable → Resume with defaults. Transient → Break with retries and stored incomplete executions — plus an alert module on the handler route so a human knows. Saying those three words with a directive each is a hire signal.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Router"</em>, <em>"Filtering"</em>, <em>"Error handling"</em>, and <em>"Incomplete executions"</em>.</li>
+      <li>Free course: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the error-handling lesson demonstrates every directive on video.</li>
+      <li>Read tonight (5 min): the Help Center page on <em>"Directives"</em> — its examples of Rollback vs Commit with multi-system writes preview Day 8's sync build.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-02.html">← Day 2: Mapping, Functions &amp; Iterators</a>
+  <a href="make-day-04.html">Day 4: Portfolio M1: Lead Intake Machine →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

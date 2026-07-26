@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 5 — HTTP Module &amp; APIs | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="5">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 5</span>HTTP Module &amp; APIs</h1>
+    <p class="day-goal">By tonight you'll call any API on the internet from Make — with query parameters, headers, API keys, and JSON bodies — page through multi-page results with a Repeater, respect rate limits with Sleep, and keep a scheduled "morning API digest" scenario as evidence. This one skill is what lets you say yes when a client's tool has no built-in Make app.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Anatomy of a request, against a live API</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">The <strong>HTTP &gt; Make a request</strong> module is the universal adapter: when there's no app module for a service, this is how you talk to it anyway. A request has five parts — <strong>URL</strong>, <strong>method</strong>, <strong>headers</strong>, <strong>query string</strong>, <strong>body</strong> — and you'll exercise each against Open-Meteo, a free weather API that needs no key at all.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m05-t01"><span>Journal the anatomy first, one line each: <strong>URL</strong> (where), <strong>method</strong> (GET = read, POST = create/send, PUT/PATCH = update, DELETE = remove), <strong>headers</strong> (metadata: auth, content type), <strong>query string</strong> (the <code>?key=value&amp;key=value</code> filters after the URL), <strong>body</strong> (the payload — JSON for almost everything modern). You sent one of these yesterday with curl; today you're the client from inside Make.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t02"><span>Create a new scenario <code>[TRAIN] HTTP lab</code>. Add <strong>HTTP &gt; Make a request</strong>: <strong>URL</strong> = <code>https://api.open-meteo.com/v1/forecast</code>, <strong>Method</strong> = <strong>GET</strong>. Under <strong>Query String</strong> click <strong>Add item</strong> three times: <code>latitude</code> = <code>52.52</code>, <code>longitude</code> = <code>13.41</code>, <code>current_weather</code> = <code>true</code>. Set <strong>Parse response</strong> = <strong>Yes</strong>. Leave everything else default.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t03"><span><strong>Run once</strong> and dissect the output bubble: <strong>Status code</strong> <code>200</code>, the response <strong>Headers</strong> array, and <strong>Data</strong> — expandable chips including <code>current_weather.temperature</code> and <code>current_weather.windspeed</code>. Add a <strong>Tools &gt; Compose a string</strong> after it: <code>Berlin: </code> + temperature chip + <code>°C, wind </code> + windspeed chip. Run once — a live weather sentence built from an API.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t04"><span>Prove the two ways to send parameters are equivalent: clear the three Query String items and instead paste everything into the URL: <code>https://api.open-meteo.com/v1/forecast?latitude=52.52&amp;longitude=13.41&amp;current_weather=true</code>. Run once — same result. Then put it back the structured way. Journal the rule: <em>structured Query String fields for anything mapped/dynamic (Make handles the encoding), inline URL only for quick static tests.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t05"><span>Now see what <strong>Parse response</strong> actually does: set it to <strong>No</strong>, run once — <strong>Data</strong> is now one raw JSON string, no chips. Add a <strong>JSON &gt; Parse JSON</strong> module, map Data into it, run — chips are back (Day 2's move). Then delete the Parse JSON module and flip Parse response back to <strong>Yes</strong>. Journal: <em>Parse response = a built-in Parse JSON; either way, no chips until something parses.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t06"><span>Break it on purpose: change the URL path to <code>/v1/forecas</code> (typo) and run. Note what happens — you get a response with status <code>404</code>, but the module <em>doesn't error</em> by default. Now open the module settings → tick <strong>Evaluate all states as errors</strong> → run again → NOW it throws, which means your Day-3 error handlers can catch it. Fix the URL, leave the checkbox ON.<em class="why">Without this checkbox, failed API calls sail silently downstream as empty data — the nastiest bug class in HTTP scenarios.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t07"><span>Status-code vocabulary — copy to journal and memorize: <code>200</code> OK · <code>201</code> created · <code>400</code> your request is malformed · <code>401</code> missing/bad auth · <code>403</code> authed but not allowed · <code>404</code> wrong URL · <code>429</code> slow down (rate limit) · <code>500/503</code> their server's problem, retry later. You'll be quizzed.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — API keys, headers, and when to use connections instead</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Most useful APIs want to know who's calling. The three common schemes: a key in the <strong>query string</strong>, a key in a <strong>custom header</strong>, or a token in the <strong>Authorization header</strong>. You'll do the first live against NASA's free API and set up the other two as written patterns.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m05-t08"><span>Get a key: go to <strong>api.nasa.gov</strong>, fill the short signup form, and your API key arrives by email in seconds. (Impatient? The literal key <code>DEMO_KEY</code> works too, with a tighter rate limit — use it now and swap later.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t09"><span>In the HTTP lab, add a second <strong>HTTP &gt; Make a request</strong>: URL <code>https://api.nasa.gov/planetary/apod</code>, GET, Query String item <code>api_key</code> = your key, Parse response Yes, Evaluate all states as errors ON. Run once → chips for <code>title</code>, <code>explanation</code>, <code>url</code> — today's Astronomy Picture of the Day. Then sabotage the key (add <code>x</code> to it), run, and read the <code>403</code> — that's what a bad credential looks like. Fix it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t10"><span>Header-based auth, the written pattern: many APIs refuse query-string keys and want a header instead. In the module, that's <strong>Headers → Add item</strong>: name <code>X-Api-Key</code>, value your key — or for OAuth-style/LLM APIs: name <code>Authorization</code>, value <code>Bearer YOUR-TOKEN</code>. Copy both header shapes into your journal verbatim.<em class="why">Tomorrow's fallback path for the AI scorer is exactly an <code>Authorization: Bearer</code> HTTP call — you're pre-learning it.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t11"><span>POST with a body: point a third HTTP module at your own Day-4 webhook URL. Method <strong>POST</strong>, <strong>Body type</strong> = <strong>Raw</strong>, <strong>Content type</strong> = <strong>JSON (application/json)</strong>, Request content = <code>{"name":"Http Test","email":"you+http@gmail.com","phone":"+1 555 0105","source":"api","message":"sent from the HTTP lab"}</code>. Run once with <code>[M1]</code> listening (Run once in the other tab) — one Make scenario just triggered another over the open internet. Delete this module after the giggle.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t12"><span>Connections vs raw HTTP — settle it in your journal: open any <strong>Google Sheets</strong> module and notice there's no key field anywhere; the <strong>connection</strong> stores OAuth tokens and refreshes them for you. Rule: <em>use the dedicated app module whenever one exists (auth, retries, and field names handled); drop to HTTP when there's no app, when the app module lacks an endpoint, or when you need raw control.</em> Interviewers love this question.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t13"><span><strong>Drill (10 min, from memory):</strong> fresh scenario — call Open-Meteo for YOUR city's coordinates (right-click your home on Google Maps to copy lat/long) and NASA APOD with your key, then Compose one string using data from both. No notes until the timer ends. Delete the scenario after.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Pagination and rate limits</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Real APIs never hand you everything at once — they <strong>paginate</strong>. Two shapes in the wild: page/offset parameters you increment, or a <code>next</code> URL you follow. You'll drill the first shape with a <strong>Repeater</strong> against the free PokéAPI (no key), and learn the politeness tools for the inevitable <code>429</code>.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m05-t14"><span>Read the target first: open <code>https://pokeapi.co/api/v2/pokemon?limit=20&amp;offset=0</code> in a browser tab. Spot the shape: a <code>count</code>, a <code>next</code> URL, and a <code>results</code> array of 20. Journal both pagination shapes and which parameter does what here (<code>limit</code> = page size, <code>offset</code> = how many to skip).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t15"><span>Build the pager in the HTTP lab: add <strong>Flow control &gt; Repeater</strong> — <strong>Initial value</strong> = <code>0</code>, <strong>Repeats</strong> = <code>3</code>, <strong>Step</strong> = <code>20</code>. After it, an <strong>HTTP &gt; Make a request</strong>: URL <code>https://pokeapi.co/api/v2/pokemon</code>, Query String <code>limit</code> = <code>20</code>, <code>offset</code> = map the Repeater's <code>i</code> chip. Run once: three calls fire with offset 0, 20, 40.<em class="why">Repeater = "run the rest of the chain N times with a counter" — the standard page-loop pattern when you know roughly how many pages you need.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t16"><span>Flatten the pages: add <strong>Flow control &gt; Iterator</strong> with <strong>Array</strong> = the HTTP module's <code>results</code> chip, then a <strong>Numeric aggregator</strong> (Source Module = the <em>Repeater</em>, function <strong>SUM</strong>, value <code>1</code>) — or simpler, a <strong>Text aggregator</strong> collecting <code>name</code>. Run once and confirm 60 items came through. Count the ops in History: 1 repeater + 3 HTTP + 60 iterator passes + aggregation — journal why iterating 60 bundles costs 60+ operations and when you'd rather keep pages as arrays.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t17"><span>Rate limits: journal the protocol — <code>429</code> means "too fast"; the response often carries a <code>Retry-After</code> header telling you how long to wait; hammering through it gets keys banned. Make's tools: <strong>Tools &gt; Sleep</strong> (pause up to 300 seconds — it counts as an operation and holds the scenario run) between calls, and Day 3's <strong>Break</strong> error handler with retry intervals for when a 429 still slips through (that's why "Evaluate all states as errors" stays ON).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t18"><span>Retrofit politeness: insert <strong>Tools &gt; Sleep</strong> = <code>2</code> seconds between the Repeater and the HTTP call, run once, and watch the runs space out in the execution flow. Then remove it (PokéAPI doesn't need it) — the point was the placement: <em>Sleep goes inside the loop, before the call it protects.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Mini-build to keep: the Morning API Digest</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Not a portfolio headliner, but permanent evidence that you can consume APIs on a schedule and turn them into something a human wants to read. Fifteen modules of skill in a five-module scenario.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m05-t19"><span>New scenario <code>[TRAIN] Morning API digest</code>. Module 1: <strong>HTTP &gt; Make a request</strong> to Open-Meteo with YOUR coordinates (from the Session-2 drill), <code>current_weather</code> = <code>true</code>, plus <code>daily</code> = <code>temperature_2m_max,temperature_2m_min</code> and <code>timezone</code> = <code>auto</code> (two more Query String items). Parse response Yes, evaluate-errors ON.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t20"><span>Module 2: <strong>HTTP &gt; Make a request</strong> to NASA APOD with your key. Module 3: <strong>Gmail &gt; Send an Email</strong> to yourself — <strong>Subject</strong>: <code>Morning digest — </code> + <code>formatDate(now; DD MMM)</code>. <strong>Content</strong>, three lines: current temperature + today's max/min (map from the <code>daily</code> arrays with <code>get(...; 1)</code> — first element = today), the APOD <code>title</code>, and the APOD <code>url</code> as a "space picture of the day" link.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t21"><span><strong>Run once</strong>, open the email, and fix anything unreadable — a digest nobody would want to read is a failed digest. Then set the schedule: clock icon on module 1 → <strong>Every day</strong> at <code>07:30</code>. Check History: 3 operations per run, so a full month ≈ 90 ops. Journal that estimate next to Day 1's pricing sentence — you can now cost a scenario before building it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m05-t22"><span>Wrap up: export blueprints of both <code>[TRAIN] HTTP lab</code> and <code>[TRAIN] Morning API digest</code> → <code>Make Portfolio/blueprints/day05-*.json</code>. Screenshots: the digest email, the Repeater pagination canvas, and a History detail showing a 200 response → <code>Make Portfolio/screenshots/makeday05-*.png</code>. Journal: the 8 status codes and both auth header shapes from memory. You may leave the digest scheduled ON if you genuinely want it (90 ops/month is affordable) — otherwise, and for everything else, switches <strong>OFF</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A working HTTP lab (keyless API, keyed API, forced 404/403 reads, Repeater pagination over 3 pages), the scheduled Morning API Digest emailing real weather + space data, two exported blueprints, screenshots, and the status-code + auth-scheme vocabulary written from memory.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 The client-call superpower</h3>
+    <p>When a client says "we use SomeObscureTool, does Make support it?", the professional answer is never "no". It's: <strong>"Does it have an API? Then yes."</strong> Today's module is why. Keep the NASA and Open-Meteo calls in your HTTP lab blueprint — walking someone through a raw API call from a blank canvas is a devastating interview demo.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"HTTP"</em> (all body types explained) and <em>"Repeater"</em>.</li>
+      <li>Today's APIs: <a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener">open-meteo.com/en/docs</a> (no key, superb docs), <a href="https://api.nasa.gov" target="_blank" rel="noopener">api.nasa.gov</a> (free key), <a href="https://pokeapi.co" target="_blank" rel="noopener">pokeapi.co</a> (pagination playground).</li>
+      <li>Free course: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the HTTP/webhooks lessons pair with today and yesterday.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-04.html">← Day 4: Portfolio M1: Lead Intake Machine</a>
+  <a href="make-day-06.html">Day 6: Portfolio M2: AI Lead Scorer →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
