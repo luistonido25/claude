@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 10 — Portfolio M5: Automated Report Generator | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="10">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 10</span>Portfolio M5: Automated Report Generator</h1>
+    <p class="day-goal">By tonight, every Monday at 08:00 a scenario will read a sales sheet, compute totals and per-status breakdowns with aggregators and mapping functions, fill a Google Docs template, convert it to PDF, email it with the PDF attached, and archive a copy to Drive. "The Monday report writes itself" is one of the easiest automations to sell — and it exercises the aggregation and formatting muscles every client project needs.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Sample data and the Docs template</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Reports are template work: the document layout lives in Google Docs with <code>{{placeholder}}</code> tags, and Make just fills the blanks. Build both ingredients — realistic data and a clean template — before touching the canvas.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m10-t01"><span>Create a Google Sheet named <strong>Sales Data</strong> with headers exactly: <code>Date</code>, <code>Product</code>, <code>Qty</code>, <code>Revenue</code>, <code>Status</code>. Keep <strong>Revenue</strong> plain numbers — no currency symbols, no thousands separators.<em class="why">Formatting belongs in the report, not the data. A "$1,240.00" cell is a string, and sum() on strings is tomorrow's bug.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t02"><span>Fill 30 rows fast: products from this set — <em>Alpine Mug, Trail Bottle, Summit Tee, Basecamp Cap, Ridge Hoodie</em>; Status one of <code>paid</code> / <code>pending</code> / <code>refunded</code> (make roughly 20 paid, 7 pending, 3 refunded); dates spread across the last 7 days; Qty 1–5; Revenue between 15 and 250. Speed trick: use <code>=RANDBETWEEN(15;250)</code> style formulas to draft values, then <strong>Copy</strong> → <strong>Edit → Paste special → Values only</strong> so the numbers stop changing.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t03"><span>In Google Drive, create a folder <strong>Weekly Reports</strong> (this holds both the generated Docs and the archived PDFs).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t04"><span>Create the template: a Google Doc named <strong>Weekly Sales Report — TEMPLATE</strong> inside that folder. Lay it out with a title line <code>Weekly Sales Report — {{reportDate}}</code>, then a summary block: <code>Orders: {{orderCount}}</code> · <code>Total revenue: {{totalRevenue}}</code> · <code>Paid: {{paidCount}} ({{paidRevenue}})</code> · <code>Pending: {{pendingCount}}</code> · <code>Refunded: {{refundedCount}}</code>, then a heading <em>Revenue by product</em> followed by <code>{{productLines}}</code> on its own line. Style it — bold headings, a horizontal rule — the formatting survives the merge.<em class="why">Make's "from a template" module replaces {{tags}} verbatim. A stray space like {{ reportDate }} is a different tag and won't be replaced — type them exactly.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t05"><span>Journal (2 min): why template-in-Docs beats assembling the document inside Make — the client can restyle the report without touching the scenario, and you can preview the layout without burning a single operation.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Aggregate: from 30 bundles to one set of numbers</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The heart of the build. In Make, 30 rows arrive as 30 bundles; a report needs ONE bundle holding totals. That's the <strong>Array Aggregator</strong> plus the <code>map()</code> / <code>sum()</code> / <code>length()</code> function trio — the exact opposite direction of Day 2's iterators.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m10-t06"><span>New scenario <code>[M5] Weekly sales report</code>. First module: <strong>Google Sheets → Search Rows</strong> on <strong>Sales Data</strong>, no filter, <strong>Maximum number of returned rows</strong> <code>100</code>. Click the clock icon → <strong>Scheduling</strong> → <strong>Every week</strong> → tick <strong>Monday</strong>, time <strong>08:00</strong>. <strong>Run this module only</strong> and confirm 30 bundles.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t07"><span>Add <strong>Array Aggregator</strong> (search "aggregator" in the module picker, it's under Tools/Flow control): <strong>Source Module</strong> = the Search Rows module, and under <strong>Aggregated fields</strong> tick <code>Date</code>, <code>Product</code>, <code>Qty</code>, <code>Revenue</code>, <code>Status</code>. <strong>Run once</strong>: 30 bundles in, ONE bundle out, containing an <code>array</code>. Open the output bubble and study the shape.<em class="why">n8n folks: this is the explicit version of what "all items in one node" gave you for free. In Make, collapsing bundles is always a deliberate module.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t08"><span>Add <strong>Tools → Set multiple variables</strong> and build the numbers with the map/sum/length trio (adjust the module number to match your canvas): <strong>orderCount</strong> = <code>{{length(2.array)}}</code>, <strong>totalRevenueRaw</strong> = <code>{{sum(map(2.array; "Revenue"))}}</code>, <strong>paidCount</strong> = <code>{{length(map(2.array; "Revenue"; "Status"; "paid"))}}</code>, <strong>paidRevenueRaw</strong> = <code>{{sum(map(2.array; "Revenue"; "Status"; "paid"))}}</code>, <strong>pendingCount</strong> = <code>{{length(map(2.array; "Revenue"; "Status"; "pending"))}}</code>, <strong>refundedCount</strong> = <code>{{length(map(2.array; "Revenue"; "Status"; "refunded"))}}</code>.<em class="why">Read map(array; "Revenue"; "Status"; "paid") aloud: "give me the Revenue values of items whose Status is paid". Filter-then-extract in one function — the single most useful formula pattern in Make.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t09"><span><strong>Run once</strong> and hand-check against the sheet: does paidCount match your ~20? Does totalRevenueRaw match a quick <code>=SUM(D2:D31)</code> you type into the sheet? Never trust an aggregation you haven't spot-checked once.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t10"><span>Format for humans — add two more variables in the same module (fields can reference the raw ones is unreliable across versions, so repeat the formula inside): <strong>totalRevenue</strong> = <code>${{formatNumber(sum(map(2.array; "Revenue")); 2; "."; ",")}}</code>, <strong>paidRevenue</strong> = same recipe with the paid filter, and <strong>reportDate</strong> = <code>{{formatDate(now; "DD MMM YYYY")}}</code>. Find <strong>formatNumber()</strong> and <strong>formatDate()</strong> in the mapping panel's function tabs and note their argument order in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t11"><span>Per-product breakdown, the drill version: add <strong>Tools → Set variable</strong> <code>products</code> = <code>{{deduplicate(map(2.array; "Product"))}}</code> → an <strong>Iterator</strong> over <code>products</code> → a <strong>Text Aggregator</strong> with row template <code>{{value}} — ${{formatNumber(sum(map(2.array; "Revenue"; "Product"; value)); 2; "."; ",")}}</code>, separator <strong>New row</strong>. <strong>Run once</strong>: the output is your <code>{{productLines}}</code> block, one line per product.<em class="why">deduplicate → iterate → aggregate is the standard "group by" recipe in Make. Five products = 5 iterator operations — count them into your cost estimate.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t12"><span>Operations math in the journal: tally one full run so far (1 search + 1 array agg + 1 variables + 1 set variable + 5 iterator + 1 text agg ≈ 10 ops before the document even exists). Estimate the finished scenario's weekly cost — you'll verify at the end of the day.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Docs merge, PDF, email, archive</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Four modules in a row: fill the template, download it as PDF, email the PDF, archive it. Each one is a connector you'll reuse in dozens of client builds.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m10-t13"><span>Add <strong>Google Docs → Create a Document from a Template</strong>: choose <strong>By Mapping</strong> off, pick <strong>Weekly Sales Report — TEMPLATE</strong>, and the module lists every <code>{{tag}}</code> it found as an input field — fill each from your variables (<strong>productLines</strong> comes from the Text Aggregator). <strong>Title</strong> = <code>Weekly Sales Report {{formatDate(now; "YYYY-MM-DD")}}</code>, <strong>New Document's Location</strong> = the <strong>Weekly Reports</strong> folder.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t14"><span><strong>Run once</strong>, open the generated Doc in Drive, and proof-read: every tag replaced? Currency formatted? Product lines on separate lines? Fix the usual suspects — a misspelled tag in the template, a missing mapping, newline separator not set — and re-run until the document is client-clean.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t15"><span>Add <strong>Google Docs → Download a Document</strong>: <strong>Document ID</strong> = map the ID output from the previous module, <strong>Type</strong> = <strong>PDF</strong> (application/pdf). This module outputs the file <em>data</em> — the actual bytes travel through the scenario to any module that accepts a file.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t16"><span>Add <strong>Gmail → Send an Email</strong>: <strong>To</strong> = your address (playing the role of the business owner), <strong>Subject</strong> = <code>Weekly Sales Report — {{reportDate}}</code>, body = 3 summary lines (orders, total revenue, paid revenue) so the key numbers are readable without opening the attachment. Under <strong>Attachments</strong> → <strong>Add</strong>: <strong>File name</strong> = <code>weekly-report-{{formatDate(now; "YYYY-MM-DD")}}.pdf</code>, <strong>Data</strong> = the Download module's data output.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t17"><span>Add <strong>Google Drive → Upload a File</strong>: <strong>New File's Location</strong> = the <strong>Weekly Reports</strong> folder, map the same file name and data. Then right-click every module → <strong>Rename</strong> to a description (<code>Fill template</code>, <code>Doc → PDF</code>, <code>Email report</code>, <code>Archive PDF</code>) — this canvas is going in your portfolio.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t18"><span>Bolt on yesterday's watchdog: right-click <strong>Create a Document from a Template</strong> (the most failure-prone module — template renamed, folder moved, permissions) → <strong>Add error handler</strong> → the standard route: <strong>Add a Row</strong> to Automation Errors + <strong>Telegram</strong> alert + <strong>Ignore</strong>. Type <code>M5 Report</code> as the scenario name in the log mapping.<em class="why">From now on, every new build ships with the watchdog route by default. That habit IS Portfolio M4 paying rent.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Test, break, cost, package</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m10-t19"><span>Full <strong>Run once</strong>: check all four outputs — Doc in the folder, PDF attached to the email, numbers matching the sheet, archive copy in Drive. Open the PDF on your phone; if the layout is cramped, adjust the template (not the scenario) and re-run.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t20"><span>Break test: set one <strong>Revenue</strong> cell to the text <code>N/A</code> and <strong>Run once</strong>. Watch where it hurts (sum() choking or a wrong total). Fix the data, then journal the two production defenses: a filter after Search Rows rejecting non-numeric Revenue, or wrapping with <code>parseNumber()</code> + a default. Add the filter if you have energy — it's 0 extra operations.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t21"><span>Verify the schedule reads <strong>Every week, Monday 08:00</strong>, flip the scenario <strong>ON</strong>, screenshot the canvas + scheduling dialog… then flip it <strong>OFF</strong> again (operations discipline — you can re-enable on a client's plan, not your free one). Compare your Session-2 cost estimate with the real numbers shown on the run in <strong>History</strong>; journal the delta.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m10-t22"><span>Package M5: <strong>More → Export Blueprint</strong> → <code>Make Portfolio/blueprints/m5-report-generator.json</code>; screenshots of the canvas, the finished PDF, and the email with attachment → <code>Make Portfolio/screenshots/makeday10-*.png</code>; a 3-minute Loom (run it live, open the PDF, say "template-driven", "aggregators", and the per-run operation count) → <code>Make Portfolio/videos</code>. Tick <strong>Portfolio M5</strong> on the Make track home page and journal: the map/sum/length pattern from memory, without peeking.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M5: Automated Report Generator</h2>
+    <p>A scheduled Monday-08:00 scenario: Sheets → Array Aggregator + map/sum/length metrics → Google Docs template merge → PDF → Gmail with attachment → Drive archive, with the watchdog error route installed, exported blueprint, screenshots, and a Loom. Go to the Make track home page and tick <strong>Portfolio M5</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The <code>[M5] Weekly sales report</code> scenario producing a client-clean PDF verified against the sheet, the template Doc with exact <code>{{tags}}</code>, a per-product breakdown built with deduplicate → Iterator → Text Aggregator, an operations-cost estimate vs. actual in the journal, and blueprint + screenshots + Loom in the portfolio folder.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Sell the template, not the scenario</h3>
+    <p>When you demo this build, lead with the Google Doc: "you can restyle this report yourself, any time, without touching the automation." Separating layout (client-editable) from logic (yours) is what makes report generators low-maintenance — and low-maintenance is what clients renew.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Google Docs"</em> (template module), <em>"Aggregator"</em>, and the functions reference for <em>map()</em>, <em>sum()</em>, <em>formatNumber()</em>.</li>
+      <li>Academy: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the mapping-functions lesson; do it tonight if map() with a filter still feels wobbly.</li>
+      <li>Google Docs API concepts (background reading): <a href="https://developers.google.com/docs/api" target="_blank" rel="noopener">developers.google.com/docs/api</a> — what the template merge is doing under the hood.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-09.html">← Day 9: Resilience Day + Portfolio M4: Error Watchdog</a>
+  <a href="make-day-11.html">Day 11: Portfolio M6: Order &amp; Ops Flow →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

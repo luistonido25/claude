@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 12 — Portfolio M7: Content Pipeline with Approval Step | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="12">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 12</span>Portfolio M7: Content Pipeline with Approval Step</h1>
+    <p class="day-goal">Your final Phase 2 build is the one clients ask about most in 2026: AI drafts content, but a HUMAN approves it before anything ships. You'll generate post drafts with OpenAI from an ideas sheet (or an RSS feed), park each draft in a Data store, send it to Telegram with tappable Approve/Reject links, and catch the click with a webhook that routes the decision. Human-in-the-loop is the pattern — and yours will be built the portable way.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Source + AI draft generator</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Primary source is an Ideas sheet — deterministic and cheap to test. You'll swap in the RSS module as a variant at the end. The AI's job is narrow: rewrite an idea into a post draft under strict brand-voice rules. Narrow prompts are testable prompts.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m12-t01"><span>Create a Google Sheet <strong>Content Ideas</strong> with headers <code>Idea</code>, <code>Angle</code>, <code>Status</code> and 5 rows, Status all <code>new</code>. Example rows: <em>"Why small businesses lose leads after 5pm" / "cost of slow follow-up"</em>, <em>"What a two-way data sync actually prevents" / "war story, no jargon"</em>, plus three of your own. Also create a second sheet <strong>Post Queue</strong> with headers <code>Approved At</code>, <code>Title</code>, <code>Draft</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t02"><span>Create the draft ledger: <strong>Data stores</strong> → <strong>Add data store</strong> → name <code>content_drafts</code> → <strong>Add</strong> a data structure <code>draft_item</code> with fields: <strong>title</strong> (Text), <strong>draft</strong> (Text), <strong>source</strong> (Text), <strong>status</strong> (Text), <strong>created</strong> (Date) → <strong>Save</strong>.<em class="why">The Telegram message can't carry the whole draft through a link click — so the draft lives in the Data store under an ID, and the links carry only the ID. State in the store, pointers in the message: memorize that sentence.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t03"><span>New scenario <code>[M7] Draft generator</code>. First module: <strong>Google Sheets → Search Rows</strong> on <strong>Content Ideas</strong>, filter <strong>Status</strong> <em>Equal to</em> <code>new</code>, <strong>Maximum number of returned rows</strong> <code>2</code>.<em class="why">Capping at 2 keeps every test run to two AI calls. AI modules are your most expensive operations in both Make ops AND API dollars — throttle at the source.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t04"><span>Add the <strong>OpenAI → Create a Completion</strong> module (chat/completion variant; connect with your API key if the Day 6 connection lapsed). Model <strong>gpt-4o-mini</strong>, <strong>Max Tokens</strong> <code>400</code>, temperature <code>0.7</code>. <strong>System message</strong> — the brand voice, verbatim: <code>You write social post drafts for a small automation consultancy. Rules: plain language; sentences under 20 words; no hype words (game-changer, revolutionary, unlock, supercharge); no emojis; first person plural; 120-180 words; end with exactly one question or call to action.</code> <strong>User message</strong>: <code>Rewrite this idea as a post draft. Idea: {{1.Idea}}. Angle: {{1.Angle}}.</code></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t05"><span><strong>Run once</strong> and read both drafts critically against the rules (count the hype words it snuck in). Tweak the system message once — one rule added or sharpened — and re-run. Journal the before/after: prompt iteration is a demo-able skill, keep the evidence.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t06"><span>Give each draft an identity and park it: add <strong>Tools → Set variable</strong> <code>draftId</code> = <code>{{uuid}}</code>, then <strong>Data store → Add/replace a record</strong> on <code>content_drafts</code>: <strong>Key</strong> = <code>{{draftId}}</code>, <strong>title</strong> = <code>{{1.Idea}}</code>, <strong>draft</strong> = the OpenAI output text, <strong>source</strong> = <code>ideas-sheet</code>, <strong>status</strong> = <code>pending</code>, <strong>created</strong> = <code>{{now}}</code>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — The approval message: Telegram with two live links</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">The approval "buttons" are just links to a webhook, with the decision and the draft ID in the query string. You need the webhook URL <em>before</em> you can compose the message — so you'll create the second scenario's trigger first, then come back.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m12-t07"><span>Create the catcher scenario now (empty for the moment): new scenario <code>[M7] Approval handler</code> → first module <strong>Webhooks → Custom webhook</strong> → <strong>Add</strong> → name <code>content-approval</code> → <strong>Save</strong> → <strong>Copy address to clipboard</strong>. Paste the URL into your notes as <code>APPROVAL_URL</code>. Leave this scenario open in a second tab.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t08"><span>Back in <code>[M7] Draft generator</code>, add <strong>Telegram Bot → Send a Text Message or a Reply</strong> after the Data store module. <strong>Parse Mode</strong> = <strong>HTML</strong>. Text: <code>📝 &lt;b&gt;Draft for review&lt;/b&gt; — {{1.Idea}}</code>, a blank line, the OpenAI draft text, a blank line, then the two links: <code>&lt;a href="APPROVAL_URL?id={{draftId}}&amp;decision=approve"&gt;✅ Approve&lt;/a&gt; | &lt;a href="APPROVAL_URL?id={{draftId}}&amp;decision=reject"&gt;❌ Reject&lt;/a&gt;</code> (paste your real URL in place of APPROVAL_URL, keep the <code>&amp;</code> between the query params).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t09"><span>Close the loop on the source: add <strong>Google Sheets → Update a Row</strong> — Row number from module 1, set ONLY <strong>Status</strong> = <code>sent</code>.<em class="why">Without this, every run re-drafts the same ideas: duplicate Telegram messages, duplicate AI spend. Mark-as-processed is the polling twin of Day 8's hash guard.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t10"><span><strong>Run once</strong>: two Telegram messages arrive, each with its draft and two tappable links. <strong>Don't click anything yet</strong> — the catcher isn't listening. Verify in the sheet that both rows now say <code>sent</code>, and in <strong>Data stores → content_drafts → Browse</strong> that two <code>pending</code> records exist.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — The approval handler: webhook → data store → router → response</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">One scenario handles both outcomes. The webhook receives a GET when a link is tapped; query-string parameters arrive as mappable fields. Every route ends with a <strong>Webhook response</strong> so the person clicking sees confirmation in their browser — small touch, very client-impressive.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m12-t11"><span>Teach the webhook its shape: in <code>[M7] Approval handler</code> click <strong>Run once</strong>, then in Telegram tap the <strong>✅ Approve</strong> link on your first draft. The webhook fires and determines the structure: fields <code>id</code> and <code>decision</code>. (The browser tab will show <em>Accepted</em> for now — you'll upgrade that shortly.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t12"><span>Add <strong>Data store → Get a record</strong> on <code>content_drafts</code>: <strong>Key</strong> = <code>{{1.id}}</code>. This pulls back the full draft the ID points to.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t13"><span>Add a <strong>Router</strong> with three routes. Route <code>Approve</code>: filter <strong>decision</strong> <em>Equal to</em> <code>approve</code> AND the record's <strong>draft</strong> <em>exists</em>. Route <code>Reject</code>: <strong>decision</strong> <em>Equal to</em> <code>reject</code> AND <strong>draft</strong> <em>exists</em>. Route <code>Bad request</code>: leave last as the fallback.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t14"><span>Approve route, three modules: <strong>Google Sheets → Add a Row</strong> to <strong>Post Queue</strong> (<strong>Approved At</strong> = <code>{{formatDate(now; "YYYY-MM-DD HH:mm")}}</code>, <strong>Title</strong> + <strong>Draft</strong> from the Data store record) → <strong>Data store → Add/replace a record</strong> (same key, <strong>Overwrite</strong> ON, status = <code>approved</code>, keep the other fields mapped through) → <strong>Telegram</strong> confirmation: <code>✅ Queued: {{title}}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t15"><span>Still on the approve route, end with <strong>Webhooks → Webhook response</strong>: <strong>Status</strong> <code>200</code>, <strong>Body</strong> <code>Approved ✔ The draft is queued. You can close this tab.</code><em class="why">Webhook response turns your automation into something with a user interface — the click gets an answer. Miss it and approvers see a cryptic "Accepted" and assume it's broken.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t16"><span>Reject route: <strong>Data store → Add/replace a record</strong> (status = <code>rejected</code>) → <strong>Telegram</strong> <code>🗑 Rejected: {{title}}</code> → <strong>Webhook response</strong> 200, body <code>Rejected. The draft won't be published.</code></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t17"><span>Bad-request route: just a <strong>Webhook response</strong>, <strong>Status</strong> <code>400</code>, body <code>Unknown draft or decision.</code> Test it directly by opening <code>APPROVAL_URL?id=nonsense&amp;decision=approve</code> in your browser while the scenario runs.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t18"><span>Journal the pattern — this paragraph is a portfolio talking point: <em>approval = a link whose URL encodes (record ID, decision), caught by a webhook, resolved against stored state, answered with a webhook response.</em> Why it's portable: the same two links work pasted into an email, a chat tool, or an SMS — anywhere a link renders — with zero vendor lock-in. And because the state lives in the Data store, the message channel can change without touching the logic.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Full test, RSS variant, packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m12-t19"><span>Full approve path: switch <code>[M7] Approval handler</code> <strong>ON</strong> (webhook scenarios need to be live to catch clicks). Reset one idea row to <code>new</code>, <strong>Run once</strong> the generator, tap <strong>✅ Approve</strong> in Telegram → browser says <em>Approved ✔</em>, <strong>Post Queue</strong> gains a row, confirmation lands in Telegram, and the Data store record reads <code>approved</code>. Verify all four.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t20"><span>Full reject path with a second draft: tap <strong>❌ Reject</strong> → browser confirms, no Post Queue row, record reads <code>rejected</code>. Then <strong>Run once</strong> the generator with no <code>new</code> ideas left: it should cost exactly 1 operation and produce nothing — your mark-as-processed guard at work.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t21"><span>RSS variant drill (30 min, timeboxed): clone the generator (<strong>More → Clone</strong>), replace the Sheets trigger with <strong>RSS → Watch RSS feed items</strong>, feed URL e.g. <code>https://www.nasa.gov/rss/dyn/breaking_news.rss</code> (any public blog feed works), max <code>2</code> items. Map the item's <strong>Title</strong> into the prompt as the idea and the item <strong>URL</strong> into the Data store's <strong>source</strong> field. <strong>Run once</strong>, confirm a draft + approval message from a live feed, then keep the clone OFF as your "RSS edition".</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t22"><span>Resilience: add the watchdog error route to the <strong>OpenAI</strong> module in the generator — log to Automation Errors as <code>M7 Generator</code> + Telegram + <strong>Break</strong> (auto-retry 2× / 5 min, incomplete executions enabled in scenario settings). AI APIs are the textbook transient-failure case.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t23"><span>Package M7: export all blueprints → <code>m7-draft-generator.json</code>, <code>m7-approval-handler.json</code>, <code>m7-rss-variant.json</code>; screenshots of both canvases, the Telegram approval message with links, the Post Queue sheet, the browser confirmation page → <code>Make Portfolio/screenshots/makeday12-*.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m12-t24"><span>Record a 4-minute Loom: run the generator, tap Approve on camera, show the browser response and the queue row, then tap Reject on the other draft. Say "human-in-the-loop", "the draft ID travels in the link, the draft lives in the data store", and "this works with email links too". Switch BOTH scenarios <strong>OFF</strong>, tick <strong>Portfolio M7</strong> on the Make track home page — that's all seven builds done — and journal how you'd explain this pipeline to a non-technical marketing manager in three sentences.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M7: Content Pipeline with Approval Step</h2>
+    <p>An AI draft generator (ideas sheet or RSS) with brand-voice prompt rules, drafts parked in a Data store, Telegram approval messages with Approve/Reject webhook links, and an approval-handler scenario routing both decisions with proper webhook responses — tested on both paths, blueprints exported, Loom recorded. Go to the Make track home page and tick <strong>Portfolio M7</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Both <code>[M7]</code> scenarios verified on the approve and reject paths, the <code>content_drafts</code> data store showing pending/approved/rejected records, a Post Queue with at least one approved draft, the RSS variant clone, and blueprints + screenshots + Loom in the portfolio folder. Seven of seven portfolio builds complete.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Webhook scenarios + AI modules: double OFF check</h3>
+    <p>The approval handler only works while it's ON — fine for demos, but leaving the <em>generator</em> ON with a schedule means unattended AI spend on top of Make operations. Tonight: generator OFF, approval handler OFF (turn it on only when demoing), and glance at your OpenAI usage dashboard so you know today's dollar cost. Quote AI builds to clients with BOTH meters in mind.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Webhook response"</em>, <em>"Data stores"</em>, <em>"RSS"</em>.</li>
+      <li>OpenAI docs: <a href="https://platform.openai.com/docs" target="_blank" rel="noopener">platform.openai.com/docs</a> — model pricing and the usage dashboard; know your per-draft cost.</li>
+      <li>Academy: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — webhooks course section; refresh it before Day 13's timed drills.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-11.html">← Day 11: Portfolio M6: Order &amp; Ops Flow</a>
+  <a href="make-day-13.html">Day 13: Speed Drills &amp; Make Certification →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

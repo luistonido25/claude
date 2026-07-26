@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 13 — Speed Drills &amp; Make Certification | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="13">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-5">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 3 · Job-Ready</span>
+      <span class="hours-badge">⏱ 5–6 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 13</span>Speed Drills &amp; Make Certification</h1>
+    <p class="day-goal">Job-ready means fast AND credentialed. Today you rebuild three classic scenarios from a blank canvas against a 30-minute clock each — the automation equivalent of whiteboard interviews — then convert twelve days of practice into an official Make Academy certification, and put your blueprint library in professional order. By tonight your speed is measured, your badge is earned, and your portfolio folder is deliverable-grade.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Three timed rebuilds, 30 minutes each</h2>
+    <p class="session-time">≈ 2.5 hours (including breaks and retros)</p>
+    <p class="session-intro">Rules of the gym: blank scenario, official docs allowed, your old blueprints and day pages NOT allowed. Timer visible. When the timer sounds, stop — a build you can't finish in 30 minutes tells you exactly what to drill. Export every attempt, even the ugly ones.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m13-t01"><span>Set up the gym: create a scratch Google Sheet <strong>Drills</strong> with headers <code>Name</code>, <code>Email</code>, <code>Message</code>, <code>Category</code>; have your Telegram bot chat and a terminal with curl ready; open a 30:00 countdown timer. Journal the pass bar: <em>working end-to-end test before the buzzer</em>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t02"><span><strong>Drill 1 — intake (webhook → validate → sheet + alert).</strong> Spec: a Custom Webhook receives <code>{"name":"...","email":"...","message":"..."}</code>; a filter rejects bundles whose email doesn't contain <code>@</code>; valid ones append a row to <strong>Drills</strong> and send a Telegram alert with name + first 50 characters of the message (<code>substring()</code>); the webhook returns a 200 response body <code>ok</code>. Pass criteria: one valid curl lands a row + alert + <code>ok</code>; one bad-email curl gets filtered and writes nothing. GO.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t03"><span>Drill 1 retro (5 min, honest): time on the clock, what you fumbled (finding a module? a function's argument order? webhook response setup?). Export the blueprint as <code>drill1-attempt.json</code>. If you missed the buzzer, note the single biggest time sink — you'll re-run at day's end.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t04"><span><strong>Drill 2 — digest (schedule → aggregate → email).</strong> Spec: scheduled daily 08:00; <strong>Search Rows</strong> on <strong>Drills</strong> (max 50); a <strong>Text Aggregator</strong> builds a bullet list <code>• Name — Message</code>; <strong>Gmail</strong> sends it with subject <code>Daily digest — N entries</code> where N = <code>{{length(map(...))}}</code> or the aggregator's bundle count; empty sheet sends nothing (filter). Pass criteria: Run once with 3+ rows → one clean email; with the sheet cleared → zero emails sent. GO.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t05"><span>Drill 2 retro + export <code>drill2-attempt.json</code>. Note your aggregate reflexes: did you reach for the Text Aggregator immediately, or detour through an iterator you didn't need?</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t06"><span><strong>Drill 3 — classify (watch rows → AI → router → update + alert).</strong> Spec: <strong>Watch Rows</strong> on <strong>Drills</strong> triggers on new entries; <strong>OpenAI</strong> classifies the message as exactly one word — <code>question</code>, <code>complaint</code>, or <code>praise</code> (max tokens 5, temperature 0); a <strong>Router</strong> with three routes writes the word into the row's <strong>Category</strong> column via <strong>Update a Row</strong>; ONLY the complaint route also fires a Telegram alert. Pass criteria: add three rows (one of each kind), Run once, all three categorized correctly, exactly one alert. GO.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t07"><span>Drill 3 retro + export <code>drill3-attempt.json</code>. This one combines five days of skills — if the router filters on the AI output tripped you (whitespace! use <code>trim(lower(...))</code> in the filter), write the fix in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t08"><span>Close the gym: re-run any drill that missed its buzzer (fresh blank canvas, second attempt — most people pass on round two), then delete or switch <strong>OFF</strong> all drill scenarios and record your three times in the journal. These numbers go in tomorrow's positioning: "I build a validated webhook intake in under 30 minutes" is a concrete, honest claim.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Make Academy: Foundation today, Intermediate scheduled</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Certification won't get you hired alone, but it gets you past filters, and recruiters searching for Make talent do look for it. After twelve days of building, the Foundation material is mostly review — which is exactly why today is the day to bank it.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m13-t09"><span>Go to <a href="https://academy.make.com" target="_blank" rel="noopener"><strong>academy.make.com</strong></a> and sign in with your Make account. Browse the catalog and find the certification track — note the level ladder the Academy shows (Foundation up through the advanced/partner levels) and journal which level maps to which of your skills.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t10"><span>Enroll in the <strong>Make Foundation</strong> path and work through its course modules today. Play videos at 1.5× where it's review, but do every in-lesson exercise for real — the exam questions come from them. Expect the basics (scenarios, modules, connections, scheduling, filters, error basics) to feel easy; slow down wherever it doesn't.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t11"><span>Take the Foundation assessment and pass it. Screenshot the certificate/badge → <code>Make Portfolio/screenshots/make-foundation-cert.png</code>, and download the certificate if offered. You'll pin this to LinkedIn tomorrow.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t12"><span>Schedule the next rung: open the <strong>Intermediate</strong>-level path, skim its syllabus, and journal a two-column gap list — <em>already own it</em> (data stores, error handling, webhooks…) vs <em>need study</em>. Put a concrete date within the next two weeks in your calendar to sit it.<em class="why">"Certified Foundation, sitting Intermediate on the 9th" sounds like momentum in an interview. An unscheduled 'someday' sounds like a stall.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Blueprint library + the operations story</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Tomorrow you package the portfolio for humans. Tonight, make the raw materials impeccable: every blueprint current, consistently named, and verified importable.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m13-t13"><span>Re-export EVERY portfolio scenario fresh (<strong>More → Export Blueprint</strong>) so the files include all post-build fixes and watchdog routes, into <code>Make Portfolio/blueprints/</code> with these exact names: <code>m1-lead-intake.json</code>, <code>m2-ai-lead-scorer.json</code>, <code>m3-sync-a-sheets-to-airtable.json</code>, <code>m3-sync-b-airtable-to-sheets.json</code>, <code>m4-error-digest.json</code>, <code>m5-report-generator.json</code>, <code>m6-order-intake.json</code>, <code>m6-refund-handler.json</code>, <code>m7-draft-generator.json</code>, <code>m7-approval-handler.json</code>. Delete stale duplicates and the <code>day09-backup-*</code> files.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t14"><span>Trust but verify: import two of them (pick M3 Sync A and M6 order intake) into blank scenarios via <strong>More → Import Blueprint</strong>. Confirm modules, routes, and filters arrive intact and only connections need re-linking — that's the sentence you'll say when handing blueprints to a client. Delete the test imports.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t15"><span>Tidy <code>Make Portfolio/screenshots/</code>: consistent <code>makedayNN-description.png</code> names, delete blurry or redundant shots, and make sure each of the seven builds has at least one canvas screenshot and one proof-it-worked screenshot (email, Telegram, sheet, or PDF).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t16"><span>The operations story: open <strong>Organization → Subscription</strong> and screenshot the operations meter. Put it side by side with your Day 1 screenshot and journal a table: total ops consumed over 13 days, roughly attributed per build, and your estimated monthly ops for running M4 + M5 + M6 in production. Finish with one sentence a client would understand: <em>"this whole stack runs comfortably inside the cheapest paid tier."</em><em class="why">Being able to quote an operations budget from real measured data is rare among junior applicants — it's your differentiator, tomorrow and in interviews.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m13-t17"><span>Final sweep: every scenario <strong>OFF</strong> (the 18:00 digest may stay on if you're keeping the watchdog live), delete unused scratch scenarios and connections (<strong>Connections</strong> → remove anything orphaned), and journal your three strongest builds — confirm M3, M4, and M7 as tomorrow's case-study picks, or argue yourself into a different trio.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>Three timed-drill blueprints with recorded times and retros (all three passing, even if on attempt two), the Make Foundation certification earned and screenshotted, an Intermediate exam date in the calendar, a clean consistently-named blueprint library verified by re-import, and the Day 1 vs Day 13 operations comparison written up in the journal.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 The 30-minute claim, kept honest</h3>
+    <p>Only claim the speed you clocked. If Drill 3 took you 40 minutes, say "under 45" — then drill it weekly until it's 25. Interviewers occasionally test these claims live; the candidates who survive are the ones whose numbers came from a real timer, not vibes.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Academy: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — Foundation path + certification; check the level ladder for what Intermediate adds.</li>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — allowed during drills; practice finding module docs fast, it's a skill too.</li>
+      <li>Make Community: <a href="https://community.make.com" target="_blank" rel="noopener">community.make.com</a> — create your account today; answering beginner questions there is Day 14's follow-up plan material.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-12.html">← Day 12: Portfolio M7: Content Pipeline with Approval Step</a>
+  <a href="make-day-14.html">Day 14: Package Your Make Portfolio &amp; Position →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

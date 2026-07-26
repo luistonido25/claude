@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 9 — Resilience Day + Portfolio M4: Error Watchdog | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="9">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 9</span>Resilience Day + Portfolio M4: Error Watchdog</h1>
+    <p class="day-goal">Today you break things on purpose. You'll sabotage yesterday's scenarios five different ways, read each failure in History like a pro, and learn exactly when to reach for Ignore vs Resume vs Break. Then you'll turn that knowledge into Portfolio M4: a standard error route bolted onto every portfolio scenario (log to an Errors sheet + instant Telegram alert) plus a daily 18:00 digest. Nothing separates a hobbyist from a hireable automation builder faster than how they handle failure.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The sabotage lab: break it five ways, watch it die</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">You can't design error handling for failures you've never seen. So you're going to cause every classic failure deliberately, in a controlled setting, and study the corpse in <strong>History</strong>. Rules of the lab: one sabotage at a time, always undo before the next one, and write down the exact error name Make shows you.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m09-t01"><span>Safety first: confirm both <code>[M3]</code> sync scenarios are switched <strong>OFF</strong>, then export a fresh backup blueprint of each (<strong>More → Export Blueprint</strong>) into <code>Make Portfolio/blueprints/day09-backup-*.json</code>.<em class="why">Professionals never experiment on the only copy. Thirty seconds of exporting buys you fearless sabotage.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t02"><span><strong>Sabotage #1 — renamed sheet:</strong> in Google Sheets, double-click the <strong>Leads</strong> tab and rename it to <code>Leads OLD</code>. In Make, <strong>Run once</strong> on <code>[M3] Sync A</code>. The Sheets module errors out. Open <strong>History</strong> → click the run marked with the error icon → click the failed module and read the message top to bottom. Journal the error name and what it tells you (and what it doesn't). Rename the tab back and re-run until green.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t03"><span><strong>Sabotage #2 — revoked connection:</strong> go to <strong>myaccount.google.com</strong> → <strong>Security</strong> → <strong>Your connections to third-party apps &amp; services</strong> → find <strong>Make</strong> → <strong>Delete all connections</strong>. Back in Make, <strong>Run once</strong> Sync A: an authorization error this time — note how it looks completely different from #1. Fix it: <strong>Connections</strong> (left sidebar) → your Google connection → <strong>Reauthorize</strong> → sign in again → re-run until green.<em class="why">Expired/revoked credentials are the #1 real-world failure for client scenarios. Now you've seen the symptom and know the 60-second fix.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t04"><span><strong>Sabotage #3 — bad mapping:</strong> in Sync A's <em>Changed</em> route, open <strong>Airtable → Update a Record</strong> and temporarily replace the <strong>Record ID</strong> mapping with the <strong>hash</strong> variable (a string Airtable will never recognize). Edit one row's <strong>Status</strong> in the sheet so a bundle takes the Changed route, then <strong>Run once</strong>. Read the error: the module got data, just the <em>wrong</em> data — a validation/data error, not a connection error. Restore the correct <strong>airtable_id</strong> mapping and re-run.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t05"><span><strong>Sabotage #4 — malformed webhook payload:</strong> reopen your Day 4 <code>[M1]</code> lead-intake scenario, <strong>Run once</strong> so the webhook listens, and fire broken JSON at it from a terminal: <code>curl -X POST -H "Content-Type: application/json" -d '{"name":"Ghost", "email":' YOUR_WEBHOOK_URL</code> (note the deliberately truncated JSON). Then send a second request that's valid JSON but missing the email field entirely. Watch what happens in History each time: where does bad input get rejected, and where does it sneak through and blow up a later module instead?<em class="why">Lesson: a webhook accepts almost anything — validation is YOUR job, and failures surface downstream of where the bad data entered.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t06"><span><strong>Sabotage #5 — deleted Airtable field:</strong> in the <strong>Leads CRM</strong> base, right-click the <strong>Source</strong> field header → <strong>Delete field</strong>. Edit a row in Sheets, <strong>Run once</strong> Sync A, and read the failure. Undo: in Airtable press <strong>Ctrl/Cmd+Z</strong> (or re-create the field), then reopen the Airtable module in Make, click <strong>Refresh</strong> on the fields, and re-map <strong>Source</strong> if it shows in red.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t07"><span>Build your failure table in the journal — five rows, four columns: <em>what broke · exact error shown · error class (transient / configuration / data) · time to fix</em>. Then classify: which of the five would fix <em>themselves</em> if simply retried later? (Answer: almost none of today's — but network timeouts and rate limits, which you'll meet in production, would.)</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Error handlers: Ignore vs Resume vs Break, and the incomplete executions queue</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Make gives you five error-handling directives. You met them briefly on Day 3; today you use the three that matter daily. The mental model: <strong>Ignore</strong> = drop this bundle and move on. <strong>Resume</strong> = substitute a fallback output and continue as if it worked. <strong>Break</strong> = park the run in the incomplete executions queue and (optionally) auto-retry — the right answer for transient failures.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m09-t08"><span>Journal the decision tree before touching the UI: <em>rate limit / timeout / 5xx from an API → <strong>Break</strong> with auto-retry; optional enrichment failed (e.g. AI scoring) → <strong>Resume</strong> with a default value or <strong>Ignore</strong>; bad data that will never succeed → log it, alert, <strong>Ignore</strong>; multi-write scenarios where a half-finished run is dangerous → the default <strong>Rollback</strong> is your friend.</em> Add one honest line about <strong>Commit</strong> (keep what already succeeded) so you can define it in an interview.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t09"><span>Attach your first handler: in Sync A, right-click <strong>Airtable → Update a Record</strong> → <strong>Add error handler</strong> → choose <strong>Ignore</strong>. Re-run sabotage #3 (bad Record ID mapping) with the handler in place: the bundle dies quietly at the handler, the run finishes with a warning instead of a failure, and — crucially — the scenario does <strong>not</strong> get deactivated. Undo the sabotage.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t10"><span>Now the heavyweight: delete the Ignore handler (right-click → delete), and this time add <strong>Break</strong>. Before it can work, open <strong>Scenario settings</strong> (gear icon in the bottom toolbar) → tick <strong>Allow storing of incomplete executions</strong> → <strong>OK</strong>. In the Break module set <strong>Automatically complete execution</strong> to <strong>Yes</strong>, <strong>Number of attempts</strong> <code>3</code>, <strong>Interval between attempts</strong> <code>5</code> minutes.<em class="why">Break without incomplete-executions storage is a car without wheels — Make has nowhere to park the failed run.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t11"><span>Trigger a failure into the queue: redo sabotage #3, <strong>Run once</strong>, then open the <strong>Incomplete executions</strong> tab (next to History at the bottom). Click the stored execution: you can see the exact bundle that failed, frozen mid-flight. Fix the Record ID mapping in the scenario, then in the incomplete execution click <strong>Retry</strong> — watch it resolve and complete. This resolve-and-retry move is a genuine consulting skill; note the click-path in your journal.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t12"><span><strong>Resume drill</strong> (scratch scenario, delete after): <strong>HTTP → Make a request</strong> to <code>https://httpbin.org/status/500</code> → right-click it → <strong>Add error handler → Resume</strong>. In the Resume module define a substitute output, e.g. <strong>Status code</strong> <code>200</code> and <strong>Data</strong> <code>{"fallback": true}</code> → add a <strong>Tools → Set variable</strong> after the HTTP module mapping the response → <strong>Run once</strong>. The 500 never derails the run; downstream modules receive your fallback. Journal one real use case (e.g. "AI scorer down → Resume with score 0 + flag for manual review").</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t13"><span>Close the loop on Sync A: remove the scratch handlers so the scenario is back to its clean Day 8 state (you'll add the permanent watchdog route in Session 3), and confirm one green <strong>Run once</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Build M4, part 1: the standard error route on every portfolio scenario</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Here's the practical pattern real Make consultants ship: every important scenario gets the <em>same</em> error route — log one row to a central <strong>Errors</strong> sheet, fire one Telegram alert, then Ignore (or Break, for flaky modules) so the scenario stays alive. Boring, repeatable, and exactly what a client pays for.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m09-t14"><span>Create the central log: a Google Sheet named <strong>Automation Errors</strong> with headers <code>Timestamp</code>, <code>Scenario</code>, <code>Module</code>, <code>Record</code>, <code>Details</code>, <code>Status</code>. Leave it empty — your scenarios will fill it.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t15"><span>Confirm your Telegram bot from Day 4 still works (send yourself a test via a scratch <strong>Telegram Bot → Send a Text Message or a Reply</strong> module). If you skipped it: in Telegram message <strong>@BotFather</strong> → <code>/newbot</code> → name it → copy the token → in Make add a <strong>Telegram Bot</strong> connection with the token → send your bot any message in Telegram → get your <strong>Chat ID</strong> by opening <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> in a browser and reading <code>chat.id</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t16"><span>Install the route on Sync A: right-click <strong>Airtable → Update a Record</strong> → <strong>Add error handler</strong>, but this time pick a regular module, not a directive: <strong>Google Sheets → Add a Row</strong> to <strong>Automation Errors</strong>. Map: <strong>Timestamp</strong> = <code>{{formatDate(now; "YYYY-MM-DD HH:mm")}}</code>, <strong>Scenario</strong> = <code>M3 Sync A</code> (typed), <strong>Module</strong> = <code>Airtable Update a Record</code> (typed), <strong>Record</strong> = the bundle's <strong>Email</strong> mapping, <strong>Status</strong> = <code>new</code>.<em class="why">The error route receives the bundle that failed — so you always know WHICH record died. Type the scenario/module names as static text: the handler is bolted to one specific module, so they never lie.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t17"><span>For <strong>Details</strong>: write a short static description of what this failure means (e.g. <code>Airtable update failed — likely deleted field or bad record ID. Check History.</code>) plus the mapped Status/Name fields. If the mapping panel in your error route exposes an error object for this module, map its message too — but never depend on it: the full error text always lives in <strong>History</strong>, one click away.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t18"><span>Extend the route: after Add a Row, add <strong>Telegram Bot → Send a Text Message or a Reply</strong> with: <code>⚠️ M3 Sync A failed at Airtable Update — record: {{Email}}. Logged to Errors sheet. Check History.</code> Then end the route with an <strong>Ignore</strong> directive so the main flow survives. Your handler route reads: <em>failed module → log row → Telegram → Ignore</em>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t19"><span>Test it live: redo sabotage #6-style damage (delete the <strong>Source</strong> field in Airtable), edit a Sheets row, <strong>Run once</strong>. You should get: a warning-but-completed run, one new row in <strong>Automation Errors</strong>, and a Telegram ping within seconds. Undo the sabotage, refresh the module's fields, re-map, re-run green. Screenshot the alert and the sheet row.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t20"><span>Roll the pattern out to the rest of the portfolio — riskiest module of each: <code>[M1]</code> lead intake → handler on <strong>Google Sheets Add a Row</strong> (log + Telegram + <strong>Ignore</strong>); <code>[M2]</code> AI scorer → handler on the <strong>OpenAI</strong> module, but end with <strong>Break</strong> (auto-retry 3× / 5 min) instead of Ignore, because AI-API failures are usually transient — remember to enable incomplete executions in that scenario's settings; <code>[M3] Sync B</code> → same route as Sync A on its Airtable module. Adjust the typed Scenario/Module text in each copy.<em class="why">Log-then-Ignore for data problems, log-then-Break for transient API problems — that one sentence is an interview answer.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — Build M4, part 2: the 18:00 daily digest + packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Instant alerts are for fires; a daily digest is for management. One scheduled scenario reads today's rows from the Errors sheet and sends a single Telegram summary at 18:00 — the kind of quiet, cheap monitoring a client actually keeps paying for.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m09-t21"><span>New scenario <code>[M4] Error digest</code>. First module: <strong>Google Sheets → Search Rows</strong> on <strong>Automation Errors</strong>, filter <strong>Timestamp</strong> <em>contains</em> <code>{{formatDate(now; "YYYY-MM-DD")}}</code>, <strong>Maximum number of returned rows</strong> <code>50</code>. Click the clock icon → <strong>Scheduling</strong> → <strong>Every day</strong> at <strong>18:00</strong>.<em class="why">Filtering by today's date means no write-back "reported" flag is needed — zero extra update operations. Cheap by design.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t22"><span>Add a <strong>Text Aggregator</strong> (Tools): Source = Search Rows, row template <code>• {{Timestamp}} — {{Scenario}} / {{Module}} — {{Record}}</code>, separator <strong>New row</strong>. Then <strong>Telegram Bot → Send a Text Message or a Reply</strong>: <code>🛡 Watchdog digest {{formatDate(now; "DD MMM")}}: errors today:</code> + the aggregated text on the next line.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t23"><span>Handle the good days: add a <strong>Router</strong> before the aggregator with route 1 filtered <em>Total number of bundles &gt; 0</em> → digest path, and route 2 (fallback) → a one-module Telegram <code>✅ Watchdog: no errors today.</code> Simpler alternative if the router fights you: put a filter <em>rows exist</em> before the aggregator and accept silence on clean days — but journal which you chose and why.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t24"><span>Test end to end: your Errors sheet already has today's seeded rows from t19 — <strong>Run once</strong> and check the digest message format (fix line breaks until it reads clean). Then delete the seeded test rows, <strong>Run once</strong> again, and confirm the all-clear path.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t25"><span>Package M4: export blueprints — the digest scenario plus fresh exports of M1/M2/M3 now that they carry error routes — as <code>m4-error-digest.json</code>, <code>m1-with-watchdog.json</code>, etc. Screenshot: one canvas showing an error route, the Errors sheet with logged rows, the Telegram alert + digest → <code>Make Portfolio/screenshots/makeday09-*.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m09-t26"><span>Record a 3-minute Loom: sabotage a scenario live, show the Telegram alert arrive, show the Errors sheet row, then run the digest. Say the words "transient vs data errors" and "the scenario never goes down". Save to <code>Make Portfolio/videos</code>, switch every scenario <strong>OFF</strong> (only the 18:00 digest may stay ON if you want it — it costs ~3 operations/day), tick <strong>Portfolio M4</strong> on the Make track home page, and journal: your Ignore/Resume/Break decision tree in your own words.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M4: Error Watchdog</h2>
+    <p>A standard error route (log to a central Errors sheet + Telegram alert + Ignore/Break directive) installed on every portfolio scenario, a scheduled 18:00 digest scenario summarizing the day's failures in one message, exported blueprints, and a Loom of a live failure being caught. Go to the Make track home page and tick <strong>Portfolio M4</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>A journal failure table for five deliberate sabotages with error classes and fixes, a working resolve-and-retry from the incomplete executions queue, the watchdog error route live on M1/M2/M3, the <code>[M4] Error digest</code> scenario tested on both the errors and all-clear paths, blueprints + screenshots + Loom in the portfolio folder.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Undo every sabotage before you log off</h3>
+    <p>Run the checklist: <strong>Leads</strong> tab renamed back, Google connection reauthorized, Record ID mapping restored, Airtable <strong>Source</strong> field back and re-mapped, seeded test rows deleted from the Errors sheet. Then flip scenarios <strong>OFF</strong>. A half-sabotaged scenario left ON is exactly the silent failure this whole day taught you to prevent.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Error handling"</em>, <em>"Directives"</em>, and <em>"Incomplete executions"</em>.</li>
+      <li>Academy: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the error-handling lesson is short; watch it after Session 2 and notice how much you already knew.</li>
+      <li>Telegram Bot API basics: <a href="https://core.telegram.org/bots" target="_blank" rel="noopener">core.telegram.org/bots</a> — for the BotFather + getUpdates chat-ID trick.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-08.html">← Day 8: Portfolio M3: Sheets ⇄ Airtable Two-Way Sync</a>
+  <a href="make-day-10.html">Day 10: Portfolio M5: Automated Report Generator →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

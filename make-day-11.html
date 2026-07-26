@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 11 — Portfolio M6: Order &amp; Ops Flow | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="11">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 6–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 11</span>Portfolio M6: Order &amp; Ops Flow</h1>
+    <p class="day-goal">Today you build the closest thing to real e-commerce plumbing without a store: a webhook receives order JSON (with a line-items array — hello, iterator), a router splits VIP from standard orders, a Docs template turns line items into an invoice, a fulfillment row lands in Sheets, confirmation emails go out — and a second webhook handles refunds with an apology email and an ops alert. Two scenarios, one believable business.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The fake storefront: webhook + three sample orders</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">No storefront needed: a <strong>Custom Webhook</strong> plus <code>curl</code> IS your storefront. The payload below is deliberately shaped like what real cart platforms send — nested customer object, items array, numeric total.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m11-t01"><span>Create the fulfillment sheet: a Google Sheet named <strong>Orders</strong> with headers <code>Order ID</code>, <code>Date</code>, <code>Customer</code>, <code>Email</code>, <code>VIP</code>, <code>Items</code>, <code>Total</code>, <code>Status</code>, <code>Invoice Doc</code>. In Drive, also create a folder <strong>Invoices</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t02"><span>New scenario <code>[M6] Order intake</code>. First module: <strong>Webhooks → Custom webhook</strong> → <strong>Add</strong> → name it <code>orders-in</code> → <strong>Save</strong> → click <strong>Copy address to clipboard</strong> and paste the URL into your notes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t03"><span>Save your three test orders as files <code>order1.json</code>, <code>order2.json</code>, <code>order3.json</code>: <br><strong>Order 1 (standard):</strong> <code>{"order_id":"ORD-1001","customer":{"name":"Dana Reyes","email":"dana.reyes@example.com"},"items":[{"sku":"MUG-01","name":"Alpine Mug","qty":2,"price":12.50},{"sku":"TEA-04","name":"Tea Sampler","qty":1,"price":22.50}],"total":47.50}</code> <br><strong>Order 2 (VIP):</strong> <code>{"order_id":"ORD-1002","customer":{"name":"Marcus Webb","email":"marcus.webb@example.com"},"items":[{"sku":"FIL-09","name":"Filter Kit","qty":1,"price":89.00},{"sku":"APR-02","name":"Barista Apron","qty":2,"price":50.00}],"total":189.00}</code> <br><strong>Order 3 (standard, refunded later):</strong> <code>{"order_id":"ORD-1003","customer":{"name":"Priya Nair","email":"priya.nair@example.com"},"items":[{"sku":"POV-01","name":"Pour-Over Set","qty":1,"price":64.00}],"total":64.00}</code></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t04"><span>Teach the webhook its shape: <strong>Run once</strong> (the webhook shows <em>waiting for data</em>), then from a terminal: <code>curl -X POST -H "Content-Type: application/json" -d @order1.json YOUR_WEBHOOK_URL</code>. The webhook replies <em>Accepted</em> and the module now shows <strong>Successfully determined</strong>. Open the output bubble: <code>customer</code> is a nested object, <code>items</code> is an <strong>array</strong>.<em class="why">One sample request is how Make learns the payload structure — every field becomes a mapping chip for downstream modules.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t05"><span>Journal the plan before building (architecture on paper is a habit interviewers notice): <em>webhook → iterator over items → text aggregator builds invoice lines → Docs invoice from template → Sheets fulfillment row → router: total ≥ 100 VIP email + alert / else standard email.</em> Mark where bundles multiply (iterator) and where they collapse back to one (aggregator).</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Iterator → Text Aggregator → invoice from template</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The invoice is the technical heart: line items live in an array, but a Docs template wants one text block. The recipe — <strong>Iterator</strong> to explode the array, <strong>Text Aggregator</strong> to fold it into formatted lines — is the same pattern behind every "list of things inside one document/email" job you'll ever quote.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m11-t06"><span>Create the template: Google Doc <strong>Invoice — TEMPLATE</strong> in the <strong>Invoices</strong> folder. Layout: a big <code>INVOICE {{orderId}}</code> title, then <code>Date: {{orderDate}}</code>, <code>Bill to: {{customerName}} ({{customerEmail}})</code>, a horizontal rule, the line <code>{{lineItems}}</code> on its own paragraph, another rule, and <code>TOTAL: {{total}}</code> bold at the bottom.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t07"><span>Back on the canvas, add an <strong>Iterator</strong> (Flow control) after the webhook: <strong>Array</strong> = the webhook's <code>items[]</code>. <strong>Run once</strong> + resend order 1 via curl: one bundle in, two bundles out (one per item), each with <code>sku</code>, <code>name</code>, <code>qty</code>, <code>price</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t08"><span>Add a <strong>Text Aggregator</strong>: <strong>Source Module</strong> = the Iterator, <strong>Row separator</strong> = <strong>New row</strong>, text template: <code>{{qty}} × {{name}} ({{sku}}) — ${{formatNumber(qty * price; 2; "."; ",")}}</code>. Run + resend: output is a clean multi-line block like <code>2 × Alpine Mug (MUG-01) — $25.00</code>.<em class="why">The line total is qty × price computed in the mapping — arithmetic lives in mappings, not in extra modules. Zero additional operations.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t09"><span>Add <strong>Google Docs → Create a Document from a Template</strong>: template = <strong>Invoice — TEMPLATE</strong>; fill <strong>orderId</strong> and customer fields from the <em>webhook</em> module (note: after an aggregator you can still reach earlier modules' chips), <strong>lineItems</strong> = the Text Aggregator output, <strong>total</strong> = <code>${{formatNumber(1.total; 2; "."; ",")}}</code>, <strong>orderDate</strong> = <code>{{formatDate(now; "DD MMM YYYY")}}</code>. <strong>Title</strong> = <code>Invoice {{1.order_id}}</code>, location = <strong>Invoices</strong> folder.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t10"><span>Run + resend order 1, open the generated invoice in Drive, and proof it like you're the customer: both line items present, math right, no naked <code>{{tags}}</code>. Note the module's <strong>Web View Link</strong> output — that's what goes in the fulfillment row next.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Fulfillment row, VIP router, confirmation emails</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m11-t11"><span>Add <strong>Google Sheets → Add a Row</strong> to <strong>Orders</strong>: <strong>Order ID</strong>, <strong>Customer</strong> = <code>{{1.customer.name}}</code>, <strong>Email</strong> = <code>{{1.customer.email}}</code>, <strong>Date</strong> = <code>{{formatDate(now; "YYYY-MM-DD HH:mm")}}</code>, <strong>Items</strong> = the Text Aggregator block, <strong>Total</strong> = <code>{{1.total}}</code>, <strong>VIP</strong> = <code>{{if(1.total &gt;= 100; "YES"; "NO")}}</code>, <strong>Status</strong> = <code>processing</code>, <strong>Invoice Doc</strong> = the invoice's Web View Link.<em class="why">The row goes BEFORE the router so it exists exactly once, no matter which email route fires. Put shared work before the split — router routes should hold only what differs.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t12"><span>Add a <strong>Router</strong> after Add a Row. Route 1, label <code>VIP</code>: click the wrench → <strong>Set up a filter</strong> → condition <strong>total</strong> (from the webhook) <em>Greater than or equal to</em> <code>100</code> — and switch the operator group to <strong>Numeric operators</strong>, not text. Route 2, label <code>Standard</code>: <strong>total</strong> <em>Less than</em> <code>100</code> (numeric).<em class="why">Text comparison thinks "99" &gt; "100" because 9 &gt; 1. Choosing the numeric operator family is the classic Make gotcha — get it wrong here and your VIPs get the boring email.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t13"><span>VIP route: <strong>Gmail → Send an Email</strong> to <code>{{1.customer.email}}</code>, subject <code>Your order {{1.order_id}} — thank you!</code>, body written personally: first-name greeting (<code>{{first(split(1.customer.name; " "))}}</code>), a thank-you that mentions the order value, the invoice link, and "reply directly to this email — you're a priority customer." Then add <strong>Telegram Bot → Send a Text Message or a Reply</strong>: <code>💎 VIP order {{1.order_id}} — {{1.customer.name}} — ${{1.total}}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t14"><span>Standard route: <strong>Gmail → Send an Email</strong> — shorter, friendly confirmation: order ID, the line-items block, total, invoice link. No Telegram (ops doesn't need to hear about every mug).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t15"><span>Housekeeping + resilience: rename every module descriptively, then install the Day 9 watchdog on <strong>Create a Document from a Template</strong> (log to Automation Errors as <code>M6 Order intake</code> + Telegram + <strong>Ignore</strong>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t16"><span>Test the standard path: <strong>Run once</strong> → curl order 1. Verify all five artifacts: invoice doc, sheet row (VIP = NO, Status = processing), standard email received, no Telegram, History run green.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t17"><span>Test the VIP path: <strong>Run once</strong> → curl order 2. Verify: VIP = YES row, personal email, 💎 Telegram alert. In History, click the router and confirm the bundle took exactly one route.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — The refund branch + full end-to-end run</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Ops flows earn their keep on the unhappy path. A second webhook receives refunds, finds the original order in the sheet, flips its status, apologizes to the customer, and alerts ops — including the case where the order ID doesn't exist.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m11-t18"><span>New scenario <code>[M6] Refund handler</code>. <strong>Webhooks → Custom webhook</strong> named <code>refunds-in</code>, copy the URL. Teach it the shape: <strong>Run once</strong> + <code>curl -X POST -H "Content-Type: application/json" -d '{"order_id":"ORD-1003","reason":"changed mind"}' YOUR_REFUND_WEBHOOK_URL</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t19"><span>Add <strong>Google Sheets → Search Rows</strong> on <strong>Orders</strong>: filter <strong>Order ID</strong> <em>Equal to</em> <code>{{1.order_id}}</code>, <strong>Maximum number of returned rows</strong> <code>1</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t20"><span>Add a <strong>Router</strong>. Route <code>Order found</code> (filter: the search's <strong>Order ID</strong> <em>exists</em>): <strong>Google Sheets → Update a Row</strong> — Row number from the search result, set ONLY <strong>Status</strong> = <code>refunded</code>, leave every other field unmapped.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t21"><span>Continue the found-route: <strong>Gmail → Send an Email</strong> to the row's <strong>Email</strong>, subject <code>Your refund for {{1.order_id}} is on its way</code>, body: acknowledge the reason (<code>{{1.reason}}</code>), state the refunded amount from the row's <strong>Total</strong>, apologize once without groveling, invite them back. Then <strong>Telegram Bot → Send a Text Message or a Reply</strong>: <code>↩️ Refund {{1.order_id}} — {{reason}} — ${{Total}}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t22"><span>Route <code>Unknown order</code> (fallback or filter: Order ID <em>does not exist</em>): a single Telegram alert — <code>⚠️ Refund request for unknown order {{1.order_id}} — manual check needed.</code> No customer email (you don't know who they are).<em class="why">Handling the record-not-found case is what separates a demo from an ops flow. Say that sentence in your Loom.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t23"><span><strong>The grand end-to-end drill:</strong> clear test rows from <strong>Orders</strong>, then run the full business day — curl orders 1, 2, 3 through the intake (Run once before each), then the ORD-1003 refund, then a refund for fake <code>ORD-9999</code>. Final state check: 3 sheet rows (two <code>processing</code>, one <code>refunded</code>), 3 invoices, 3 confirmations + 1 apology in your inbox, and exactly 3 Telegram alerts (1 VIP, 1 refund, 1 unknown-order). Screenshot the sheet and your Telegram thread.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t24"><span>Journal the operations bill: from History, add up ops for one standard order, one VIP order, and one refund. Which module chain is the expensive part, and what would you batch or trim at 1,000 orders/month?</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m11-t25"><span>Package M6: export both blueprints → <code>m6-order-intake.json</code> + <code>m6-refund-handler.json</code>; screenshots of both canvases, an invoice, the final sheet → <code>Make Portfolio/screenshots/makeday11-*.png</code>; a 4-minute Loom running order 2 + the refund live (say "iterator to aggregator", "numeric router", "unhappy path"). Switch both scenarios <strong>OFF</strong>, tick <strong>Portfolio M6</strong> on the Make track home page, journal one design decision you'd defend in an interview.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M6: Order &amp; Ops Flow</h2>
+    <p>Two scenarios: order intake (webhook → iterator/aggregator invoice → Docs template → fulfillment row → VIP/standard router with emails + alert) and a refund handler with an unknown-order guard — tested end to end with 3 orders + 1 refund + 1 bad refund, both blueprints exported, screenshots and a Loom saved. Go to the Make track home page and tick <strong>Portfolio M6</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p><code>[M6] Order intake</code> and <code>[M6] Refund handler</code> verified against the full test sequence, a client-clean invoice template, the Orders sheet showing the final state, an operations-cost breakdown per order type in the journal, and blueprints + screenshots + Loom in the portfolio folder.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 Optional: the Stripe test-mode variant</h3>
+    <p>Want the payload to come from a real payments product instead of curl? Create a free Stripe account, stay in <strong>test mode</strong>, and swap the intake trigger for the Stripe <strong>checkout.session.completed</strong> event (Stripe → webhooks, or Make's Stripe modules) — the rest of your scenario barely changes, which is exactly the point: good architecture is source-agnostic. Keep it as a noted variant in your case study; don't rebuild the whole flow today.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Webhooks"</em>, <em>"Iterator"</em>, <em>"Text aggregator"</em>, <em>"Router"</em>.</li>
+      <li>Academy: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the flow-control course section maps 1:1 to today's build.</li>
+      <li>Stripe test mode (for the optional variant): <a href="https://docs.stripe.com/testing" target="_blank" rel="noopener">docs.stripe.com/testing</a> — test cards and events, no real money anywhere.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-10.html">← Day 10: Portfolio M5: Automated Report Generator</a>
+  <a href="make-day-12.html">Day 12: Portfolio M7: Content Pipeline with Approval Step →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
