@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 2 — Mapping, Functions &amp; Iterators/Aggregators | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="2">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-2">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 1 · Fast Fundamentals</span>
+      <span class="hours-badge">⏱ 6–7 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 2</span>Mapping, Functions &amp; Iterators/Aggregators</h1>
+    <p class="day-goal">By tonight you'll map data between modules fluently, use Make's function library (string, date, math, array) without looking things up, and — the single biggest Make-specific skill — control bundle flow explicitly with iterators and aggregators. You'll prove it by rebuilding Day 1's email-per-row scenario as a one-email digest and counting the operations you saved.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — The mapping panel, inside out</h2>
+    <p class="session-time">≈ 1 hour</p>
+    <p class="session-intro">Everything you typed into fields yesterday goes through the <strong>mapping panel</strong> — the popup that appears when you click into any module field. It has two halves: mappable items (the colored chips from earlier modules) and a function library organized in tabs. In n8n you wrote <code>{{ $json.name }}</code> expressions; in Make you click chips and wrap them in functions. Same power, different muscle memory — today builds that muscle.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m02-t01"><span>Open yesterday's <code>[TRAIN] Daily sheet digest v1</code> scenario (confirm the switch is <strong>OFF</strong>). Click the email module → click into the <strong>Subject</strong> field. The mapping panel opens. Identify its parts: the <strong>star tab</strong> (mappable items from previous modules, grouped by module number), and the function tabs — <strong>General</strong>, <strong>Math</strong>, <strong>Text and binary</strong> (T icon), <strong>Date and time</strong> (calendar icon), <strong>Arrays</strong>.<em class="why">Knowing which tab holds which function is half the speed battle — Make interviews often include a live mapping exercise.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t02"><span>Hover over any mapped chip already in a field — note it shows the module number and field name (e.g. <code>1. Name</code>). The number is the module's position badge on the canvas. In your journal: <em>"Chips are references, not copies — if I rename a sheet column, mappings can break."</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t03"><span>In the Subject field, build a mixed value: type <code>Lead: </code>, click the <strong>Name</strong> chip, type <code> (</code>, click the <strong>Status</strong> chip, type <code>)</code>. Right-click the Sheets module → <strong>Run this module only</strong>, then hover the email module's field to see the resolved preview. Text and chips freely interleave — that's your string concatenation.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t04"><span>Now nest a function: clear Subject, open the <strong>Text and binary</strong> tab, click <strong>upper()</strong> — it drops <code>upper( )</code> into the field with the cursor inside the parentheses. Click the <strong>Name</strong> chip so it lands <em>inside</em> the brackets: <code>upper( 1. Name )</code>. This click-function-then-click-chip rhythm is how every formula gets built.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t05"><span>Deliberately break it: drag the Name chip <em>outside</em> the closing bracket and note the result changes. Fix it. Then in your journal write the three mapping-panel gotchas: chips must sit inside function brackets, functions are separated by <code>;</code> arguments not commas-with-quotes like spreadsheets, and green/purple chip colors just indicate which module they came from.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Function categories with Set Variable + Compose</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">You'll practice functions in a scratch scenario using two free utility modules: <strong>Tools &gt; Set variable</strong> (create a value) and <strong>Tools &gt; Compose a string</strong> (display a result). This costs 2 operations per test run — the cheapest possible practice rig.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m02-t06"><span>Create a new scenario named <code>[TRAIN] Function gym</code>. Click the <strong>+</strong> circle → search <strong>Tools</strong> → choose <strong>Set variable</strong>. Variable name <code>raw</code>, value <code>maria lopez, maria@example.com, new</code>. Add a second module: <strong>Tools</strong> → <strong>Compose a string</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t07"><span><strong>String drills.</strong> In Compose, using the <code>raw</code> chip, build and <strong>Run once</strong> each of these (one at a time, checking output in the module bubble): <code>upper(raw)</code>, <code>lower(raw)</code>, <code>substring(raw; 0; 5)</code>, <code>replace(raw; new; NEW LEAD)</code>, and <code>length(raw)</code>. Journal one line on what <code>substring</code>'s two numbers mean (start index, end index — zero-based).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t08"><span><strong>split() preview.</strong> Change Compose to <code>split(raw; ,)</code> and run. The output is an <strong>array</strong> — note how Make displays it. Then get the second element with <code>get(split(raw; ,); 2)</code>.<em class="why">get() is 1-based, substring is 0-based. Yes, really. Write that down — it bites everyone once.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t09"><span><strong>Date drills.</strong> Open the <strong>Date and time</strong> tab. Build in Compose: <code>now</code> (it's a variable, bottom of the tab, not a function), then <code>formatDate(now; DD/MM/YYYY)</code>, then <code>formatDate(now; YYYY-MM-DD HH:mm)</code>, then <code>formatDate(addDays(now; 7); dddd)</code> — the weekday name one week from today. Run and verify each.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t10"><span><strong>Math drills.</strong> Set a second variable <code>price</code> = <code>149.99</code> (add another <strong>Set variable</strong> module or switch to <strong>Set multiple variables</strong>). In Compose build: <code>round(price)</code>, <code>ceil(price)</code>, <code>floor(price)</code>, and <code>formatNumber(price * 1.21; 2)</code> — price with 21% tax, 2 decimals. The <code>*</code> works directly between chips and numbers.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t11"><span><strong>Array function drills.</strong> Set a variable <code>team</code> = <code>split(ana,bo,carla,dev; ,)</code> (yes — functions work in Set variable too, making a real array). In Compose: <code>join(team; " | ")</code>, <code>length(team)</code>, <code>first(team)</code>, <code>last(team)</code>, and <code>map()</code> — read its tooltip now, you'll use it for real on complex arrays (it plucks one key from every element of an array of objects). Journal: <em>"map() = extract column, get() = grab element, join() = array→string, split() = string→array."</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — THE BIG ONE: iterators and aggregators</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">This is the concept that separates Make users from Make professionals. n8n loops over items invisibly; Make makes flow control explicit. An <strong>iterator</strong> splits one bundle containing an array into many bundles (1 → N). An <strong>aggregator</strong> collects many bundles back into one (N → 1). Every module between an iterator and an aggregator runs once per bundle — and bills one operation per run. Master this and you control both correctness <em>and</em> cost.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m02-t12"><span>In your journal, draw the diagram before touching the UI: <code>[1 bundle with array of 5] → ITERATOR → [5 bundles] → (modules run 5×) → AGGREGATOR → [1 bundle]</code>. Label the operation count at each stage. This picture is the answer to half of today's quiz.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t13"><span>Recall Day 1's scenario: <strong>Search Rows</strong> returned 5 bundles and the email module fired 5 times (~6 operations, 5 annoying emails). Today's build: same sheet, <strong>one</strong> summary email. Create a new scenario <code>[TRAIN] Daily digest v2 — aggregated</code> and add <strong>Google Sheets &gt; Search Rows</strong> (reuse your connection, spreadsheet <strong>Make Practice</strong>, sheet <strong>Sheet1</strong>, max rows <strong>10</strong>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t14"><span>Add the aggregator: click right of the Sheets module → search <strong>Array aggregator</strong> (under <strong>Flow control</strong>). In its settings, <strong>Source Module</strong> = your Google Sheets module — this tells it where the "many bundles" section begins. Under <strong>Aggregated fields</strong>, tick <code>Name</code>, <code>Email</code>, <code>Status</code>. Run once and inspect the output: <strong>one</strong> bundle containing an <code>Array</code> of 5 objects.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t15"><span>Add <strong>Gmail &gt; Send an Email</strong> (or Email &gt; Send an Email) after the aggregator. <strong>To</strong>: yourself. <strong>Subject</strong>: <code>Digest: </code> + <code>length()</code> of the aggregator's <code>Array</code> chip + <code> leads</code>. <strong>Content</strong>: use <code>join(map( Array ; Name); ", ")</code> — click the <strong>Array</strong> chip into map()'s first slot and type <code>Name</code> as the second argument (the raw field name). Run once. One email, all five names, comma-separated.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t16"><span>Count the receipts: open the run in <strong>History</strong> and add up module executions. v2 = 1 search + 1 aggregate + 1 email = <strong>3 operations</strong>, versus Day 1's 6 — and the gap grows linearly with rows (100 rows: 102 ops vs 3). Write this comparison in your journal in client-pitch form: <em>"I redesigned a notification flow from per-row to aggregated and cut operation costs by 97% at scale."</em><em class="why">This exact before/after is portfolio gold — screenshot both History runs side by side.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t17"><span>Now the <strong>Text aggregator</strong> — often even simpler for emails. Replace the Array aggregator (right-click → delete) with <strong>Flow control &gt; Text aggregator</strong>, Source Module = Sheets. In <strong>Text</strong>, build one line per row: map <strong>Name</strong>, type <code> — </code>, map <strong>Status</strong>. Set <strong>Row separator</strong> to <strong>New row</strong>. Map the aggregator's output <code>text</code> chip into the email body. Run once: a tidy line-per-lead email for the same 3 operations.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t18"><span>And the reverse direction — the <strong>Iterator</strong>. New scenario <code>[TRAIN] Iterator lab</code>: <strong>Set variable</strong> with <code>tags</code> = <code>split(vip,newsletter,demo; ,)</code> → add <strong>Flow control &gt; Iterator</strong>, map the <code>tags</code> array into its <strong>Array</strong> field → add a <strong>Compose a string</strong> mapping the iterator's <code>Value</code> chip. Run once: Compose executes 3 times, once per element. Also try the <strong>Numeric aggregator</strong> after it (operation: <strong>SUM</strong> won't apply to text — feed it <code>length(value)</code> via a Set variable in between, or just read its options and journal when you'd use SUM/AVG/MAX on real numbers).</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — JSON module + six timed drills</h2>
+    <p class="session-time">≈ 1.5–2 hours</p>
+    <p class="session-intro">One more tool for the belt — parsing raw JSON strings — then the drill block. Set a visible timer for every drill. Passing time is generous on purpose: the point is doing it <em>without notes</em>.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m02-t19"><span>In the Function gym scenario, add a <strong>Set variable</strong> with <code>payload</code> = <code>{"lead":{"name":"Sam","score":8},"tags":["hot","demo"]}</code>. Add a <strong>JSON &gt; Parse JSON</strong> module and map <code>payload</code> into <strong>JSON string</strong>. Run once — the output becomes mappable chips: <code>lead.name</code>, <code>lead.score</code>, and a <code>tags</code> array you could feed straight into an Iterator.<em class="why">Webhooks and HTTP responses (Days 4–5) often deliver JSON as a string — Parse JSON turns it into chips.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t20"><span><strong>Drill 1 (5 min):</strong> format today's date three ways from memory in a Compose module: <code>DD/MM/YYYY</code>, <code>YYYY-MM-DD</code>, and full weekday name. No peeking at Session 2 notes until after the timer.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t21"><span><strong>Drill 2 (10 min):</strong> from a fresh Sheets Search Rows module, aggregate all Names into a single comma-separated list in one Compose/email field. (Two valid answers: Array aggregator + <code>join(map(...))</code>, or Text aggregator with comma separator. Do the one you find harder.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t22"><span><strong>Drill 3 (10 min):</strong> take the string <code>red,green,blue,gold</code>, split it, iterate it, and produce one Compose output per color reading <code>Color #N is X</code> — using the iterator's <strong>Bundle order position</strong> chip for N.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t23"><span><strong>Drill 4 (5 min):</strong> given variable <code>email</code> = <code>SAM.Tan@Example.COM</code>, output the lowercased address and, separately, just the domain part. (Hint: <code>lower()</code>, <code>split()</code> on <code>@</code>, <code>get(...; 2)</code>.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t24"><span><strong>Drill 5 (10 min):</strong> paste this into a Set variable and get <code>score</code> out of it via Parse JSON: <code>{"result":{"contact":"Ana","score":9}}</code> — then produce the string <code>Ana scored 9/10</code> in Compose.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t25"><span><strong>Drill 6 (15 min, the boss):</strong> from memory, rebuild the entire digest v2 (Sheets → Text aggregator → one email) in a blank scenario. Under 15 minutes with a correct one-line-per-lead email = pass. Delete the copy after.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m02-t26"><span>Wrap up: export blueprints of <code>Daily digest v2</code> and <code>Function gym</code> (<strong>More</strong> menu → <strong>Export Blueprint</strong>) to <code>Make Portfolio/blueprints/day02-*.json</code>. Screenshot the v1-vs-v2 History comparison → <code>Make Portfolio/screenshots/makeday02-*.png</code>. Journal: the iterator/aggregator diagram from memory + your drill pass/fail list. Confirm every scenario switch is <strong>OFF</strong>.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p>The aggregated digest scenario (<code>[TRAIN] Daily digest v2</code>) sending one summary email instead of five, exported blueprints for it and the function gym, a side-by-side operations screenshot (6 ops vs 3 ops), and six drills attempted with pass/fail noted in your journal.</p>
+  </div>
+
+  <div class="callout tip">
+    <h3>💡 The interview answer</h3>
+    <p>When someone asks "what's the difference between Make and other tools?", the professional answer is: <strong>explicit flow control</strong>. "In Make I decide exactly where bundles multiply and where they collapse, so I can put a filter or aggregator exactly where it saves operations." You built the proof today — keep that 6-vs-3 screenshot.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Official docs: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Iterator"</em>, <em>"Aggregator"</em>, and <em>"Functions"</em> (the full function reference lives here).</li>
+      <li>Free course: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the mapping and data-flow lessons in the foundation course mirror today exactly.</li>
+      <li>Keep open in a tab while drilling: the <em>"Text and binary functions"</em> and <em>"Date and time functions"</em> Help Center pages — but only <em>after</em> each timer ends.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-01.html">← Day 1: Make Fundamentals &amp; Account Setup</a>
+  <a href="make-day-03.html">Day 3: Routers, Filters &amp; Error Handlers →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

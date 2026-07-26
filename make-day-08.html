@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day 8 — Portfolio M3: Sheets ⇄ Airtable Two-Way Sync | Make.com 14-Day Intensive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-track="make" data-day="8">
+
+<nav class="track-nav"><div class="container"><a href="index.html">GHL 30-Day</a><a href="make.html" class="active">Make.com 14-Day</a><span class="soon">n8n</span><span class="soon">Zapier</span></div></nav>
+
+<header class="day-header week-4">
+  <div class="container">
+    <a class="back-link" href="make.html">← Make track</a>
+    <div class="day-meta">
+      <span class="week-badge">Phase 2 · Portfolio Builds</span>
+      <span class="hours-badge">⏱ 7–8 hours</span>
+      <span class="quiz-score-badge"></span>
+    </div>
+    <h1><span class="day-num">Day 8</span>Portfolio M3: Sheets ⇄ Airtable Two-Way Sync</h1>
+    <p class="day-goal">By tonight two scenarios will keep a Google Sheet and an Airtable base in sync in both directions — without the infinite ping-pong loop that kills naive two-way syncs. You'll build the ledger pattern with a Data store (record-ID mapping + last-synced hash), prove loop prevention with a written test matrix, and walk away with the single most interview-impressive integration pattern in this track.</p>
+    <div class="progress-track"><div class="progress-fill day-progress-fill"></div></div>
+    <p class="progress-label"><span class="day-progress-text">0%</span> of today's tasks complete</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="session">
+    <h2>Session 1 — Airtable setup and why naive two-way sync loops forever</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">Two-way sync is where amateurs burn a month of operations in one weekend. System A changes → sync writes to B → B's "watch" trigger fires → sync writes back to A → A's trigger fires → forever. Today's whole design exists to break that loop. First, build the Airtable side.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m08-t01"><span>In Airtable, click <strong>+ Create</strong> → <strong>Start from scratch</strong> → name the base <code>Leads CRM</code>. Rename <strong>Table 1</strong> to <strong>Contacts</strong> (double-click the tab name).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t02"><span>Set up the Contacts fields to mirror your Sheets <strong>Leads</strong> columns: keep <strong>Name</strong> (Single line text), then click <strong>+</strong> to add <strong>Email</strong> (type <em>Email</em>), <strong>Phone</strong> (type <em>Phone number</em>), <strong>Status</strong> (type <em>Single select</em> with options <code>new</code>, <code>contacted</code>, <code>won</code>, <code>lost</code>), <strong>Source</strong> (Single line text), and <strong>Synced At</strong> (type <em>Date</em>, toggle <strong>Include time</strong> ON). Delete the leftover Notes/Attachments fields.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t03"><span>Add one more field the trigger will need: <strong>Last Modified</strong> (type <em>Last modified time</em>, watching <em>all editable fields</em>).<em class="why">Make's Airtable "Watch Records" trigger requires a Last-modified-time field to know what changed since the last poll.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t04"><span>On the Sheets side: open (or create) your <strong>Leads</strong> spreadsheet with headers <code>Name</code>, <code>Email</code>, <code>Phone</code>, <code>Status</code>, <code>Source</code> — and add two new columns: <code>Airtable ID</code> and <code>Synced At</code>. Make sure it has 3 sample rows with real-looking emails.<em class="why">The Airtable ID column is half of your "ledger" — it lets the Sheets side know which Airtable record a row already maps to.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t05"><span>Create the Airtable connection: go to <strong>airtable.com/create/tokens</strong> → <strong>Create new token</strong> → name it <code>make-training</code> → add scopes <strong>data.records:read</strong>, <strong>data.records:write</strong>, <strong>schema.bases:read</strong> → under Access add the <strong>Leads CRM</strong> base → <strong>Create token</strong> and copy it. In Make: <strong>Connections</strong> → <strong>Add</strong> → search <strong>Airtable</strong> → choose the token/personal-access-token option → paste.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t06"><span>Journal drill — write the naive-loop failure from memory: <em>Sheets watch fires → creates Airtable record → Airtable watch fires → updates the Sheets row → Sheets watch fires again → …</em> Then compute the damage: at 2 scenarios × 4 modules, one edited row ping-ponging every 15 minutes ≈ how many operations per day? (Answer: hundreds — on a 1,000-op free plan you're dead by Tuesday.)</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t07"><span>Write the two guards you'll build, in one line each: <strong>(1) Identity ledger</strong> — a Data store maps each contact (keyed by email) to its Airtable record ID, so you always update instead of duplicating. <strong>(2) Change hash</strong> — the ledger also stores a hash of the last-synced field values; if the incoming data hashes the same, the scenario stops. An echo coming back from the other side always hashes identical, so the loop dies after one cheap filtered run.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t08"><span>Build the ledger: <strong>Data stores</strong> (left sidebar) → <strong>Add data store</strong> → name <code>sync_ledger</code> → next to Data structure click <strong>Add</strong> → name <code>ledger_item</code> → add fields: <strong>airtable_id</strong> (Text), <strong>row_number</strong> (Number), <strong>last_hash</strong> (Text), <strong>last_synced</strong> (Date) → <strong>Save</strong>. Data storage size 1 MB is plenty.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 2 — Direction 1: Sheets → Airtable, guarded</h2>
+    <p class="session-time">≈ 2.5 hours</p>
+    <p class="session-intro">The pattern per contact: <em>look up in ledger → not found? create → found but changed? update → found and identical? stop.</em> Every module past the lookup only runs when there's real work, which is exactly what keeps operations low.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m08-t09"><span>Create a new scenario named <code>[M3] Sync A: Sheets → Airtable</code>. First module: <strong>Google Sheets → Watch Rows</strong>, pick the Leads spreadsheet/sheet, set <strong>Limit</strong> to <strong>10</strong>. When Make asks where to start, choose <strong>All</strong> so your existing rows sync on the first run. <strong>Run once</strong> to confirm bundles come out.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t10"><span>Add <strong>Data store → Search records</strong>: data store <code>sync_ledger</code>, filter <strong>key</strong> <em>equal to</em> — click into the value and build <code>{{lower(1.Email)}}</code> with the <strong>lower()</strong> function from the mapping panel's function tabs. Turn ON <strong>Continue the execution of the route even if the module finds no records</strong>.<em class="why">Lower-casing the email makes "Dana@x.com" and "dana@x.com" the same contact. The "continue even if not found" toggle is what lets one route handle both create and update.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t11"><span>Now compute the hash. Add <strong>Tools → Set variable</strong>: name <code>hash</code>, value <code>{{md5(lower(1.Email) + "|" + 1.Name + "|" + 1.Phone + "|" + 1.Status + "|" + 1.Source)}}</code> (find <strong>md5()</strong> in the mapping panel under the T-in-a-square text functions).<em class="why">One string of every synced field, hashed — if any field changes, the hash changes; if nothing changed, it's identical to what the ledger stored.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t12"><span>Add a <strong>Router</strong> after Set variable. Route 1 label <code>New contact</code>: filter — Data store search's <strong>key</strong> field <em>does not exist</em>. Route 2 label <code>Changed</code>: filter — ledger <strong>last_hash</strong> <em>exists</em> AND <strong>last_hash</strong> <em>not equal to</em> <code>{{3.hash}}</code>. No third route — identical bundles simply die at the router, costing nothing further.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t13"><span>On the <strong>New contact</strong> route: <strong>Airtable → Create a Record</strong> → base <strong>Leads CRM</strong>, table <strong>Contacts</strong> → map <strong>Name</strong>, <strong>Email</strong>, <strong>Phone</strong>, <strong>Status</strong>, <strong>Source</strong> from module 1, and <strong>Synced At</strong> = <code>{{now}}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t14"><span>Still on that route, add <strong>Google Sheets → Update a Row</strong>: Row number = module 1's <strong>Row number</strong>, fill ONLY <strong>Airtable ID</strong> = the Create-a-Record module's <strong>ID</strong> and <strong>Synced At</strong> = <code>{{now}}</code> (leave every other cell unmapped so you don't overwrite user edits).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t15"><span>Finish the route with <strong>Data store → Add/replace a record</strong>: Key = <code>{{lower(1.Email)}}</code>, <strong>Overwrite an existing record</strong> ON, fields: <strong>airtable_id</strong> = the new record's ID, <strong>row_number</strong> = module 1's Row number, <strong>last_hash</strong> = <code>{{3.hash}}</code>, <strong>last_synced</strong> = <code>{{now}}</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t16"><span>On the <strong>Changed</strong> route: <strong>Airtable → Update a Record</strong> (Record ID = ledger's <strong>airtable_id</strong>, map the five fields + Synced At = <code>{{now}}</code>) → then the same <strong>Data store → Add/replace a record</strong> as above to store the new hash. Your canvas: Watch Rows → Search records → Set variable → Router → two guarded routes.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t17"><span><strong>Run once</strong> → your 3 sample rows should take the New route, appear in Airtable, and get their Airtable ID written back into the sheet. <strong>Run once</strong> again immediately: Watch Rows returns nothing new — 1 operation, done. Now edit one row's <strong>Status</strong> in Sheets… and notice nothing happens. Journal why: <strong>Watch Rows only sees NEW rows, never edits.</strong></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t18"><span>Upgrade the trigger to catch edits: right-click <strong>Watch Rows</strong> → <strong>Delete</strong>, and replace it with <strong>Google Sheets → Search Rows</strong> (same sheet, no filter, <strong>Maximum number of returned rows</strong> = <strong>20</strong>). Click the clock icon on it → schedule <strong>Every 15 minutes</strong>. Re-link the broken mappings (they'll show in red; the field names are the same). <strong>Run once</strong>: unchanged rows die at the router for ~3 ops each; your edited row takes the Changed route and updates Airtable.<em class="why">Polling + hash-guard is the standard Make answer to "Sheets has no edit trigger" — the ledger makes re-scanning all rows cheap because unchanged rows stop after the router.</em></span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 3 — Direction 2: Airtable → Sheets, same guard</h2>
+    <p class="session-time">≈ 2 hours</p>
+    <p class="session-intro">Mirror image, one new trick: the Airtable trigger really can watch for edits (thanks to the Last Modified field), so this direction is event-shaped. The hash guard is what stops direction 1's writes from echoing back.</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m08-t19"><span>New scenario <code>[M3] Sync B: Airtable → Sheets</code>. First module: <strong>Airtable → Watch Records</strong> → base <strong>Leads CRM</strong>, table <strong>Contacts</strong>, <strong>Trigger configuration → Last modified time field</strong> = your <strong>Last Modified</strong> field, Limit <strong>10</strong>. In <em>Choose where to start</em> pick <strong>From now on</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t20"><span>Rebuild the guard exactly as in Sync A: <strong>Data store → Search records</strong> (key = <code>{{lower(1.Email)}}</code>, continue-if-none ON) → <strong>Tools → Set variable</strong> <code>hash</code> using the SAME field order and separator: <code>{{md5(lower(1.Email) + "|" + 1.Name + "|" + 1.Phone + "|" + 1.Status + "|" + 1.Source)}}</code> → <strong>Router</strong> with routes <code>New in Airtable</code> (ledger key does not exist) and <code>Changed</code> (last_hash exists AND not equal to hash).<em class="why">Identical hash recipe on both sides is the whole trick — if the recipes differ, every echo looks like a change and the loop comes back.</em></span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t21"><span><strong>New in Airtable</strong> route: <strong>Google Sheets → Add a Row</strong> mapping Name/Email/Phone/Status/Source + <strong>Airtable ID</strong> = module 1's record <strong>ID</strong> + Synced At = <code>{{now}}</code> → then <strong>Data store → Add/replace a record</strong> (key = lower email, airtable_id = record ID, row_number = the Add-a-Row module's <strong>Row number</strong> output, last_hash = <code>{{3.hash}}</code>, last_synced = <code>{{now}}</code>).</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t22"><span><strong>Changed</strong> route: <strong>Google Sheets → Update a Row</strong> with Row number = the ledger's <strong>row_number</strong>, map the five data fields + Synced At — then the same ledger <strong>Add/replace a record</strong> with the fresh hash. Rename modules descriptively (right-click → <strong>Rename</strong>) — this canvas goes in your portfolio.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t23"><span>Trace the loop-kill on paper before testing: you edit a phone number in Sheets → Sync A updates Airtable → Airtable's Last Modified changes → Sync B fires → hashes the incoming record → <strong>matches the hash Sync A just stored</strong> → dies at the router. Total echo cost: ~3 operations, zero writes, no ping-pong. Write this paragraph in your journal — it's your interview answer for "how do you prevent sync loops?"</span></label></li>
+    </ol>
+  </section>
+
+  <section class="session">
+    <h2>Session 4 — The test matrix, proof, and packaging</h2>
+    <p class="session-time">≈ 1.5 hours</p>
+    <p class="session-intro">A sync you haven't tested in all four directions is a rumor, not a deliverable. Run the matrix with <strong>Run once</strong> on each side (don't schedule both ON until the matrix passes).</p>
+    <ol class="tasks">
+      <li class="task"><label><input type="checkbox" data-task="m08-t24"><span><strong>Matrix case 1 — new row in Sheets:</strong> add a 4th row → <strong>Run once</strong> on Sync A → record appears in Airtable, ID written back, ledger updated. <strong>Run once</strong> on Sync B → the record it sees hashes identical → dies at router. Verify in each scenario's <strong>History</strong> and note the operation counts.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t25"><span><strong>Matrix case 2 — new record in Airtable:</strong> add a record directly in Airtable → <strong>Run once</strong> on Sync B → new Sheets row with Airtable ID → <strong>Run once</strong> on Sync A → the new row hashes identical → dies. ✔</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t26"><span><strong>Matrix cases 3 &amp; 4 — edit each side:</strong> change a <strong>Status</strong> in Sheets, Run once A (updates Airtable) then B (echo dies). Change a <strong>Phone</strong> in Airtable, Run once B (updates the sheet) then A (echo dies). For each case screenshot the History run where the bundle stops at the router — that filtered-run screenshot IS your loop-prevention proof.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t27"><span><strong>Endurance check:</strong> turn both scenarios <strong>ON</strong>, let them run 3 cycles (~45 min — do the next two tasks while waiting), then open <strong>Organization → Subscription</strong>: the operations meter should have crept up by only a few ops per cycle (trigger polls + router deaths), not exploded. Screenshot the meter. Then turn both scenarios <strong>OFF</strong>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t28"><span>Export both blueprints (<strong>More → Export Blueprint</strong> on each canvas) → save as <code>Make Portfolio/blueprints/m3-sync-a-sheets-to-airtable.json</code> and <code>m3-sync-b-airtable-to-sheets.json</code>. Screenshot both canvases and the sync_ledger data store (Data stores → <strong>Browse</strong>) → <code>Make Portfolio/screenshots/makeday08-*.png</code>.</span></label></li>
+      <li class="task"><label><input type="checkbox" data-task="m08-t29"><span>Record a 3-minute Loom: show a Sheets edit landing in Airtable, an Airtable edit landing in Sheets, then open History and point at the echo run dying at the router while you say the words "hash guard" and "operations cost". Save to <code>Make Portfolio/videos</code>. Journal: the full test matrix results + one thing that surprised you.</span></label></li>
+    </ol>
+  </section>
+
+  <section class="callout quiz" id="daily-quiz"></section>
+
+  <div class="callout portfolio-flag">
+    <h2><span class="pf-tag">PORTFOLIO</span>Portfolio M3: Sheets ⇄ Airtable Two-Way Sync</h2>
+    <p>Two guarded scenarios syncing both directions with a Data-store ledger (record-ID mapping + last-synced hash), a passed four-case loop-prevention test matrix with History screenshots, two exported blueprints, and a Loom. Go to the Make track home page and tick <strong>Portfolio M3</strong> on the portfolio tracker.</p>
+  </div>
+
+  <div class="callout deliverable">
+    <h2>📦 Deliverable of the day</h2>
+    <p><code>[M3] Sync A</code> and <code>[M3] Sync B</code> working and verified, the <code>sync_ledger</code> data store populated, two blueprints + canvas/ledger/History screenshots + operations-meter screenshot in your portfolio folder, and a journal entry with the test-matrix results and the loop-prevention explanation in your own words.</p>
+  </div>
+
+  <div class="callout warning">
+    <h3>⚠️ Both scenarios OFF before you close the laptop</h3>
+    <p>Two-way syncs are the #1 quota burner: two scheduled scenarios polling forever. After the endurance check, flip <strong>both</strong> switches OFF. Also: if the sync ever misbehaves, clear the <code>sync_ledger</code> (Data stores → Browse → delete all) and blank the <strong>Airtable ID</strong> column before re-running — a stale ledger causes ghost updates.</p>
+  </div>
+
+  <section class="callout resources">
+    <h3>🔗 Resources</h3>
+    <ul>
+      <li>Make Help Center: <a href="https://www.make.com/en/help" target="_blank" rel="noopener">make.com/en/help</a> — search <em>"Data stores"</em>, <em>"Airtable"</em>, and <em>"Google Sheets"</em> module docs.</li>
+      <li>Airtable tokens &amp; API: <a href="https://airtable.com/developers/web/guides/personal-access-tokens" target="_blank" rel="noopener">airtable.com/developers</a> — personal access token scopes explained.</li>
+      <li>Academy deep-dive: <a href="https://academy.make.com" target="_blank" rel="noopener">academy.make.com</a> — the data-stores lesson pairs well with today.</li>
+    </ul>
+  </section>
+
+</main>
+
+<nav class="day-nav container">
+  <a href="make-day-07.html">← Day 7: Data Stores, Text Parser &amp; Tools</a>
+  <a href="make-day-09.html">Day 9: Resilience Day + Portfolio M4: Error Watchdog →</a>
+</nav>
+
+<script src="make-quizzes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
