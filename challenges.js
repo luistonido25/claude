@@ -3475,5 +3475,626 @@ window.PORTFOLIO_CHALLENGES = [
    "Email verification: run migrated emails through a verification API in n8n before the reactivation wave, tagging `email-verified` / `email-risky` and suppressing the risky tier",
    "Turn the hygiene patrol into a weekly PDF trend report (Docs template → PDF) showing the hygiene score over time — proof to the owner that the rot stayed dead"
   ]
+ },
+// c31 — Real Estate Wholesaling System
+ {
+  "id": "c31",
+  "title": "Motivated Seller to Closed Deal: Real Estate Wholesaling System",
+  "industry": "real estate (wholesaling)",
+  "stack": "ghl+n8n",
+  "difficulty": "advanced",
+  "hours": "12-16 h",
+  "brief": [
+   "I wholesale residential properties — I find motivated sellers, get them under contract below market, and assign those contracts to cash buyers for an assignment fee. My ads are running on Facebook and Google and I'm pulling 60-80 seller leads a month. The problem is I'm running the whole thing from a Gmail label and a Notes app. Half the leads I forget to follow up with, and the ones I do call back get a totally manual conversation with no context about what they filled out.",
+   "I have no way of knowing at a glance which leads are worth spending time on. I'm burning 45 minutes on the phone with someone whose property has no equity and passing over someone else whose numbers would've worked. I need a system that scores deals the moment the form comes in so I know in 10 seconds whether to pick up the phone or let the nurture sequence do the work.",
+   "And I have zero buyer-side systems. I have a spreadsheet of 40 cash buyers I've worked with but I manually text them when I get something under contract. I want a pipeline that takes a lead from first contact all the way to assigned and closed, with automation doing the heavy lifting on follow-up so I can focus on the deals that actually pencil.",
+   "Design for: 60-80 seller leads/month, 3-5 appointments/week, 2-4 deals under contract at any time, 40-person buyer list to grow."
+  ],
+  "painPoints": [
+   "60-80 leads/month with no CRM — follow-up depends entirely on memory, and cold leads fall through every week",
+   "No deal-scoring logic: equal time spent on high-equity opportunities and unmovable listings",
+   "Buyer-side outreach is a manual group text — no buyer preference data, no matching, no cadence",
+   "No appointment-setting funnel: interested sellers have to call a number that sometimes goes to voicemail",
+   "Zero reporting: no idea what sources are producing closable deals vs. burning ad spend"
+  ],
+  "whyStack": "GHL natively handles the seller side: the motivated-seller funnel with an offer-request form, the full pipeline from New Lead to Assigned/Closed, a calendar for property walkthroughs, speed-to-lead and nurture workflows, and the buyer CRM with contact tags by buy-box criteria. What GHL cannot be is an analyst or an appraiser: it has no way to call the Zillow API, compute an equity percentage from a zestimate and asking price, or run that number through an AI model to generate a deal comment. That is an n8n chain — **Webhook** (form submitted) → **HTTP Request** (Zillow Zestimate) → **Code** (equity %, deal score 0-100) → **OpenAI** (one-sentence deal note) → **HTTP Request** back to the GHL contacts API (`services.leadconnectorhq.com`, header `Version: 2021-07-28`) to write `Zestimate`, `Deal Score`, and `AI Deal Note` on the contact. A second n8n job — daily **Schedule Trigger** — scans contacts tagged `motivated-seller` with no stage movement in 7 days and pushes the `follow-up-due` tag back to GHL so a workflow fires the next touchpoint without human memory.",
+  "guide": [
+   {
+    "step": "A1 — Private Integration token and n8n credentials",
+    "tool": "Setup",
+    "detail": "In GHL go to **Settings** → **Private Integrations** → **+ Create new integration**, name it `n8n Wholesale`, scopes: contacts (read + write), opportunities (write), tags. Copy the token immediately — you only see it once. In n8n create a **Header Auth** credential named `GHL — Wholesale` (Name field: `Authorization`, Value field: `Bearer YOUR_TOKEN`); every HTTP Request node in this build adds header `Version: 2021-07-28` and base URL `https://services.leadconnectorhq.com`. Also set up Telegram: create a bot via @BotFather, add it to a `Wholesale Deals` group, record the chat ID. Connect an **OpenAI** credential with a key that has access to `gpt-4o-mini` or better."
+   },
+   {
+    "step": "A2 — Seller pipeline",
+    "tool": "GHL",
+    "detail": "Go to **Settings** → **Opportunities** → **Pipelines** → **+ Create new pipeline**, name `Motivated Sellers`. Add stages in order: `New Lead`, `Attempted Contact`, `Appointment Set`, `Offer Made`, `Under Contract`, `Assigned / Closed`, `Dead`. Click **+ Add Stage** for each, then **Save**. Copy the `pipelineId` from the URL. Create a second pipeline named `Buyers` with stages `New Buyer`, `Vetted`, `Offer Sent`, `Closed Together` — you'll reference this pipeline ID when building the buyer side of the system."
+   },
+   {
+    "step": "A3 — Contact custom fields",
+    "tool": "GHL",
+    "detail": "Go to **Settings** → **Custom Fields** → **+ Add Field**. Create a folder called `Property` and add these fields inside it: `Property Address` (Single Line), `Asking Price` (Monetary), `Estimated ARV` (Monetary), `Repair Estimate` (Monetary), `Zillow Zestimate` (Monetary), `Equity %` (Number — decimal allowed), `Deal Score` (Number, 0–100), `AI Deal Note` (Multi-Line Text). Record each field's `fieldId` from the URL — the n8n write-back node maps to these IDs. Add a second folder `Buyer Prefs` with fields `Buy Box Areas` (Single Line), `Max Buy Price` (Monetary), `Property Types` (Checkbox Group: SFR, MFR, Condo, Land)."
+   },
+   {
+    "step": "A4 — Tag vocabulary",
+    "tool": "GHL",
+    "detail": "**Settings** → **Tags** → **+ New Tag** for every tag the system will touch: `motivated-seller`, `follow-up-due`, `appointment-set`, `under-contract`, `dead-deal`, `buyer-vetted`, `buyer-match-ready`, `deal-scored`. Having these pre-created means no typo divergence between the workflow that adds a tag and the workflow that triggers on it — GHL auto-creates tags on first use but misspellings create silent parallel tags."
+   },
+   {
+    "step": "B1 — Motivated seller landing page",
+    "tool": "GHL",
+    "detail": "**Sites** → **Funnels** → **+ New Funnel** → **From Blank**, name `Motivated Seller Offer`. Add three steps: `Offer Page` (path `/cash-offer`), `Tell Us More` (path `/property-details`), `Thank You` (path `/submitted`). Build the Offer Page: hero section with headline `Get a Fair Cash Offer in 24 Hours`, 3-bullet value prop (no agents / no repairs / close on your schedule), a CTA button that scrolls to the form, and a simple trust bar (3 deal counts / years in market / testimonial). Keep the design clean — sellers are skeptical. The Thank You page should set a clear expectation: `We'll call you within 2 hours on business days.`"
+   },
+   {
+    "step": "B2 — Property inquiry form",
+    "tool": "GHL",
+    "detail": "**Sites** → **Forms** → **Builder** → **+ Add Form**, name `Seller Inquiry`. Fields: First Name, Last Name, Phone (required), Email, then **Custom Field** elements mapped to `Property Address`, `Asking Price`, and a standard **Dropdown** for `Property Condition` with options `Move-in Ready`, `Needs Cosmetic Work`, `Major Repairs`, `Uninhabitable` — map this to the contact's **Source** note or a custom field so the AI scorer sees it. In Form **Options**, set On Submit → **Redirect** to the `/submitted` thank-you step. Embed the form on the `Offer Page` as the primary CTA element."
+   },
+   {
+    "step": "C1 — n8n: GHL form webhook + Zillow Zestimate fetch",
+    "tool": "n8n",
+    "detail": "New workflow `Deal Scorer`. Trigger: **Webhook** node, path `/deal-score`, method POST, `Respond Immediately` on. In GHL, **Automation** → new workflow, trigger **Form Submitted** (`Seller Inquiry`) → **Webhook** action pointing at your n8n URL. Back in n8n, a **Code** node extracts `contactId`, `propertyAddress`, `askingPrice` from the payload. Then an **HTTP Request** node calls `https://api.bridgedataoutput.com/api/v2/zestimates` (or Zillow's unofficial `/zestimate` endpoint — document the endpoint in your build notes as subject to terms) with the address, returning the estimated value. If Zillow is unavailable, substitute an **HTTP Request** to the ATTOM Property API free tier for AVM — note the fallback in your portfolio doc."
+   },
+   {
+    "step": "C2 — n8n: equity score + AI deal note",
+    "tool": "n8n",
+    "detail": "A **Code** node computes: `equity = (zestimate - askingPrice) / zestimate * 100` (rounded to one decimal), `dealScore = Math.min(100, Math.max(0, Math.round(equity * 1.5)))` (a simple linear scale where 67%+ equity = 100 score). Then an **OpenAI** node (model `gpt-4o-mini`, temperature 0.3) receives a prompt: `You are a real estate wholesale analyst. Address: ${address}. Asking: $${askingPrice}. Zestimate: $${zestimate}. Equity: ${equity}%. Write ONE sentence (max 20 words) classifying this as Hot Lead, Warm Lead, or Pass and state the key reason.` The node returns the sentence as `aiNote`. Emit `contactId`, `equity`, `dealScore`, `zestimate`, `aiNote` from this Code node."
+   },
+   {
+    "step": "C3 — n8n: write scores back to GHL contact",
+    "tool": "n8n",
+    "detail": "An **HTTP Request** node sends PUT `https://services.leadconnectorhq.com/contacts/{{contactId}}` (credential `GHL — Wholesale`, header `Version: 2021-07-28`), body: `{ \"customFields\": [ { \"id\": \"ZESTIMATE_FIELD_ID\", \"field_value\": \"{{zestimate}}\" }, { \"id\": \"EQUITY_FIELD_ID\", \"field_value\": \"{{equity}}\" }, { \"id\": \"DEAL_SCORE_FIELD_ID\", \"field_value\": \"{{dealScore}}\" }, { \"id\": \"AI_NOTE_FIELD_ID\", \"field_value\": \"{{aiNote}}\" } ] }`. Replace each `_FIELD_ID` with the actual ID you recorded in A3. On success, a second **HTTP Request** node adds the tag `deal-scored` via POST `/contacts/{{contactId}}/tags`."
+   },
+   {
+    "step": "C4 — n8n: Telegram deal card",
+    "tool": "n8n",
+    "detail": "A **Telegram** node (bot credential, chat ID of `Wholesale Deals` group) sends: `🏠 NEW DEAL SCORED\\n\\nAddress: ${address}\\nAsking: $${askingPrice}\\nZestimate: $${zestimate}\\nEquity: ${equity}%\\nScore: ${dealScore}/100\\n\\n${aiNote}\\n\\nGHL contact: https://app.gohighlevel.com/contacts/{{contactId}}`. Scores above 60 get a 🔥 prefix; below 30 get a ⚠️ so you can triage by visual scan alone. This fires for every scored lead regardless of score — the score itself is the filter."
+   },
+   {
+    "step": "C5 — GHL: speed-to-lead + nurture workflow",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow** → **Start from Scratch**, name `Seller — Speed to Lead`. Trigger: **Tag Added** → `motivated-seller`. Actions: **Send SMS** (`Hi {{contact.first_name}}, got your cash offer request for {{custom.Property Address}}. I'm reviewing it now — expect a call within the hour. Reply STOP to opt out.`), **Send Email** (subject: `Your cash offer request is in — here's what happens next`), **Create Opportunity** (pipeline `Motivated Sellers`, stage `New Lead`, name `{{contact.name}} — {{custom.Property Address}}`), **Add Contact Tag** → `motivated-seller` (already set, this is a no-op guard), **Internal Notification** to you. Add a 1-hour **Wait** → **If** branch on `Deal Score > 60` → **Send Internal Notification** `HOT LEAD: call now` → else continue to a 24-hour wait then a second SMS follow-up."
+   },
+   {
+    "step": "C6 — n8n: daily idle-lead radar",
+    "tool": "n8n",
+    "detail": "New workflow `Idle Lead Radar`. Trigger: **Schedule** node, every day at 8:00 AM. An **HTTP Request** node calls `GET https://services.leadconnectorhq.com/contacts/?locationId=YOUR_LOCATION_ID&tags=motivated-seller&limit=100` (credential `GHL — Wholesale`). A **Code** node filters the response: keep only contacts whose `dateUpdated` is more than 7 days ago AND whose `pipelineStageId` is `New Lead` or `Attempted Contact`. For each match, an **HTTP Request** node POSTs to `/contacts/{{id}}/tags` adding `follow-up-due`. Use a **Loop Over Items** node around the tag-add request; add a 1-second **Wait** after each batch of 10 to stay within rate limits."
+   },
+   {
+    "step": "C7 — GHL: follow-up workflow on tag",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Seller — Follow-Up Due`. Trigger: **Tag Added** → `follow-up-due`. Actions: **Send SMS** (`Hey {{contact.first_name}}, still interested in a cash offer on your property? We buy in any condition — reply YES and I'll call you today.`), **Send Internal Notification** `Call this seller — idle 7 days: {{contact.name}} {{custom.Property Address}}`, **Remove Tag** → `follow-up-due` (so the radar can re-tag in another 7 days if still idle). Add a 3-day **Wait** → **If** stage is still `Attempted Contact` → move stage to `Dead` and add tag `dead-deal` → notify you for a final manual review."
+   }
+  ],
+  "dataModel": [
+   "GHL Private Integration token — scopes: contacts read/write, opportunities write, tags",
+   "n8n credentials: Header Auth `GHL — Wholesale`, OpenAI API key (gpt-4o-mini), Telegram bot (Deals group chat ID)",
+   "Zillow/ATTOM API access — document terms-of-use compliance in build notes",
+   "Custom field IDs for: Property Address, Asking Price, Zillow Zestimate, Equity %, Deal Score, AI Deal Note",
+   "Pipeline IDs and stage IDs for both `Motivated Sellers` and `Buyers` pipelines",
+   "Location ID from GHL sub-account settings — required for the contacts list API call"
+  ],
+  "edgeCases": [
+   "Zillow API unavailability: the scorer must not fail silently — if the Zestimate call errors, write `Deal Score = 0` and `AI Deal Note = 'Auto-score unavailable — review manually'` and still fire the Telegram card so you see every lead",
+   "Duplicate form submissions: a seller who submits twice in one minute should not generate two Telegram cards — gate on `deal-scored` tag presence before running the scorer workflow",
+   "Property address format: free-text address fields come in every format imaginable — the Zillow API call must URL-encode the address string and handle 404 (no match) gracefully with the fallback score",
+   "Rate limiting: the idle-lead radar hitting 100+ contacts must batch tag-add requests with a wait node — GHL's API allows ~10 req/s burst; a Loop + Wait(1s) keeps well within it",
+   "Dead-deal resurrection: a seller who previously landed in `Dead` and submits the form again should start fresh — the speed-to-lead workflow must not skip them because the tag already exists; use `Remove Tag` + `Add Tag` pattern to force the trigger",
+   "A2P 10DLC compliance: all SMS actions need approved campaign registration before going live — build and test the full workflow first, document the registration step in your portfolio as the go-live gate",
+   "OpenAI token cost: at $0.15/1M input tokens for gpt-4o-mini, scoring 80 leads/month costs pennies — include the math in your portfolio to show cost-awareness"
+  ],
+  "acceptance": [
+   "A seller form submission triggers a Telegram deal card with equity %, deal score, and AI note within 90 seconds",
+   "The GHL contact record shows Zillow Zestimate, Equity %, Deal Score, and AI Deal Note populated correctly",
+   "A contact with Deal Score > 60 triggers the internal HOT LEAD notification in addition to the standard speed-to-lead SMS",
+   "The idle-lead radar adds `follow-up-due` to contacts tagged `motivated-seller` with no stage movement in 7 days, and fires the follow-up SMS",
+   "The `follow-up-due` tag is removed after the workflow fires so re-tagging in 7 more days works correctly",
+   "A contact idle in `Attempted Contact` for 7 days after the follow-up fires moves to `Dead` with the `dead-deal` tag",
+   "Submitting a form with an unresolvable address produces a score of 0 and a manual-review note without breaking the workflow"
+  ],
+  "portfolio": [
+   "Loom (6-8 min): fill the seller form on camera using a real address, show the Telegram deal card arrive with score and AI note, open the GHL contact and show all custom fields populated, trigger the idle radar manually and show the follow-up SMS fire",
+   "Export the two n8n workflow JSONs (`Deal Scorer` and `Idle Lead Radar`) — include annotated screenshots of the Zillow HTTP Request and OpenAI prompt node configuration",
+   "Frame as a demonstration build for a fictional wholesaler; include the math showing the cost-per-scored-lead (Zillow API + OpenAI tokens) vs. time saved per manual underwrite",
+   "Hero slide: the deal-scoring chain diagram (form → Zillow → Code → OpenAI → GHL write-back → Telegram) — this is the kind of AI augmentation clients in 2025 explicitly want to see"
+  ],
+  "stretch": [
+   "Add a **buyer matching** branch: after scoring, the Code node queries your Buyers pipeline for contacts whose `Max Buy Price` ≥ `Asking Price` and `Buy Box Areas` contains the property's zip code, then posts a buyer-match card to a separate `Buyer Outreach` Telegram group with a pre-written intro message",
+   "Replace the Zillow call with an ATTOM AVM node that also returns **days on market**, **last sold price**, and **tax assessment** — enrich the deal card and AI prompt with these signals for a more nuanced score",
+   "Build a **Google Sheets deal log**: after every scored deal, append a row with timestamp, address, asking price, zestimate, equity %, score, AI note, and source — gives you a dataset to audit which ad source is producing your best-scoring leads"
+  ]
+ },
+{
+  "id": "c32",
+  "title": "Membership Retention Engine: Gym & Fitness Studio",
+  "industry": "fitness / health (boutique studio)",
+  "stack": "ghl+n8n",
+  "difficulty": "advanced",
+  "hours": "11-15 h",
+  "brief": [
+   "I run a boutique fitness studio — 280 active members across group classes and personal training. My biggest problem is churn. I lose about 18-22 members a month and I have no early warning system. By the time I notice someone is gone, they've already canceled. A member can go from attending three times a week to zero and nobody flags it — we're too busy coaching to watch attendance logs.",
+   "The second problem is conversions. I run free-class weekends four times a year and get 40-60 trial guests each time. My conversion rate to paid membership is around 22%, which I know is low. The problem is every follow-up is a manual call from the front desk, which happens inconsistently depending on how busy we are. Half the trial leads don't get a second touchpoint.",
+   "And renewals are a mess. I have 110 members on annual plans whose renewal dates are scattered across the year. I send a 'renewal coming up' email by hand when I remember. I missed 14 last year, and 8 of those churned when the charge failed and nobody caught it.",
+   "I want a system that flags at-risk members before they quit, converts trial guests automatically, and never misses a renewal. Design for 280 active members, 40-60 trial guests per promo weekend, 18-22 churn events per month."
+  ],
+  "painPoints": [
+   "Zero churn early warning — members go from active to gone with no system flag and no retention attempt",
+   "Trial-to-member conversion at 22% because follow-up calls happen inconsistently from a busy front desk",
+   "110 annual renewal dates managed manually — 14 missed last year, 8 churned from failed-charge silence",
+   "No coach visibility into which members are quietly disengaging before they cancel",
+   "Attendance data lives in the booking software and never flows anywhere useful"
+  ],
+  "whyStack": "GHL natively handles the member-facing layer: the free-class funnel with opt-in and calendar booking, the membership upsell page, recurring payment products for monthly and annual plans, and every automated sequence (trial follow-up, renewal reminders, win-back). What GHL has no primitive for is the attendance analysis: it cannot ingest a daily check-in export, compute a rolling attendance score per member, or identify who crossed the at-risk threshold today. That is an n8n pipeline — a daily **Webhook** or **Schedule Trigger** ingests the CSV export from your booking software (Mindbody, Pike13, or a Google Sheet your front desk updates), a **Code** node updates `Last Check-In Date`, increments `Monthly Check-ins`, and computes an `Attendance Score` (0-100) per member, then an **HTTP Request** to the GHL API (`services.leadconnectorhq.com`, `Version: 2021-07-28`) writes the score back and adds `at-risk` to members who dropped below 40. A weekly **Schedule Trigger** builds a coach briefing digest and posts it to a Telegram channel so coaches go into Monday knowing exactly who to pull aside.",
+  "guide": [
+   {
+    "step": "A1 — Private Integration token and n8n credentials",
+    "tool": "Setup",
+    "detail": "**Settings** → **Private Integrations** → **+ Create new integration**, name `n8n Studio`, scopes contacts (read + write), tags. Copy the token. In n8n create a **Header Auth** credential `GHL — Studio` (Name: `Authorization`, Value: `Bearer YOUR_TOKEN`); all HTTP Request nodes use base URL `https://services.leadconnectorhq.com` and header `Version: 2021-07-28`. Connect a **Google Sheets OAuth2** credential for the check-in export sheet. Set up the Telegram bot in a `Studio Team` group and record the chat ID. The check-in export format should be documented now: column names `member_id`, `member_name`, `email`, `check_in_date`, `class_name` — align with whatever your booking software exports before building the Code node."
+   },
+   {
+    "step": "A2 — Member pipeline",
+    "tool": "GHL",
+    "detail": "**Settings** → **Pipelines** → **+ Create new pipeline**, name `Member Lifecycle`. Stages: `Trial Guest`, `Trial Follow-Up`, `Active Member`, `At-Risk`, `Churned`, `Won Back`. **Save** and copy the `pipelineId`. This pipeline is not a sales funnel — it's a retention dashboard. Active members sit in `Active Member`; the n8n scorer moves them to `At-Risk` automatically; your team works `At-Risk` to move them back. Create a second pipeline `Renewals` with stages `Upcoming` (30+ days out), `Due Soon` (≤30 days), `Renewed`, `Lapsed` — this is the annual-member renewal board."
+   },
+   {
+    "step": "A3 — Custom fields",
+    "tool": "GHL",
+    "detail": "**Settings** → **Custom Fields** → **+ Add Field**. Folder `Membership`: `Membership Tier` (Dropdown: Trial / Basic / Premium / VIP), `Join Date` (Date), `Renewal Date` (Date), `Monthly Check-ins` (Number), `Last Check-In Date` (Date), `Attendance Score` (Number, 0-100), `Coach Assigned` (Single Line). Record every `fieldId` from the URL — the n8n write-back node references these IDs. The `Renewal Date` field is the anchor for the entire renewals pipeline, so spell it identically everywhere it appears."
+   },
+   {
+    "step": "A4 — Recurring membership products and tags",
+    "tool": "GHL",
+    "detail": "**Payments** → **Integrations** → connect Stripe (test mode). **Payments** → **Products** → **+ Create Product**: `Basic Membership` at $79/month recurring; `Premium Membership` at $129/month recurring; `Annual Membership` at $799/year recurring. Then **Settings** → **Tags** for the full tag vocabulary: `trial`, `active-member`, `at-risk`, `churned`, `won-back`, `trial-expiring`, `renewal-due-30`, `renewal-due-7`, `coach-outreach`, `check-in-synced`. Pre-creating these prevents the typo-divergence issue where two slightly different tag names create parallel silent tracks."
+   },
+   {
+    "step": "B1 — Free-class landing page",
+    "tool": "GHL",
+    "detail": "**Sites** → **Funnels** → **+ New Funnel**, name `Free Class Weekend`. Steps: `Claim Your Class` (path `/free-class`), `Pick Your Time` (path `/book-class`), `You're In` (path `/class-confirmed`). Offer Page structure: bold headline (`Your First Class Is Free — No Commitment`), 3-bullet social proof (class types, coach credentials, community feel), CTA button to the booking step. Keep it single-column and mobile-first — most class registrations happen on a phone. On the `You're In` confirmation page, set expectations: `Arrive 10 minutes early. Wear athletic shoes. We'll have a water bottle for you.`"
+   },
+   {
+    "step": "B2 — Funnel: booking and membership upsell",
+    "tool": "GHL",
+    "detail": "On the `Pick Your Time` step, embed a **Calendar** element linked to a `Free Trial Class` calendar (30-min slots, buffer 5 min, max 12 per slot). Create a **Form** `Trial Signup` with First Name, Last Name, Phone, Email, and a **Dropdown** custom field `How did you hear about us?` (Facebook / Instagram / Google / Friend / Walk-by / Other). After the trial class, the automation sequence (Phase C) does the upsell — not a page redirect. The upsell page lives at `/join` as a standalone funnel step: feature comparison table (Basic vs. Premium), both recurring payment links, and a `Schedule a Tour` CTA for those not ready to buy."
+   },
+   {
+    "step": "C1 — GHL: trial-guest welcome + follow-up sequence",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow** → **Start from Scratch**, name `Trial — Welcome & Convert`. Trigger: **Form Submitted** (`Trial Signup`). Actions: add tag `trial`, **Create Opportunity** (pipeline `Member Lifecycle`, stage `Trial Guest`, name `{{contact.name}} — Trial`), **Send SMS** (`Hi {{contact.first_name}}! You're booked for your free class. Tap here to add it to your calendar: [calendar link]. See you soon!`), **Send Email** (what to bring, parking, class format). On class day + 2 hours, a **Wait** node → **Send SMS** (`How was your class, {{contact.first_name}}? We'd love to have you back — here's how to become a member: [join link]`), **Move Opportunity** stage to `Trial Follow-Up`. 48 hours later → **Send Email** (membership options, social proof). 5 days later → **If** stage is still `Trial Follow-Up` → **Send Internal Notification** `Call this trial guest — not yet converted`."
+   },
+   {
+    "step": "C2 — n8n: daily check-in ingester",
+    "tool": "n8n",
+    "detail": "New workflow `Attendance Sync`. Trigger: **Schedule** node, daily at 6:00 AM. A **Google Sheets** node reads the check-in export sheet (last 24 hours of rows, filtered by `check_in_date >= yesterday`). A **Code** node normalizes the data: lowercase email, strip phone formatting, group by email to get each member's check-in count for the day. Then for each member with a check-in, an **HTTP Request** node calls `GET https://services.leadconnectorhq.com/contacts/?locationId={{locationId}}&email={{email}}` to resolve their GHL `contactId`. Emit pairs of `[contactId, checkInDate, checkInCount]` into the next node. Handle the case where a check-in email doesn't match any GHL contact — log these to a **Google Sheets** `Unmatched Check-ins` tab for front-desk review."
+   },
+   {
+    "step": "C3 — n8n: attendance score calculator + at-risk tagger",
+    "tool": "n8n",
+    "detail": "After resolving contactIds, a **HTTP Request** node reads each contact's current `Monthly Check-ins` and `Last Check-In Date` custom fields via `GET /contacts/{{contactId}}`. A **Code** node updates: `newMonthlyCheckIns = currentMonthlyCheckIns + todayCheckInCount` (reset to 0 on the first of each month); `attendanceScore = Math.min(100, newMonthlyCheckIns * 8)` (12+ check-ins/month = 96+, 5/month = 40, below 40 = at-risk). Then an **HTTP Request** PUT `/contacts/{{contactId}}` writes `Monthly Check-ins`, `Last Check-In Date`, and `Attendance Score`. A branching **If** node: if `attendanceScore < 40` AND tag `active-member` is present AND tag `at-risk` is NOT present → POST `/contacts/{{contactId}}/tags` adding `at-risk` and `coach-outreach`. Use a **Loop Over Items** around all three HTTP calls with a **Wait**(500ms) every 20 items."
+   },
+   {
+    "step": "C4 — n8n: weekly coach digest",
+    "tool": "n8n",
+    "detail": "New workflow `Coach Monday Brief`. Trigger: **Schedule** node, every Monday at 7:30 AM. An **HTTP Request** node calls `GET /contacts/?locationId={{locationId}}&tags=at-risk&limit=50` to retrieve at-risk members. A **Code** node formats the list sorted by `Attendance Score` ascending (worst first) with name, score, last check-in date, and coach assigned. A **Telegram** node posts to `Studio Team`: `🏋️ Coach Brief — {{date}}\\n\\nAt-Risk Members (${count}):\\n${memberList}\\n\\nPull these members aside this week — personalized check-in goes a long way before they cancel.` Coaches get a visual weekly prompt without needing to log into GHL."
+   },
+   {
+    "step": "C5 — n8n: annual renewal scanner",
+    "tool": "n8n",
+    "detail": "New workflow `Renewal Radar`. Trigger: **Schedule** node, daily at 8:00 AM. **HTTP Request** `GET /contacts/?locationId={{locationId}}&limit=200` — page through results (use `startAfter` cursor). A **Code** node parses each contact's `Renewal Date` custom field: members with renewal date = today + 30 days → add tag `renewal-due-30`; renewal date = today + 7 days → add tag `renewal-due-7`. Use date comparison against today's date (`new Date()`) normalizing to midnight. The tag additions trigger GHL workflows (built in C6). To avoid re-tagging the same contact daily: check if the tag already exists on the contact record before POSTing — the contacts endpoint returns current tags in the response."
+   },
+   {
+    "step": "C6 — GHL: renewal and at-risk workflows",
+    "tool": "GHL",
+    "detail": "Build two workflows: **Renewal — 30 Day Reminder**: trigger Tag Added `renewal-due-30` → Send Email (renewal coming up, `your annual membership renews on {{custom.Renewal Date}} — update your payment method here: [link]`), Send SMS (shorter version), Move Opportunity in `Renewals` pipeline to `Due Soon`. **Renewal — 7 Day Reminder**: trigger Tag Added `renewal-due-7` → Send SMS (`Your membership renews in 7 days, {{contact.first_name}}. Tap here to confirm your payment info is current: [link]`), Internal Notification to front desk. Third workflow **At-Risk Recovery**: trigger Tag Added `at-risk` → Move opportunity to `At-Risk` stage, Send SMS from owner's number (`Hey {{contact.first_name}}, I noticed you haven't been in lately — everything okay? Would love to see you back. -[Owner name]`), wait 5 days → If still `at-risk` → Send Email with a personalized 2-week freeze offer."
+   }
+  ],
+  "dataModel": [
+   "GHL Private Integration token — scopes: contacts read/write, tags",
+   "n8n credentials: Header Auth `GHL — Studio`, Google Sheets OAuth2, Telegram bot (Studio Team group chat ID)",
+   "Check-in export sheet format documented: columns member_id, member_name, email, check_in_date, class_name",
+   "Custom field IDs for: Membership Tier, Join Date, Renewal Date, Monthly Check-ins, Last Check-In Date, Attendance Score, Coach Assigned",
+   "GHL Location ID — required for contact search API calls",
+   "Stripe connected in test mode; three recurring products created with their productIds recorded"
+  ],
+  "edgeCases": [
+   "Monthly check-in counter reset: on the 1st of each month the Code node must zero `Monthly Check-ins` before incrementing — otherwise a member who attended 2x in January and 2x in February shows 4 on February 1st and never triggers at-risk",
+   "Unmatched check-ins: emails in the booking software may differ from GHL contact emails (typos, aliases) — route unmatched rows to a Sheets tab for front-desk reconciliation, never silently drop them",
+   "Double-trigger on at-risk: the scorer runs daily, so a member already tagged `at-risk` would re-trigger the recovery workflow every day — gate on tag existence before adding, as noted in C3",
+   "Annual renewal date field blank: some contacts imported without a renewal date will cause null comparison errors in C5 — filter these out with a Code node check and route to a `Missing Renewal Date` Sheets log",
+   "At-risk for good reason (injury, travel): coaches may want to mark a member as `exempt` — add an `exempt-at-risk` tag that the C3 scorer checks before applying `at-risk`, giving staff a manual override",
+   "Stripe payment failure on renewal: when a charge fails, GHL does not automatically flag the contact — add a Stripe webhook (Phase C GHL workflow) triggered by `invoice.payment_failed` to add a `payment-failed` tag and fire an urgent SMS to the member",
+   "A2P 10DLC: all SMS workflows need registered campaigns — the trial welcome, at-risk recovery, and renewal reminder are three separate use cases and may require separate campaign registrations"
+  ],
+  "acceptance": [
+   "A trial guest form submission creates a GHL opportunity in `Trial Guest`, fires the welcome SMS within 60 seconds, and moves to `Trial Follow-Up` stage 2 hours after the class",
+   "A contact whose daily attendance score drops below 40 receives the `at-risk` tag exactly once (not re-tagged on subsequent daily runs while already at-risk)",
+   "The Monday coach digest posts to Telegram with the correct at-risk member list sorted by attendance score ascending",
+   "A contact with Renewal Date = today + 30 days receives the 30-day reminder email and SMS; at 7 days the second SMS fires",
+   "The monthly check-in counter resets to zero on the 1st of each month without breaking the attendance score calculation",
+   "An unmatched check-in email (no corresponding GHL contact) routes to the Unmatched Check-ins sheet and does not crash the workflow",
+   "The at-risk recovery workflow sends the owner-voice SMS once; if the member checks in within 5 days, they should be manually removed from `at-risk` via the pipeline — document this manual step in the portfolio"
+  ],
+  "portfolio": [
+   "Loom (7-9 min): show the free-class funnel on mobile, trigger the trial welcome SMS live, then manually run the attendance scorer with a test contact below the threshold and show the `at-risk` tag appear and the recovery SMS fire",
+   "Export both n8n workflow JSONs (`Attendance Sync` and `Renewal Radar`) with annotated screenshots of the attendance score Code node logic",
+   "Frame as a demonstration build for a fictional studio (280 members); include the retention math — catching 8 at-risk members/month at $79 average membership = $632/month saved at 10% recovery rate",
+   "Hero image: the pipeline board showing `Active Member → At-Risk → Won Back` stages with real cards — interviewers who've worked with studios recognize the retention problem immediately"
+  ],
+  "stretch": [
+   "Add a **class utilization tracker**: after each check-in sync, aggregate check-ins by class name and post a weekly capacity report to Telegram (`Monday 6AM: 11/12 full, Saturday 9AM: 4/12 — consider canceling`) so the owner can make scheduling decisions with data",
+   "Build a **referral tracking** branch: add a `Referred By` custom field to the trial signup form, and when a trial converts to paid membership, send an automated thank-you SMS to the referring member with a $20 credit coupon tag",
+   "Connect the attendance scorer to a **Google Sheets retention dashboard**: append a daily row per at-risk member (name, score, days since last visit) to build a rolling churn-risk graph the owner can review at month end"
+  ]
+ },
+{
+  "id": "c33",
+  "title": "Table to Tribe: Restaurant Group Loyalty & VIP System",
+  "industry": "restaurant / hospitality (multi-location)",
+  "stack": "ghl+n8n",
+  "difficulty": "advanced",
+  "hours": "10-14 h",
+  "brief": [
+   "We run three Italian restaurants in the same metro — combined about 1,400 covers a week. Our problem is invisibility. We have no idea who our best customers are across all three locations. A guest who eats at all three locations twice a month looks exactly the same in our system as someone who came in once for a birthday and never returned. We give the exact same birthday email to the person who's spent $4,000 with us this year and the one who's been in once.",
+   "The other issue is we're completely reactive on marketing. When we have a slow Tuesday, someone sends an email blast to our whole list. No segmentation, no timing, no personalization — and our unsubscribe rate proves it. We know our regulars are our best marketing channel (they bring groups, they refer friends, they post on Instagram) but we've never built anything to recognize or reward them.",
+   "I want a loyalty system that knows each guest's visit history and spend across all three locations, promotes them through tiers as they engage, and treats our gold-tier VIPs like they deserve. And I want our birthday and anniversary automations to feel personal — not like a mail merge from 2010.",
+   "Design for: 1,400 covers/week, 3 locations, ~600 loyalty opt-ins in month 1, 40-60 new opt-ins/month ongoing. POS is Toast — exports a nightly transaction CSV."
+   ],
+  "painPoints": [
+   "Zero cross-location visibility: a 3-location regular is indistinguishable from a one-time guest in any individual location's system",
+   "No tier or VIP logic: every loyalty member gets the same communication regardless of lifetime value",
+   "Birthday and anniversary sends are untargeted bulk emails — high unsubscribe rate, low redemption",
+   "Reactive marketing with no segmentation — Tuesday slow night blasts go to 100% of the list",
+   "General manager has no weekly view of VIP guest activity, so high-value guests don't get recognized at the table"
+  ],
+  "whyStack": "GHL handles the guest-facing layer natively: the QR-code loyalty opt-in funnel, birthday and anniversary collection, pre-visit confirmation and post-visit follow-up sequences, the tier-based promotion workflows, and the VIP recognition SMS that fires when a gold member makes a reservation. What GHL cannot be is a ledger: it has no way to receive a POS transaction event, decrement nothing (restaurants don't have inventory in GHL), or aggregate visit count and spend across records. That is n8n — a nightly **Webhook** or **Google Sheets** read ingests the Toast export, a **Code** node increments `Lifetime Visits` and `Lifetime Spend` per contact by email-matching to GHL, then calls the GHL contacts API (`services.leadconnectorhq.com`, `Version: 2021-07-28`) to write the updated numbers and promote tier tags (`bronze` at 10 visits, `silver` at 25, `gold` at 50). A monthly **Schedule Trigger** builds a spend-ranked VIP digest and posts it to a Telegram `GM Channel` so managers walk into Monday knowing who their top guests are.",
+  "guide": [
+   {
+    "step": "A1 — Private Integration token and n8n credentials",
+    "tool": "Setup",
+    "detail": "**Settings** → **Private Integrations** → **+ Create new integration**, name `n8n Loyalty`, scopes contacts (read + write), tags. Copy the token. In n8n create **Header Auth** credential `GHL — Restaurants` (Name: `Authorization`, Value: `Bearer YOUR_TOKEN`); all calls use `https://services.leadconnectorhq.com` and header `Version: 2021-07-28`. Connect **Google Sheets OAuth2** for the Toast export sheet. Set up Telegram: create bot via @BotFather, add it to a `GM Channel` group for all three GMs plus ownership, record the chat ID. Document the Toast nightly export format now: columns should include `date`, `guest_email`, `location`, `check_total`, `covers` — adjust column names in the Code node to match your actual export."
+   },
+   {
+    "step": "A2 — Guest custom fields",
+    "tool": "GHL",
+    "detail": "**Settings** → **Custom Fields** → **+ Add Field**. Folder `Loyalty`: `Lifetime Visits` (Number), `Lifetime Spend` (Monetary), `Last Visit Date` (Date), `Last Visit Location` (Dropdown: Downtown / Midtown / Eastside), `VIP Tier` (Dropdown: None / Bronze / Silver / Gold), `Birthday Month` (Dropdown: January through December), `Anniversary Month` (Dropdown: same), `Loyalty Join Date` (Date). Record each `fieldId` — the n8n write-back node maps to these. The `Birthday Month` field is the anchor for the birthday workflow trigger — GHL's `Contact Birthday` trigger fires on the actual date, but a Contact Date Reminder trigger on a synthetic date-field is unreliable for month-only; use a Workflow with **Date/Time** conditions instead."
+   },
+   {
+    "step": "A3 — Tier tags and segment tags",
+    "tool": "GHL",
+    "detail": "**Settings** → **Tags** → **+ New Tag** for the full vocabulary: `loyalty-member`, `bronze`, `silver`, `gold`, `birthday-month`, `anniversary-month`, `vip-incoming`, `lapsed-45`, `location-downtown`, `location-midtown`, `location-eastside`. The three location tags are written at opt-in (the QR code URL carries a `?location=` param that maps to a hidden form field). Having these pre-created means tier promotions don't accidentally create a parallel `Bronze` tag alongside the existing `bronze` tag."
+   },
+   {
+    "step": "A4 — Location-specific QR opt-in funnels",
+    "tool": "GHL",
+    "detail": "**Sites** → **Funnels** → **+ New Funnel** per location (three total), or one funnel with three separate form versions distinguished by a hidden `Location` field. Each path: `/loyalty-downtown`, `/loyalty-midtown`, `/loyalty-eastside`. Landing page structure: restaurant logo, `Join Our Table — Earn Rewards at Every Visit`, opt-in form, and a `What You Unlock` section showing tier benefits (Bronze: early access to specials; Silver: complimentary dessert on your birthday; Gold: chef's table reservation priority + invite to private tastings). Keep each page mobile-first — these get scanned at the table on a phone. Customize the hero image per location; the form is shared."
+   },
+   {
+    "step": "B1 — Loyalty opt-in form",
+    "tool": "GHL",
+    "detail": "**Sites** → **Forms** → **Builder** → **+ Add Form**, name `Loyalty Opt-In`. Fields: First Name, Last Name, Phone, Email, then **Custom Field** elements for `Birthday Month` (renders as your dropdown), `Anniversary Month` (optional — label it `Celebrating an anniversary this year?`), and a **Hidden Field** mapped to `Last Visit Location` — this field gets pre-filled via URL parameter. In Form **Options**: On Submit → redirect to a short thank-you page (`You're in! Your first reward unlocks at 10 visits.`), and trigger the GHL welcome workflow via the form submission. Embed this form on each location funnel page."
+   },
+   {
+    "step": "C1 — GHL: loyalty welcome + birthday/anniversary workflows",
+    "tool": "GHL",
+    "detail": "Build three workflows: **Loyalty Welcome**: trigger Form Submitted (`Loyalty Opt-In`) → add tag `loyalty-member` + location tag (use **If** on `Last Visit Location` field) → **Send SMS** (`Welcome to the tribe, {{contact.first_name}}! You're now earning rewards at all three locations. We'll let you know when you hit Bronze.`), **Send Email** (tier benefit overview). **Birthday Reward**: trigger monthly (use a **Date/Time** condition or build with Contact Date Reminder on `Birthday Month`) → **If** `VIP Tier = Gold` → Send a personalized SMS from the GM; else → **Send Email** (complimentary dessert offer, valid during birthday month, with a reservation link). **Anniversary Recognition**: mirror the birthday workflow for `Anniversary Month` with a `Celebrate with us — bottle of prosecco on the table` offer."
+   },
+   {
+    "step": "C2 — n8n: nightly POS transaction ingester",
+    "tool": "n8n",
+    "detail": "New workflow `POS Sync`. Trigger: **Schedule** node, daily at 2:00 AM (after close). A **Google Sheets** node reads the Toast export sheet (yesterday's rows filtered by `date = yesterday`). A **Code** node normalizes emails (lowercase, trim), groups rows by email to aggregate `total_spend` and `visit_count` per guest across all three locations in one night, and tags each group with the `location` column value. For each guest, an **HTTP Request** node calls `GET https://services.leadconnectorhq.com/contacts/?locationId={{locationId}}&email={{email}}` to resolve the GHL `contactId`. Emit tuples of `[contactId, lastVisitDate, location, visitCountToAdd, spendToAdd]`. Route unmatched emails (guests not in GHL) to a **Google Sheets** `Non-Member Visits` tab — these are potential opt-in targets."
+   },
+   {
+    "step": "C3 — n8n: increment fields and promote tiers",
+    "tool": "n8n",
+    "detail": "After resolving contactIds, a **HTTP Request** node reads each contact's current `Lifetime Visits` and `Lifetime Spend` from GHL. A **Code** node computes new totals: `newVisits = currentVisits + visitCountToAdd`, `newSpend = currentSpend + spendToAdd`. Tier logic: `newTier = newVisits >= 50 ? 'gold' : newVisits >= 25 ? 'silver' : newVisits >= 10 ? 'bronze' : 'none'`. If `newTier !== currentTier`, emit a `tierChange = true` flag. An **HTTP Request** PUT `/contacts/{{contactId}}` writes updated fields. If `tierChange`, a second **HTTP Request** POST `/contacts/{{contactId}}/tags` removes the old tier tag and adds the new one. Use a **Loop Over Items** with **Wait**(500ms) every 20 items to respect rate limits."
+   },
+   {
+    "step": "C4 — GHL: tier-promotion congratulations workflows",
+    "tool": "GHL",
+    "detail": "Build one workflow per tier: **Bronze Unlocked** (trigger: Tag Added `bronze`), **Silver Unlocked** (Tag Added `silver`), **Gold Unlocked** (Tag Added `gold`). Each workflow: **Send SMS** with a personalized congratulations message naming the tier and its perks (bronze: `You've hit 10 visits — you're officially Bronze! Here's what's new for you: [link]`; silver: same with silver perks; gold: `You've earned Gold status, {{contact.first_name}}. The GM will be in touch personally.`). The gold workflow adds an **Internal Notification** to the GM email and a **Telegram** message to the GM group so high-value guests get a human touch, not just automation."
+   },
+   {
+    "step": "C5 — n8n: 45-day lapsed guest scanner",
+    "tool": "n8n",
+    "detail": "New workflow `Lapsed Guest Radar`. Trigger: **Schedule** node, daily at 9:00 AM. **HTTP Request** `GET /contacts/?locationId={{locationId}}&tags=loyalty-member&limit=200` (page through all members). A **Code** node filters: `Last Visit Date` is more than 45 days ago AND tag `lapsed-45` is NOT already present. For each match, **HTTP Request** POST `/contacts/{{id}}/tags` adding `lapsed-45`. GHL's lapsed win-back workflow picks it up from there. Remove `lapsed-45` once the guest visits again — the POS sync C3 node should clear this tag when it successfully processes a transaction for that guest."
+   },
+   {
+    "step": "C6 — GHL: lapsed win-back sequence",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Loyalty — Win Back`. Trigger: Tag Added `lapsed-45`. Actions: **Send SMS** (`We miss you, {{contact.first_name}}. It's been a while since we've seen you — come back this week and the first glass of wine is on us. Reserve a table: [link]`), **Send Email** (more detailed win-back with a time-limited offer — 14 days to redeem), wait 14 days → **If** `Last Visit Date` is still > 45 days ago (contact hasn't returned) → **Send Final Email** (`Last call — your complimentary wine offer expires in 3 days. We'd love to see you at the table.`). Add tag `win-back-sent` after the sequence to avoid re-triggering."
+   },
+   {
+    "step": "C7 — n8n: monthly VIP Telegram digest",
+    "tool": "n8n",
+    "detail": "New workflow `Monthly VIP Digest`. Trigger: **Schedule** node, first Monday of each month at 7:00 AM (use a **Code** node to check `new Date().getDate() <= 7 && new Date().getDay() === 1`). **HTTP Request** `GET /contacts/?locationId={{locationId}}&tags=gold&limit=50`, then a **Code** node sorts by `Lifetime Spend` descending, takes the top 10, and formats: `name | visits | total spend | last visit | home location`. A **Telegram** node posts to `GM Channel`: `👑 VIP Report — ${month}\\n\\nTop 10 Gold Members:\\n${leaderboard}\\n\\nTotal Gold Members: ${count}\\nNew Gold this month: ${newGold}`. GMs now walk into Monday knowing exactly who to recognize at the table."
+   }
+  ],
+  "dataModel": [
+   "GHL Private Integration token — scopes: contacts read/write, tags",
+   "n8n credentials: Header Auth `GHL — Restaurants`, Google Sheets OAuth2, Telegram bot (GM Channel chat ID)",
+   "Toast nightly export sheet format documented: columns date, guest_email, location, check_total, covers",
+   "Custom field IDs for: Lifetime Visits, Lifetime Spend, Last Visit Date, Last Visit Location, VIP Tier, Birthday Month, Anniversary Month, Loyalty Join Date",
+   "GHL Location ID — required for contact search API calls",
+   "Three QR code URLs per location with distinct path slugs (/loyalty-downtown, /loyalty-midtown, /loyalty-eastside)"
+  ],
+  "edgeCases": [
+   "Email case mismatch between Toast export and GHL: normalize to lowercase in the Code node before every lookup — `guest@gmail.com` and `Guest@Gmail.com` must resolve to the same contact",
+   "Duplicate tier tags: if a contact somehow has both `bronze` and `silver`, the tier promotion logic should check for and remove ALL lower tier tags when adding a new one, not just the specific previous tier",
+   "Birthday month trigger timing: GHL's native birthday trigger fires on the exact date, but `Birthday Month` is a dropdown — build the birthday workflow with a monthly Schedule Trigger + a Contact Date Reminder on a synthetic date field set to the 1st of the birthday month, or use a 30-day lead time tag applied by the POS sync",
+   "Guest emails not in GHL (non-members who ate at the restaurant): route to `Non-Member Visits` sheet — these are warm leads for opt-in campaigns, not errors",
+   "Multiple visits on the same night across locations: the aggregation Code node groups by email BEFORE looking up contactId, so a guest who ate at Midtown and Eastside on the same day counts as 2 visits and the combined spend in one write",
+   "Lapsed guest who's actually a Gold VIP: the lapsed win-back SMS should branch on tier — a Gold member should get a personal GM call note instead of an automated SMS that feels tone-deaf",
+   "A2P 10DLC for hospitality: the welcome SMS, tier-promotion SMS, birthday SMS, and win-back SMS are four distinct campaigns — register them separately and document the timeline in your portfolio"
+  ],
+  "acceptance": [
+   "A new loyalty opt-in via the Downtown QR code creates a GHL contact tagged `loyalty-member` and `location-downtown`, and fires the welcome SMS within 60 seconds",
+   "After the nightly POS sync, a contact with 10 total visits receives the `bronze` tag and the Bronze Unlocked SMS",
+   "After 50 visits the contact receives `gold` tag, the Gold Unlocked SMS, and an internal GM notification",
+   "The monthly VIP Telegram digest posts on the first Monday of the month with the correct top-10 Gold leaderboard",
+   "A contact whose Last Visit Date exceeds 45 days receives `lapsed-45` exactly once; on their next recorded visit the tag is removed",
+   "An email in the Toast export that doesn't match any GHL contact routes to the Non-Member Visits sheet without crashing the workflow",
+   "The birthday workflow sends a tier-appropriate message — Gold members receive the GM-voice SMS rather than the standard email"
+  ],
+  "portfolio": [
+   "Loom (7-9 min): scan the loyalty QR code on a phone, show the GHL contact created with the correct location tag, manually trigger the POS sync with a test row pushing the contact to 10 visits, show the `bronze` tag appear and the Bronze Unlocked SMS fire, and end on the monthly Telegram digest posting",
+   "Export the three n8n workflow JSONs (`POS Sync`, `Lapsed Guest Radar`, `Monthly VIP Digest`) with an annotated screenshot of the tier-promotion Code node logic",
+   "Frame as a demonstration build for a fictional three-location restaurant group; include the business case — Gold members who are recognized at the table spend 40% more on average (cite a hospitality study or hypothesize conservatively)",
+   "Hero image: the VIP Telegram digest in an actual Telegram group — GMs immediately understand the problem it solves"
+  ],
+  "stretch": [
+   "Add a **reservation pre-arrival VIP alert**: when a Gold member books a table (via GHL calendar or a reservation webhook), n8n fires a Telegram message to the GM at the booked location 2 hours before the reservation time with the guest's name, visit count, spend, and last visit note — so the GM can greet them by name",
+   "Build a **non-member to member conversion campaign**: weekly, n8n reads the `Non-Member Visits` sheet, filters emails that have appeared 3+ times (repeat guests who haven't opted in), and pushes them into a GHL sequence with a personalized SMS: `We've seen you three times — you deserve rewards. Join our loyalty program here: [link]`",
+   "Add a **spend velocity alert**: in the monthly POS sync, flag contacts whose spend in the current month is already 2x their monthly average and add tag `vip-incoming` — GHL workflow fires a VIP upgrade teaser SMS (`You're 5 visits from Gold status — here's a sneak peek of what's waiting for you`) before the threshold hits"
+  ]
+ },
+{
+  "id": "c34",
+  "title": "Mortgage Pipeline & Rate Alert System",
+  "industry": "mortgage brokerage / lending",
+  "stack": "ghl+n8n",
+  "difficulty": "advanced",
+  "hours": "11-15 h",
+  "brief": [
+   "I'm an independent mortgage broker — I close about 12-15 loans a month across purchase and refinance. My business has two completely separate problems. The first is pipeline chaos. I have loans at every stage simultaneously — pre-qual, application, appraisal, underwriting, clear to close — and I'm tracking them in a spreadsheet that I update manually, sometimes days late. My realtor referral partners call me asking for status updates I can't give in under 5 minutes because I have to hunt through emails.",
+   "The second problem is a massive untapped opportunity sitting in my database. I have 380 past clients who refinanced when rates were at 6.5-7.5%. Rates have since moved, and I have no system watching for when a client's target rate is available. I check rates manually every morning and mentally note that 'some people should be called' — but I'm working 60-hour weeks and the calls don't happen. I've estimated I've missed 40-50 refi opportunities in the last 18 months just from not having an alert system.",
+   "I also need a lead generation funnel. Right now I rely entirely on realtor referrals. I've been meaning to build a refinance calculator landing page for two years — the kind where someone enters their current rate and loan balance and instantly sees their potential savings. That page would pay for itself in one closed loan.",
+   "Design for: 12-15 active loans in pipeline at any time, 380 past-client database, 30-50 new refinance leads per month from the calculator funnel."
+  ],
+  "painPoints": [
+   "Pipeline tracked in a spreadsheet updated days late — realtor partners call for status updates that take 5+ minutes to dig up",
+   "380 past clients in a rate-window opportunity that goes unmonitored — estimated 40-50 missed refis in 18 months",
+   "No lead generation funnel — 100% referral dependent with no owned channel",
+   "Document collection is manual email back-and-forth with no checklist, no automation, no status visibility for the client",
+   "Zero reporting: no idea which referral partners are sending closable loans vs. pre-quals that die in underwriting"
+  ],
+  "whyStack": "GHL natively owns the client-facing layer: the refinance calculator funnel, the full pipeline from inquiry to closed, the document-request workflow with automated follow-ups, and realtor partner notifications at key milestones. What GHL absolutely cannot do is watch a live rate feed — it has no HTTP Request primitive in automations, no scheduled polling, and no ability to compare a stored custom field value against an external API response. That is an n8n job: a daily **Schedule Trigger** calls the FRED (Federal Reserve Economic Data) API for the current 30-year fixed average, a **Code** node compares it against each past client's `Target Rate` custom field, and for every contact where `currentRate <= targetRate`, it POSTs to the GHL contacts API (`services.leadconnectorhq.com`, `Version: 2021-07-28`) adding the `rate-alert-triggered` tag — which fires a GHL workflow that sends a personalized email and SMS with the client's actual savings estimate. Every alert event is logged to a **Google Sheets** tracker so you can prove ROI at the end of the quarter.",
+  "guide": [
+   {
+    "step": "A1 — Private Integration token and n8n credentials",
+    "tool": "Setup",
+    "detail": "**Settings** → **Private Integrations** → **+ Create new integration**, name `n8n Mortgage`, scopes contacts (read + write), opportunities (write), tags. Copy the token once. In n8n create **Header Auth** credential `GHL — Mortgage` (Name: `Authorization`, Value: `Bearer YOUR_TOKEN`); all HTTP Request nodes use base URL `https://services.leadconnectorhq.com` and header `Version: 2021-07-28`. Create a **Google Sheets OAuth2** credential for the rate alert log sheet. The FRED API is public — no key required for the 30-year average series (`MORTGAGE30US`). Get the base URL: `https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US` — note this returns CSV, not JSON; the Code node will parse the last row."
+   },
+   {
+    "step": "A2 — Loan pipeline",
+    "tool": "GHL",
+    "detail": "**Settings** → **Opportunities** → **Pipelines** → **+ Create new pipeline**, name `Loan Pipeline`. Stages: `New Inquiry`, `Pre-Qual`, `Application Submitted`, `Processing`, `Appraisal`, `Underwriting`, `Clear to Close`, `Closed / Funded`, `Dead`. **Save** and copy the `pipelineId` and each `stageId`. These IDs are referenced by the n8n document-request webhook. Create a second pipeline `Referral Partners` with stages `New Partner`, `Active`, `Top Producer`, `Dormant` — this is for tracking realtor relationships separately from loan files."
+   },
+   {
+    "step": "A3 — Custom fields",
+    "tool": "GHL",
+    "detail": "**Settings** → **Custom Fields** → **+ Add Field**. Folder `Loan`: `Loan Type` (Dropdown: Purchase / Refinance / HELOC / VA / FHA), `Loan Amount` (Monetary), `Current Rate` (Number — two decimals, represents percentage), `Target Rate` (Number — same format), `Credit Score Range` (Dropdown: 580-619 / 620-659 / 660-699 / 700-739 / 740+), `Property State` (Single Line), `Estimated Savings` (Monetary), `Alert Count` (Number), `Last Rate Alert Sent` (Date), `Referring Partner` (Single Line). Record every `fieldId`. The `Target Rate` field is the core of the alert engine — it must be set on every past-client record for the scanner to work."
+   },
+   {
+    "step": "A4 — Tags",
+    "tool": "GHL",
+    "detail": "**Settings** → **Tags** → **+ New Tag**: `new-lead`, `pre-qual-started`, `app-submitted`, `rate-alert-triggered`, `rate-alert-sent`, `doc-needed`, `closed-won`, `past-client`, `refi-candidate`, `referral-partner`. The `past-client` tag is applied to your 380 imported contacts — it's the filter the rate scanner uses to scope its daily search. `refi-candidate` narrows further to contacts who explicitly have a `Target Rate` set and whose `Loan Type` is Refinance. Adding these two tags at import time is step one after bulk-importing your CSV."
+   },
+   {
+    "step": "B1 — Refinance calculator landing page",
+    "tool": "GHL",
+    "detail": "**Sites** → **Funnels** → **+ New Funnel** → **From Blank**, name `Refi Savings Calculator`. Steps: `Calculator` (path `/refi-calculator`), `Your Results` (path `/your-savings`), `Next Steps` (path `/lets-talk`). On the Calculator page, use a **Form** with fields: Current Interest Rate (number, label `Your current rate (%)`), Remaining Loan Balance (monetary), Remaining Term (dropdown: 30 / 25 / 20 / 15 years), Credit Score Range (your custom dropdown), Name, Phone, Email. The `Your Results` step shows a static 'Your savings estimate is being calculated — we'll text you within the hour' message. The actual savings calculation happens in Phase C — don't try to do JavaScript math on the funnel page."
+   },
+   {
+    "step": "B2 — Funnel: results delivery and CTA",
+    "tool": "GHL",
+    "detail": "The `Next Steps` page hosts a **Calendar** element linked to a `Discovery Call` calendar (30-minute slots). Above the calendar: a 3-bullet value prop for working with you (broker vs. bank, rate access, speed to close). Below: a trust section — your NMLS number, years in business, average days to close. This page is the conversion point — keep it simple and focused on booking the call. In Form **Options** for the Calculator form, set On Submit → **Redirect** to `/your-results` and trigger the GHL workflow (C1) that does the savings calc and sends the text."
+   },
+   {
+    "step": "C1 — GHL: calculator lead intake + savings SMS",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow** → **Start from Scratch**, name `Refi — Lead Intake`. Trigger: **Form Submitted** (`Refi Savings Calculator`). Actions: add tag `new-lead`, **Create Opportunity** (pipeline `Loan Pipeline`, stage `New Inquiry`, name `{{contact.name}} — Refi Inquiry`), **Send SMS** (`Hi {{contact.first_name}}, I'm reviewing your refinance scenario now. I'll call you within 2 hours with your personalized savings estimate. -[Your Name], NMLS#XXXXX`), **Send Email** (confirmation with what to expect), **Internal Notification** to you with all form field values. Add a 2-hour **Wait** → **Send Internal Notification** `Call this refi lead now — 2-hour window` if still in `New Inquiry` stage."
+   },
+   {
+    "step": "C2 — n8n: daily rate poller",
+    "tool": "n8n",
+    "detail": "New workflow `Rate Alert Engine`. Trigger: **Schedule** node, every weekday at 7:00 AM. An **HTTP Request** node fetches `https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US` (method GET, response format text). A **Code** node parses the CSV: split by newline, take the last row, split by comma, parse `float(row[1])` as `currentRate`. Log the value and the date. If `currentRate` is `NaN` or `> 10` or `< 2` (sanity check — FRED data occasionally has revision artifacts), skip the run and post a Telegram warning `⚠️ Rate data anomaly: ${rawValue} — skipping today's alert run`. Otherwise proceed to C3."
+   },
+   {
+    "step": "C3 — n8n: contact rate matcher",
+    "tool": "n8n",
+    "detail": "An **HTTP Request** node calls `GET https://services.leadconnectorhq.com/contacts/?locationId={{locationId}}&tags=refi-candidate&limit=200` (credential `GHL — Mortgage`). Use the `startAfter` cursor to page through all contacts if over 200. A **Code** node filters the response: keep contacts where `customFields.Target Rate` (as float) >= `currentRate` AND tag `rate-alert-triggered` is NOT present on the contact (prevents re-alerting on the same rate window). Also compute `estimatedSavings` using the standard mortgage payment formula: `P * (r(1+r)^n) / ((1+r)^n - 1)` comparing current rate vs. target rate on `Loan Amount` and remaining term — this is the personalization number. Emit `[contactId, targetRate, loanAmount, estimatedMonthlySavings]` for each match."
+   },
+   {
+    "step": "C4 — n8n: tag push to GHL + alert log",
+    "tool": "n8n",
+    "detail": "For each matched contact, an **HTTP Request** node POSTs `/contacts/{{contactId}}/tags` adding `rate-alert-triggered` (credential `GHL — Mortgage`). A second **HTTP Request** PUT `/contacts/{{contactId}}` writes `Estimated Savings` and `Last Rate Alert Sent` = today. Then a **Google Sheets** node appends a row to the `Rate Alert Log` sheet: timestamp, contactId, contact name, current rate, target rate, estimated savings, alert count. Use a **Loop Over Items** with **Wait**(500ms) every 10 contacts. After the loop, post a Telegram summary: `📊 Rate Alert Run — ${date}\\nCurrent Rate: ${currentRate}%\\nAlerts Triggered: ${alertCount}\\nTotal Estimated Refi Opportunity: $${totalSavings}/mo`."
+   },
+   {
+    "step": "C5 — GHL: rate alert email/SMS workflow",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Past Client — Rate Alert`. Trigger: Tag Added `rate-alert-triggered`. Actions: **Send Email** (subject: `Rates just hit your target, {{contact.first_name}} — here's your savings estimate`, body: `When we spoke, you mentioned you'd want to refinance if rates hit {{custom.Target Rate}}%. Today's 30-year average is [current rate] — you're in the window. Based on your balance of {{custom.Loan Amount}}, your estimated monthly savings are {{custom.Estimated Savings}}. I have time this week — reply YES and I'll call you today.`), **Send SMS** (compressed version with the savings number and a reply CTA), **Move Opportunity** to pipeline `Loan Pipeline`, stage `Pre-Qual`. Add a 3-day **Wait** → **If** no reply → **Send Follow-Up SMS** (`Last check — rates may not stay here long. Worth 15 minutes?`). Increment `Alert Count` custom field."
+   },
+   {
+    "step": "C6 — GHL: document request workflow",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Loan — Doc Request`. Trigger: **Opportunity Stage Changed** → stage = `Application Submitted`. Actions: **Send Email** (subject: `Your loan application is in — here's your document checklist`, body: a numbered list of standard docs — pay stubs (2 months), W-2s (2 years), tax returns (2 years), bank statements (3 months), photo ID, homeowner insurance if refi — plus a Dropbox or Google Drive link where they can upload). **Send SMS** (`{{contact.first_name}}, I've sent your document checklist. Upload link: [link]. The faster docs come in, the faster we move — call me with questions.`), add tag `doc-needed`. Add a 3-day **Wait** → **If** stage still `Application Submitted` → **Send Follow-Up SMS** (`Checking in on your docs, {{contact.first_name}} — any questions? Even partial docs help us start.`), **Internal Notification** to you."
+   },
+   {
+    "step": "C7 — n8n: weekly pipeline summary",
+    "tool": "n8n",
+    "detail": "New workflow `Pipeline Monday Summary`. Trigger: **Schedule** node, every Monday at 7:30 AM. **HTTP Request** `GET /opportunities/search?locationId={{locationId}}&pipelineId={{loanPipelineId}}&limit=100` (credential `GHL — Mortgage`). A **Code** node groups opportunities by stage and computes: count per stage, total loan value per stage (sum of `monetaryValue`). A **Telegram** node posts to yourself: `📋 Pipeline — ${date}\\n${stageBreakdown}\\n\\nTotal Pipeline Value: $${totalValue}\\nClear to Close: ${ctcCount} loans`. This replaces the manual spreadsheet check and gives referral partners a fast answer when they call."
+   }
+  ],
+  "dataModel": [
+   "GHL Private Integration token — scopes: contacts read/write, opportunities write, tags",
+   "n8n credentials: Header Auth `GHL — Mortgage`, Google Sheets OAuth2, Telegram bot (personal or team channel)",
+   "FRED API endpoint: `https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US` — public, no key required",
+   "Custom field IDs for: Loan Type, Loan Amount, Current Rate, Target Rate, Credit Score Range, Property State, Estimated Savings, Alert Count, Last Rate Alert Sent",
+   "GHL Location ID and Loan Pipeline ID — required for opportunity search API call",
+   "Google Sheets `Rate Alert Log` with columns: timestamp, contactId, name, currentRate, targetRate, estimatedSavings, alertCount"
+  ],
+  "edgeCases": [
+   "FRED data artifacts: weekly FRED updates sometimes include revision rows with unusual values — the sanity check (< 2 or > 10) in C2 must catch these; if the check fails too aggressively and skips real rate drops, widen the range to 1.5-12",
+   "Re-alert prevention: a contact already tagged `rate-alert-triggered` must not receive a second alert in the same rate window — the filter in C3 checks tag presence; when a contact converts (refi closes), remove `rate-alert-triggered` so future rate drops can re-trigger",
+   "Target Rate field missing: not every past-client import will have a Target Rate — the C3 Code node must filter out contacts with null or zero `Target Rate` before the comparison to avoid false positives",
+   "Estimated savings formula edge case: if `Loan Amount` is blank (not all past clients have it set), the savings calc returns NaN — emit `estimatedSavings = null` and omit the savings number from the email rather than crashing",
+   "NMLS compliance: all marketing communications from a mortgage broker must include the broker's NMLS number — every email and SMS template in C1 and C5 must include it; verify this before going live",
+   "Rate alert timing: FRED updates weekly (Thursday release) — running the poller daily means the same rate triggers for 5+ days before an update; this is fine but document it; alternatively, switch to a weekly schedule timed for Thursday at 8 AM",
+   "Google Sheets log size: at 380 contacts, the log grows by up to 380 rows per alert run — after 6 months this may slow the append node; archive old rows to a yearly tab quarterly"
+  ],
+  "acceptance": [
+   "A refinance calculator form submission creates a GHL opportunity in `New Inquiry`, fires the intake SMS within 60 seconds, and triggers the 2-hour internal notification",
+   "The FRED rate poller parses the CSV correctly and extracts the current 30-year average as a float",
+   "A contact with `Target Rate = 6.5` and `refi-candidate` tag receives `rate-alert-triggered` when the polled rate is ≤ 6.5, and does not receive it again on the next daily run while the tag is still present",
+   "The GHL rate alert workflow sends the personalized email and SMS with the contact's actual Estimated Savings figure populated",
+   "Every alert event appends a row to the Google Sheets Rate Alert Log with all required columns",
+   "The Application Submitted stage change triggers the document checklist email within 2 minutes",
+   "The Monday pipeline summary Telegram posts with correct per-stage counts and total pipeline value"
+  ],
+  "portfolio": [
+   "Loom (7-9 min): fill the refi calculator on camera, show the intake SMS fire, then manually run the rate poller workflow against a test contact with a Target Rate set to today's actual rate and show the alert email and SMS deliver with the savings figure",
+   "Export the two n8n workflow JSONs (`Rate Alert Engine` and `Pipeline Monday Summary`) with annotated screenshots of the FRED CSV parse and the savings formula Code node",
+   "Frame as a demonstration build for an independent mortgage broker; include the ROI math — at 380 past clients, if 5% convert on a rate alert (19 refis) at $2,500 average commission, the automation generates $47,500 in closed loans per triggered rate window",
+   "Hero image: the Telegram rate alert summary card showing `Alerts Triggered: 23, Total Estimated Refi Opportunity: $8,400/mo` — the business case is self-evident in one screenshot"
+  ],
+  "stretch": [
+   "Replace the FRED weekly average with a **daily live rate feed** from the Optimal Blue or Polly API (both offer free sandbox access for demo builds) — document the integration in your portfolio as the production upgrade path",
+   "Add a **partner notification branch**: when a lead from a specific realtor partner closes, n8n sends that partner a Telegram or email congratulations with the loan amount and closing date — builds referral relationship loyalty with zero manual effort",
+   "Build a **pre-approval letter generator**: when an opportunity reaches `Clear to Close`, an n8n Google Docs template node fills a pre-approval letter template with the borrower's name, approved amount, loan type, and today's date, converts to PDF, and emails it to the contact and their realtor partner — eliminating a manual document step"
+  ]
+ },
+{
+  "id": "c35",
+  "title": "Event Studio: Inquiry to Invoice Automation",
+  "industry": "event planning / experiential",
+  "stack": "ghl+n8n",
+  "difficulty": "advanced",
+  "hours": "12-16 h",
+  "brief": [
+   "I run a boutique event studio — weddings, corporate events, and private celebrations. I handle 4-6 events a month, sometimes simultaneously, and my back office is a disaster. When an inquiry comes in, I manually copy their details into a Word doc proposal template, adjust prices, save it as a PDF, and email it. That takes 45-60 minutes per proposal. I send 15-20 proposals a month. Do the math — that's up to 20 hours a month on document production.",
+   "Once a client signs, the chaos continues. I track their event date in a personal calendar, their deposit status in a spreadsheet, and their vendor contacts in a Notes app. Two months before their event I manually compile a vendor briefing document. The week before I'm triple-checking everything by hand. Last spring I forgot to brief the florist on setup time for a corporate event — they arrived an hour late and the client noticed.",
+   "On the client side, the experience is inconsistent. Some clients get prompt follow-ups; others fall into the gap when I'm deep in production for another event. A few have ghosted mid-inquiry because I didn't follow up fast enough. I know my conversion rate is lower than it should be because my response time varies too much.",
+   "I want a system that generates proposals automatically, handles the deposit-to-confirmed flow, and briefs vendors on autopilot two weeks before every event. Design for: 15-20 inquiries/month, 4-6 active events simultaneously, 10-15 regular vendor contacts."
+  ],
+  "painPoints": [
+   "15-20 manual proposals/month at 45-60 minutes each — up to 20 hours/month on document production alone",
+   "Vendor briefings are manual and error-prone — one missed briefing caused a vendor to arrive an hour late at a corporate event",
+   "Inconsistent follow-up speed causes inquiry ghosting — conversion rate is lower than it should be",
+   "Event date, deposit status, and vendor contacts live in three separate tools with no single source of truth",
+   "No automatic post-event review request — testimonials are collected ad-hoc when remembered"
+  ],
+  "whyStack": "GHL natively handles the client-facing layer: the event inquiry funnel with a detailed form, the full pipeline from Inquiry to Post-Event, calendar booking for discovery calls, recurring deposit and balance payment products, and the automated follow-up sequences (speed-to-inquiry, deposit reminder, post-event review request). What GHL cannot do is generate a document: it has no Google Docs integration, no PDF conversion, no Drive storage, and no way to fill a template from contact field values. That is n8n — a **Webhook** fires when an opportunity moves to `Proposal Sent`, a **Google Docs** node copies a template and fills `{{client_name}}`, `{{event_date}}`, `{{event_type}}`, `{{guest_count}}`, `{{package}}`, `{{deposit_amount}}`, `{{balance_due}}`, a **Google Drive** node exports it as PDF and stores it in a client folder, and an **HTTP Request** back to the GHL API (`services.leadconnectorhq.com`, `Version: 2021-07-28`) writes the proposal Drive URL to a contact field and fires a GHL email with the PDF link. A second n8n **Schedule Trigger** runs daily, finds events exactly 14 days out, compiles vendor details from contact custom fields, and posts a structured briefing card to a `Studio Ops` Telegram channel — so no vendor is ever forgotten.",
+  "guide": [
+   {
+    "step": "A1 — Private Integration token and n8n credentials",
+    "tool": "Setup",
+    "detail": "**Settings** → **Private Integrations** → **+ Create new integration**, name `n8n Studio`, scopes contacts (read + write), opportunities (read + write), tags. Copy the token immediately. In n8n create **Header Auth** credential `GHL — Event Studio` (Name: `Authorization`, Value: `Bearer YOUR_TOKEN`); all HTTP Request nodes use `https://services.leadconnectorhq.com` and header `Version: 2021-07-28`. Connect **Google Docs**, **Google Drive**, and **Gmail OAuth2** credentials (same Google account). Set up Telegram: create a bot via @BotFather, add it to a `Studio Ops` group (you + any coordinators), record the chat ID. Create a Google Drive folder `Event Proposals/` and record its folder ID from the URL — the Drive node uploads into this folder."
+   },
+   {
+    "step": "A2 — Event pipeline",
+    "tool": "GHL",
+    "detail": "**Settings** → **Opportunities** → **Pipelines** → **+ Create new pipeline**, name `Event Pipeline`. Stages: `New Inquiry`, `Discovery Call Booked`, `Proposal Sent`, `Deposit Paid`, `Event Confirmed`, `In Production`, `Event Day`, `Post-Event`, `Closed`. **Save** and record the `pipelineId` and each `stageId`. The n8n proposal generator webhook listens for the stage change to `Proposal Sent` and uses the `stageId` to filter. `Event Confirmed` is the stage where the vendor briefing countdown starts — 14 days from `Event Date` custom field."
+   },
+   {
+    "step": "A3 — Custom fields",
+    "tool": "GHL",
+    "detail": "**Settings** → **Custom Fields** → **+ Add Field**. Folder `Event Details`: `Event Type` (Dropdown: Wedding / Corporate / Birthday / Anniversary / Gala / Other), `Event Date` (Date — this is the anchor for the 14-day briefing trigger), `Guest Count` (Number), `Venue Name` (Single Line), `Venue Address` (Single Line), `Package` (Dropdown: Essential / Premium / Elite), `Deposit Amount` (Monetary), `Balance Due` (Monetary), `Proposal URL` (Single Line — Drive link written back by n8n), `Florist Name` (Single Line), `Florist Phone` (Single Line), `Photographer Name` (Single Line), `Photographer Phone` (Single Line), `Caterer Name` (Single Line), `Caterer Phone` (Single Line), `Setup Time` (Single Line). Record every `fieldId` — the proposal template and vendor briefing both read these."
+   },
+   {
+    "step": "A4 — Payment products and tags",
+    "tool": "GHL",
+    "detail": "**Payments** → **Integrations** → connect Stripe (test mode for the demo). **Payments** → **Products** → **+ Create Product** three times: `Essential Package Deposit` one-time $500; `Premium Package Deposit` one-time $1,000; `Elite Package Deposit` one-time $2,500. Balance amounts vary per event — collect via a custom invoice link after confirming the total. **Settings** → **Tags**: `new-inquiry`, `discovery-booked`, `proposal-sent`, `deposit-paid`, `event-confirmed`, `vendor-briefed`, `post-event`, `review-requested`. The `event-confirmed` tag triggers the deposit receipt workflow; `vendor-briefed` prevents re-sending the briefing."
+   },
+   {
+    "step": "A5 — Google Docs proposal template",
+    "tool": "Setup",
+    "detail": "Create a Google Doc named `Event Proposal Template` in the `Event Proposals/` Drive folder. Structure: header with your studio logo and contact info, then sections: Client Information (auto-filled), Event Overview (type, date, guests, venue), Package Inclusions (a table — Essential / Premium / Elite tiers; the non-selected tiers can be greyed out or omitted via manual review), Investment Summary (deposit amount, balance due, payment schedule), Booking Terms (your standard cancellation policy — write this carefully as it is legally binding), Signature line. Mark every auto-filled value with a placeholder in double curly braces: `{{client_name}}`, `{{event_date}}`, `{{event_type}}`, `{{guest_count}}`, `{{venue_name}}`, `{{package}}`, `{{deposit_amount}}`, `{{balance_due}}`. Record the template's Google Doc ID from the URL."
+   },
+   {
+    "step": "B1 — Event inquiry funnel",
+    "tool": "GHL",
+    "detail": "**Sites** → **Funnels** → **+ New Funnel**, name `Event Inquiry`. Steps: `Tell Us About Your Event` (path `/event-inquiry`), `Book a Discovery Call` (path `/discovery-call`), `You're On the Calendar` (path `/confirmed`). Inquiry page structure: headline (`Let's Create Something Unforgettable`), 3-bullet social proof (events completed, average review score, years in market), the inquiry form, and a gallery section of 4-6 event photos. Keep the design warm and editorial — brides and corporate planners both make emotional buying decisions. The `Book a Discovery Call` step embeds a Calendar element. The `You're On the Calendar` step sets expectations: what to bring to the call, how long it lasts, and a pre-meeting questionnaire link."
+   },
+   {
+    "step": "B2 — Event inquiry form",
+    "tool": "GHL",
+    "detail": "**Sites** → **Forms** → **Builder** → **+ Add Form**, name `Event Inquiry Form`. Fields: First Name, Last Name, Phone, Email, then Custom Field elements: `Event Type` (your dropdown), `Event Date` (date picker), `Guest Count` (number), `Venue Name` (text), `Package` (dropdown), `How did you hear about us?` (standard dropdown). In Form **Options**, set On Submit → **Redirect** to `/discovery-call` step. Every custom field element must map to the correct field — check the field picker on each one, as unmapped fields silently discard the data the proposal generator needs."
+   },
+   {
+    "step": "C1 — GHL: speed-to-inquiry + discovery workflow",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Event — Speed to Inquiry`. Trigger: **Form Submitted** (`Event Inquiry Form`). Actions: add tag `new-inquiry`, **Create Opportunity** (pipeline `Event Pipeline`, stage `New Inquiry`, name `{{contact.name}} — {{custom.Event Type}} — {{custom.Event Date}}`), **Send SMS** (`Hi {{contact.first_name}}, thank you for your inquiry! I'm reviewing your event details now and will follow up within the hour. If you haven't booked your discovery call yet, here's the link: [calendar URL]`), **Send Email** (confirmation with what to expect). Add a 1-hour **Wait** → **If** stage still `New Inquiry` → **Internal Notification** `Call this inquiry now — hot lead`. When calendar is booked, a separate **Appointment Booked** trigger workflow moves the stage to `Discovery Call Booked` and adds tag `discovery-booked`."
+   },
+   {
+    "step": "C2 — n8n: proposal generator webhook",
+    "tool": "n8n",
+    "detail": "New workflow `Proposal Generator`. Trigger: **Webhook** node, path `/proposal-generate`, method POST, `Respond Immediately` on. In GHL, **Automation** → new workflow, trigger **Opportunity Stage Changed** → stage = `Proposal Sent` → **Webhook** action pointing at this n8n URL with the `opportunityId` and `contactId` in the body. In n8n, an **HTTP Request** node reads the contact: `GET /contacts/{{contactId}}` (credential `GHL — Event Studio`) to retrieve all custom fields. A **Code** node extracts and formats: `clientName` (full name), `eventDate` (format as `Month DD, YYYY`), `eventType`, `guestCount`, `venueName`, `packageName`, `depositAmount` (format as USD), `balanceDue` (format as USD). Validate that required fields are non-empty — if `Event Date` is blank, post a Telegram error message and stop the workflow."
+   },
+   {
+    "step": "C3 — n8n: Docs template fill → PDF → Drive → GHL write-back",
+    "tool": "n8n",
+    "detail": "A **Google Docs** node (operation: **Create Document from Template**, not `Create`) copies the `Event Proposal Template` (by document ID from A5) into a new document named `Proposal — {{clientName}} — {{eventDate}}` in the `Event Proposals/` Drive folder. The template-fill operation replaces each `{{placeholder}}` with the extracted values from C2. Then a **Google Drive** node (operation: **Export File**, MIME type `application/pdf`) exports the filled document as a PDF. A second **Google Drive** node uploads the PDF to the `Event Proposals/` folder, returning the file ID. Generate the shareable link: `https://drive.google.com/file/d/{{fileId}}/view`. An **HTTP Request** PUT `/contacts/{{contactId}}` writes `Proposal URL = drive link` (credential `GHL — Event Studio`). Finally, a **Gmail** node sends the proposal email with the Drive link (a direct attachment would exceed email size limits for large proposals)."
+   },
+   {
+    "step": "C4 — GHL: deposit payment + event confirmation workflow",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Event — Deposit & Confirm`. Trigger: **Payment Received** → product is one of the three deposit products. Actions: add tag `deposit-paid`, **Move Opportunity** stage to `Deposit Paid`, **Send SMS** (`Your deposit is confirmed, {{contact.first_name}}! Your {{custom.Event Type}} on {{custom.Event Date}} is now officially on our calendar. We'll be in touch 30 days out to review details.`), **Send Email** (deposit receipt with event summary and next steps), **Internal Notification** (new confirmed event — add to production calendar). After 1 day: move stage to `Event Confirmed` and add tag `event-confirmed`. Build a second trigger on **Tag Added** → `event-confirmed` → **Send Email** (welcome to the confirmed client family, what happens next, your coordinator contact)."
+   },
+   {
+    "step": "C5 — n8n: 14-day pre-event vendor briefing",
+    "tool": "n8n",
+    "detail": "New workflow `Vendor Briefing`. Trigger: **Schedule** node, daily at 7:00 AM. **HTTP Request** `GET /contacts/?locationId={{locationId}}&tags=event-confirmed&limit=100` (credential `GHL — Event Studio`). A **Code** node filters: contacts where `Event Date` custom field = today + 14 days (compare as ISO date strings, midnight UTC). For each match, also check that tag `vendor-briefed` is NOT present (prevents re-sending). Extract all vendor fields: florist name/phone, photographer name/phone, caterer name/phone, venue name/address, setup time, guest count. A **Telegram** node posts to `Studio Ops`: `📋 VENDOR BRIEF — ${clientName} — ${eventDate}\\n\\nFlorist: ${floristName} | ${floristPhone}\\nPhotographer: ${photographerName} | ${photographerPhone}\\nCaterer: ${catererName} | ${catererPhone}\\nVenue: ${venueName}, ${venueAddress}\\nSetup Time: ${setupTime}\\nGuest Count: ${guestCount}\\n\\nAction: confirm arrival times with each vendor today.` Then add tag `vendor-briefed` via **HTTP Request** POST `/contacts/{{contactId}}/tags`."
+   },
+   {
+    "step": "C6 — GHL: post-event review request sequence",
+    "tool": "GHL",
+    "detail": "**Automation** → **+ Create Workflow**, name `Post-Event — Review Request`. Trigger: **Opportunity Stage Changed** → stage = `Post-Event`. Actions: add tag `post-event`, **Send SMS** (`{{contact.first_name}}, it was such a pleasure being part of your {{custom.Event Type}}! If you have a moment, a Google review means the world to small studios like ours: [Google review link]`), wait 1 day → **Send Email** (more detailed thank-you with 2-3 photos from the event if applicable, and the review link), wait 5 days → **If** tag `review-requested` NOT present → **Send Final SMS** (`One last ask — a quick review helps other couples/clients find us. Here's the link: [link]`), **Add Tag** → `review-requested`. Move opportunity to `Closed` after the sequence completes."
+   }
+  ],
+  "dataModel": [
+   "GHL Private Integration token — scopes: contacts read/write, opportunities read/write, tags",
+   "n8n credentials: Header Auth `GHL — Event Studio`, Google Docs OAuth2, Google Drive OAuth2, Gmail OAuth2, Telegram bot (Studio Ops group chat ID)",
+   "Google Docs template ID — the `Event Proposal Template` document with all `{{placeholder}}` markers; stored in `Event Proposals/` Drive folder",
+   "Google Drive folder ID for `Event Proposals/` — proposal PDFs are stored here per event",
+   "Custom field IDs for: Event Type, Event Date, Guest Count, Venue Name, Venue Address, Package, Deposit Amount, Balance Due, Proposal URL, all vendor name/phone fields, Setup Time",
+   "GHL pipeline stage ID for `Proposal Sent` — used to trigger the n8n webhook from the GHL stage-change workflow"
+  ],
+  "edgeCases": [
+   "Missing required fields on proposal generate: if Event Date or Package is blank, the Docs node will produce a proposal with literal `{{event_date}}` — validate all required fields in the C2 Code node before calling Docs, stop the workflow, and post a Telegram error `⚠️ Proposal failed for {{clientName}} — Event Date missing` so you can add the field and manually re-trigger",
+   "Google Docs template copy vs. edit: always copy the template to a new document (the `Create from Template` operation), never edit the master template — one mis-trigger that edits the template corrupts every future proposal",
+   "Drive export timing: Google's export-to-PDF conversion is not instant on large documents — add a short **Wait** (10 seconds) between the Docs fill and the Drive export to avoid a partially-rendered PDF",
+   "Vendor briefing idempotency: the daily scanner must check `vendor-briefed` tag before posting — without this check, the briefing fires every day for 14 days instead of once",
+   "Event date stored as a string: GHL custom Date fields return as ISO strings (`2026-09-15`); the 14-day comparison must parse both sides with `new Date()` and compare date-only (strip time component) to avoid timezone drift",
+   "Telegram message length: a vendor briefing for a large event (6+ vendor contacts) may exceed Telegram's 4096-character limit — cap the message at 4000 chars and append `... [see GHL contact for full details]` with the contact URL",
+   "A2P 10DLC for event services: the inquiry confirmation, deposit confirmation, and post-event review request are three separate message purposes and may require three campaign registrations — sequence the approval timeline in your portfolio as the go-live gate"
+  ],
+  "acceptance": [
+   "An inquiry form submission creates a GHL opportunity in `New Inquiry`, fires the welcome SMS within 60 seconds, and triggers the 1-hour internal notification if not yet in discovery stage",
+   "Moving an opportunity to `Proposal Sent` triggers the n8n generator: the GHL contact receives a filled PDF proposal Drive link via email within 3 minutes, and the `Proposal URL` custom field is populated",
+   "The proposal document uses the correct client name, event date (formatted as Month DD, YYYY), package, and deposit amount — no `{{placeholder}}` strings appear in the output",
+   "A deposit payment moves the opportunity to `Event Confirmed`, fires the confirmation SMS, and adds the `event-confirmed` tag within 60 seconds",
+   "The daily scanner posts the vendor briefing card to Telegram exactly once for events 14 days out — on day 15 the `vendor-briefed` tag prevents a duplicate",
+   "An event with a blank `Event Date` field stops the vendor briefing workflow and posts a Telegram error without crashing",
+   "The post-event review SMS fires 1 day after the stage moves to `Post-Event`, and the follow-up SMS fires on day 6 only if the `review-requested` tag is not yet present"
+  ],
+  "portfolio": [
+   "Loom (8-10 min): fill the inquiry form on camera, show the speed-to-inquiry SMS fire, manually move the opportunity to `Proposal Sent` and show the n8n workflow run live — open the resulting Google Doc proposal with the client's details filled, show the Drive PDF stored, and end on the proposal email arriving in inbox",
+   "Export the two n8n workflow JSONs (`Proposal Generator` and `Vendor Briefing`) with annotated screenshots of the Google Docs template-fill node and the 14-day date comparison Code node",
+   "Frame as a demonstration build for a fictional event studio; include the time math — 20 proposals/month × 45 minutes each = 15 hours saved, or approximately $1,500/month at a $100/hour opportunity cost",
+   "Hero image: the filled proposal PDF open in Drive alongside the n8n workflow canvas — document generation is a viscerally satisfying portfolio piece that non-technical clients immediately understand"
+  ],
+  "stretch": [
+   "Add a **contract e-signature step**: after the proposal Drive link is sent, n8n sends the same document to a **DocuSign** or **PandaDoc** API node for e-signature, and a GHL workflow listens for the signed webhook to auto-advance the stage to `Deposit Paid` — removing the manual signature chase entirely",
+   "Build a **day-of timeline generator**: 7 days before the event, n8n fills a second Google Docs template (`Event Day Timeline`) with setup time, vendor arrival windows computed from setup time, ceremony/event start, and breakdown — posts the PDF to the client and to `Studio Ops` Telegram so everyone has the same document",
+   "Add a **post-event photo delivery trigger**: when the photographer tags `photos-delivered` on the GHL contact (via a GHL form link you send them), n8n downloads the shared album link from a Google Sheets entry, generates a branded delivery email with a preview gallery, and sends it to the client — turning delivery into a marketing moment"
+  ]
  }
 ];
